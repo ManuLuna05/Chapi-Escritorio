@@ -4,7 +4,12 @@ import org.example.dao.DAOChapi;
 import org.example.model.Usuario;
 import org.example.model.UsuarioCuidador;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ControladorUsuarios {
     private DAOChapi dao;
@@ -19,7 +24,7 @@ public class ControladorUsuarios {
     }
 
     public void registrarUsuario(UsuarioCuidador usuarioCuidador) throws SQLException {
-        // Lógica para registrar UsuarioCuidador, por ejemplo, insertando en la tabla de relaciones
+        dao.registrarUsuarioCuidador(usuarioCuidador);
     }
 
     // Método para asignar un cuidador a un usuario cuidado
@@ -45,5 +50,35 @@ public class ControladorUsuarios {
     // Método para eliminar un usuario
     public void eliminarUsuario(int id) throws SQLException {
         dao.eliminarUsuario(id);
+    }
+
+    public boolean existeRelacionCuidador(int usuarioCuidadoId, int cuidadorId) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Cuidador_Usuario WHERE UsuarioID = ? AND UsuarioCuidadorID = ?";
+        try (Connection conn = dao.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, usuarioCuidadoId);
+            stmt.setInt(2, cuidadorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public List<Integer> obtenerPacientesDeCuidador(int cuidadorId) throws SQLException {
+        List<Integer> pacientes = new ArrayList<>();
+        String query = "SELECT UsuarioID FROM Cuidador_Usuario WHERE UsuarioCuidadorID = ?";
+        try (Connection conn = dao.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, cuidadorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    pacientes.add(rs.getInt("UsuarioID"));
+                }
+            }
+        }
+        return pacientes;
     }
 }

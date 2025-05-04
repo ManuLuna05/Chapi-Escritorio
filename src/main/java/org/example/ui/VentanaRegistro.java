@@ -159,8 +159,6 @@ public class VentanaRegistro extends JFrame {
             }
         });
 
-
-
         // Acción botón Volver
         botonVolver.addActionListener(e -> {
             new VentanaAcceso().setVisible(true);

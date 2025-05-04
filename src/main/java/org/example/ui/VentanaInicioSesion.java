@@ -101,10 +101,10 @@ public class VentanaInicioSesion extends JFrame {
                 if (usuario != null) {
                     if (usuario.getTipo().equals("cuidador")) {
                         JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso como Cuidador");
-                        new VentanaPrincipal(usuario.getId()).setVisible(true); // Inicio como cuidador
+                        new VentanaPrincipal(usuario.getId(), usuario.getTipo()).setVisible(true);
                     } else if (usuario.getTipo().equals("cuidado")) {
                         JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso como Usuario Cuidado");
-                        new VentanaPrincipal(usuario.getId()).setVisible(true); // Inicio como usuario cuidado
+                        new VentanaPrincipal(usuario.getId(), usuario.getTipo()).setVisible(true);
                     }
                     dispose();
                 } else {

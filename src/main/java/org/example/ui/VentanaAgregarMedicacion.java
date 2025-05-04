@@ -52,8 +52,8 @@ public class VentanaAgregarMedicacion extends JFrame {
         centerPanel.setBackground(new Color(248, 248, 248));
 
         JLabel titulo = new JLabel("AGREGAR MEDICACIÓN");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        titulo.setForeground(new Color(60, 60, 60));
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titulo.setForeground(new Color(113, 183, 188));
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         titulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
         centerPanel.add(titulo);
@@ -73,7 +73,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         cargarMedicamentos();
 
         btnConfigurarHoras = new JButton("CONFIGURAR HORAS DE DOSIS");
-        styleButton(btnConfigurarHoras, new Color(0, 120, 215), Color.WHITE);
+        styleButton(btnConfigurarHoras, new Color(113, 183, 188));
         btnConfigurarHoras.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnConfigurarHoras.addActionListener(e -> configurarHorasDosis());
 
@@ -86,12 +86,12 @@ public class VentanaAgregarMedicacion extends JFrame {
         buttonPanel.setBackground(new Color(248, 248, 248));
 
         btnGuardar = new JButton("GUARDAR");
-        styleButton(btnGuardar, new Color(40, 167, 69), Color.WHITE);
+        styleButton(btnGuardar, new Color(113, 183, 188));
         btnGuardar.setPreferredSize(new Dimension(150, 40));
         btnGuardar.addActionListener(e -> guardarMedicacion());
 
         btnCancelar = new JButton("CANCELAR");
-        styleButton(btnCancelar, new Color(240, 240, 240), new Color(80, 80, 80));
+        styleButton(btnCancelar, new Color(113, 183, 188));
         btnCancelar.setPreferredSize(new Dimension(150, 40));
         btnCancelar.addActionListener(e -> dispose());
 
@@ -140,7 +140,7 @@ public class VentanaAgregarMedicacion extends JFrame {
     private JDateChooser createDateChooser() {
         JDateChooser dateChooser = new JDateChooser();
         dateChooser.setDateFormatString("yyyy-MM-dd");
-        dateChooser.getCalendarButton().setBackground(new Color(0, 120, 215));
+        dateChooser.getCalendarButton().setBackground(new Color(113, 183, 188));
         dateChooser.getCalendarButton().setForeground(Color.WHITE);
         dateChooser.getDateEditor().getUiComponent().setBackground(Color.WHITE);
         dateChooser.setPreferredSize(new Dimension(300, 30));
@@ -148,10 +148,9 @@ public class VentanaAgregarMedicacion extends JFrame {
         return dateChooser;
     }
 
-    private void styleButton(JButton button, Color bgColor, Color fgColor) {
+    private void styleButton(JButton button, Color bgColor) {
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         button.setBackground(bgColor);
-        button.setForeground(fgColor);
         button.setFocusPainted(false);
         button.setMaximumSize(new Dimension(300, 40));
 

@@ -72,21 +72,18 @@ public class DAOChapi {
 
 
     public void registrarUsuarioCuidador(UsuarioCuidador usuarioCuidador) throws SQLException {
-        // Implementar el registro en la tabla Cuidador_Usuario
         String sql = "INSERT INTO Cuidador_Usuario (UsuarioID, UsuarioCuidadorID) VALUES (?, ?)";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Chapi", "usuario", "contraseña")) {
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, usuarioCuidador.getUsuarioId());  // ID del usuario cuidado
-                stmt.setInt(2, usuarioCuidador.getCuidadorId()); // ID del cuidador
-                stmt.executeUpdate();
-            }
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, usuarioCuidador.getUsuarioId());
+            stmt.setInt(2, usuarioCuidador.getCuidadorId());
+            stmt.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new SQLException("Error al registrar la relación cuidador-cuidado", ex);
         }
     }
-
 
     public void editarUsuario(Usuario usuario) throws SQLException {
         String query = "UPDATE Usuario SET Nombre = ?, Apellidos = ?, Email = ?, Password = ?, Telefono = ?, Tipo = ? WHERE UsuarioID = ?";
@@ -132,14 +129,13 @@ public class DAOChapi {
     }
 
     public int obtenerUsuarioIdPorCorreo(String email) throws SQLException {
-        // Obtener la conexión a la base de datos
         try (Connection connection = getConnection()) {
-            String sql = "SELECT id FROM usuario WHERE email = ?";
+            String sql = "SELECT UsuarioID FROM Usuario WHERE Email = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, email);
+                stmt.setBytes(1, email.getBytes());
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    return rs.getInt("id");
+                    return rs.getInt("UsuarioID");
                 } else {
                     throw new SQLException("No se encontró un usuario con ese correo.");
                 }
@@ -202,9 +198,10 @@ public class DAOChapi {
     // Método para obtener todos los recordatorios de un usuario
     public List<Recordatorios> obtenerRecordatoriosPorUsuario(int usuarioID) throws SQLException {
         List<Recordatorios> recordatorios = new ArrayList<>();
-        String query = "SELECT * FROM Recordatorio WHERE UsuarioID = ?";
+        String query = "SELECT * FROM Recordatorio WHERE UsuarioID = ? OR UsuarioCuidadorID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, usuarioID); // Filtrar por el usuario actual
+            stmt.setInt(2, usuarioID); // Filtrar por el cuidador asignado
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Recordatorios recordatorio = new Recordatorios();

@@ -13,6 +13,7 @@ public class VentanaAreaMedica extends JFrame {
     private ControladorRecordatorios controladorRecordatorios;
     private int usuarioID;
     private int usuarioCuidadorID;
+    private String tipoUsuario;
 
     public VentanaAreaMedica(int usuarioID, int usuarioCuidadorID) {
         this.usuarioID = usuarioID;
@@ -111,12 +112,14 @@ public class VentanaAreaMedica extends JFrame {
         addButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         addButton.setBackground(new Color(113, 183, 188));
         addButton.setFocusPainted(false);
+        addButton.setForeground(Color.WHITE);
 
         JButton deleteButton = new JButton("Eliminar");
         deleteButton.setPreferredSize(new Dimension(140, 45));
         deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         deleteButton.setBackground(new Color(113, 183, 188));
         deleteButton.setFocusPainted(false);
+        deleteButton.setForeground(Color.WHITE);
 
         buttonPanel.add(addButton);
         buttonPanel.add(Box.createHorizontalStrut(30));
@@ -131,7 +134,7 @@ public class VentanaAreaMedica extends JFrame {
 
         // Listeners
         backButton.addActionListener(e -> {
-            new VentanaPrincipal(usuarioID).setVisible(true);
+            new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
             dispose();
         });
 

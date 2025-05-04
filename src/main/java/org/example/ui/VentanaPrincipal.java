@@ -3,6 +3,8 @@ package org.example.ui;
 
 import org.example.model.Recordatorios;
 import org.example.service.ControladorRecordatorios;
+import org.example.service.ControladorUsuarios;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -13,8 +15,26 @@ import java.util.List;
 
 public class VentanaPrincipal extends JFrame {
     private JTextArea textoArea;
+    private int usuarioID;
+    private int usuarioCuidadorID;
+    private String tipoUsuario;
+    private List<Integer> usuarioCuidado = new ArrayList<>();
 
-    public VentanaPrincipal(int usuarioID) {
+    public VentanaPrincipal(int usuarioID, String tipoUsuario) {
+        this.usuarioID = usuarioID;
+        this.tipoUsuario = tipoUsuario;
+
+        // Si es cuidador, obtener sus pacientes
+        if ("cuidador".equals(tipoUsuario)) {
+            try {
+                ControladorUsuarios controlador = new ControladorUsuarios();
+                this.usuarioCuidado = controlador.obtenerPacientesDeCuidador(usuarioID);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al cargar pacientes: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
         setTitle("Chapi");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -197,7 +217,7 @@ public class VentanaPrincipal extends JFrame {
                     public void mouseClicked(MouseEvent e) {
                         if (titulo.equals("Área Médica")) {
                             dispose();
-                            new VentanaAreaMedica(1, 1).setVisible(true);
+                            new VentanaAreaMedica(usuarioID, usuarioCuidadorID).setVisible(true);
                         } else {
                             JOptionPane.showMessageDialog(VentanaPrincipal.this,
                                     "Accediendo a: " + titulo);
@@ -217,13 +237,5 @@ public class VentanaPrincipal extends JFrame {
         footer.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         footer.add(new JLabel("© 2025 Chapi"));
         return footer;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            VentanaPrincipal frame = new VentanaPrincipal(1);
-            frame.setVisible(true);
-            frame.setLocationRelativeTo(null);
-        });
     }
 }
