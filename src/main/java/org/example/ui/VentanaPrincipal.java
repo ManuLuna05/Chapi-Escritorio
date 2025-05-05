@@ -43,8 +43,15 @@ public class VentanaPrincipal extends JFrame {
         setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        // Eliminar recordatorios pasados
-        controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+        if ("cuidador".equals(tipoUsuario)) {
+            // Eliminar recordatorios pasados de todos los pacientes y del propio cuidador
+            for (Integer pacienteId : pacientesAsignados) {
+                controladorRecordatorios.eliminarRecordatoriosPasados(pacienteId);
+            }
+            controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+        } else {
+            controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+        }
 
         // Cargar los recordatorios del día
         List<String> recordatoriosHoy = obtenerRecordatoriosDelDia();
@@ -255,6 +262,14 @@ public class VentanaPrincipal extends JFrame {
                             dispose();
                             try {
                                 new VentanaAreaMedica(usuarioID, usuarioCuidadorID).setVisible(true);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                        } else if (titulo.equals("Área Física")) {
+                            dispose();
+                            try {
+                                new VentanaAreaFisica(usuarioID, usuarioCuidadorID).setVisible(true);
                             } catch (SQLException ex) {
                                 throw new RuntimeException(ex);
                             }

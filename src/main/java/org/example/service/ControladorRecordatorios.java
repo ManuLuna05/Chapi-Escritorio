@@ -60,7 +60,6 @@ public class ControladorRecordatorios {
     }
 
 
-
     public void eliminarRecordatoriosPasados(int usuarioID) throws SQLException {
         List<Recordatorios> recordatorios = obtenerRecordatoriosPorUsuarioOCuidador(usuarioID);
         for (Recordatorios recordatorio : recordatorios) {

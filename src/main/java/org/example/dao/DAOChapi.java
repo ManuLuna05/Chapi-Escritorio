@@ -62,17 +62,6 @@ public class DAOChapi {
         return null;
     }
 
-    public void asignarCuidador(int usuarioCuidadoId, int cuidadorId) throws SQLException {
-        String sql = "INSERT INTO Cuidador_Usuario (UsuarioID, UsuarioCuidadorID) VALUES (?, ?)";
-
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, usuarioCuidadoId);
-            stmt.setInt(2, cuidadorId);
-            stmt.executeUpdate();
-        }
-    }
-
-
     public void registrarUsuarioCuidador(UsuarioCuidador usuarioCuidador) throws SQLException {
         String sql = "INSERT INTO Cuidador_Usuario (UsuarioID, UsuarioCuidadorID) VALUES (?, ?)";
 
@@ -97,14 +86,6 @@ public class DAOChapi {
             stmt.setBytes(5, usuario.getTelefono() != null ? usuario.getTelefono().getBytes() : null);
             stmt.setString(6, usuario.getTipo());
             stmt.setInt(7, usuario.getId());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void eliminarUsuario(int id) throws SQLException {
-        String query = "DELETE FROM Usuario WHERE UsuarioID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id);
             stmt.executeUpdate();
         }
     }
@@ -145,19 +126,42 @@ public class DAOChapi {
         }
     }
 
-    // En tu clase DAO o ControladorUsuarios
     public List<Integer> obtenerPacientesDeCuidador(int cuidadorId) throws SQLException {
-        List<Integer> usuariosCuidado = new ArrayList<>();
+        List<Integer> pacientes = new ArrayList<>();
         String query = "SELECT UsuarioID FROM Cuidador_Usuario WHERE UsuarioCuidadorID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, cuidadorId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    usuariosCuidado.add(rs.getInt("UsuarioID"));
+                    pacientes.add(rs.getInt("UsuarioID"));
                 }
             }
         }
-        return usuariosCuidado;
+        return pacientes;
+    }
+
+    public Usuario obtenerUsuarioPorId(int usuarioId) throws SQLException {
+        String query = "SELECT * FROM Usuario WHERE UsuarioID = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, usuarioId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Usuario usuario = new Usuario(
+                            rs.getInt("UsuarioID"),
+                            rs.getString("Nombre"),
+                            rs.getString("Apellidos"),
+                            rs.getString("Email"),
+                            rs.getString("Password"),
+                            rs.getString("Telefono"),
+                            rs.getString("Tipo")
+                    );
+                    return usuario;
+                }
+            }
+        }
+        return null;
     }
 
     public List<Medicamento> obtenerTodosMedicamentos() throws SQLException {

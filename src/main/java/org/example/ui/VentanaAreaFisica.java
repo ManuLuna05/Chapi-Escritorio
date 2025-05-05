@@ -17,7 +17,7 @@ import org.example.model.Usuario;
 import org.example.service.ControladorRecordatorios;
 import org.example.service.ControladorUsuarios;
 
-public class VentanaAreaMedica extends JFrame {
+public class VentanaAreaFisica extends JFrame {
     private JList<String> listaRecordatorios;
     private DefaultListModel<String> modeloLista;
     private ControladorRecordatorios controladorRecordatorios;
@@ -31,7 +31,7 @@ public class VentanaAreaMedica extends JFrame {
         return tipoUsuario;
     }
 
-    public VentanaAreaMedica(int usuarioID, int usuarioCuidadorID) throws SQLException {
+    public VentanaAreaFisica(int usuarioID, int usuarioCuidadorID) throws SQLException {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
 
@@ -71,7 +71,7 @@ public class VentanaAreaMedica extends JFrame {
         // Título
         JPanel titlePanel = new JPanel();
         titlePanel.setOpaque(false);
-        JLabel tituloLabel = new JLabel("MEDICACIÓN", JLabel.CENTER);
+        JLabel tituloLabel = new JLabel("ACTIVIDAD FÍSICA", JLabel.CENTER);
         tituloLabel.setFont(new Font("Segoe UI", Font.BOLD, 72));
         tituloLabel.setForeground(new Color(113, 183, 188));
         titlePanel.add(tituloLabel);
@@ -214,18 +214,11 @@ public class VentanaAreaMedica extends JFrame {
         });
 
         addButton.addActionListener(e -> {
-            VentanaAgregarMedicacion ventana = new VentanaAgregarMedicacion(usuarioID, usuarioCuidadorID, this);
-            ventana.setVisible(true);
+
         });
 
         deleteButton.addActionListener(e -> {
-            try {
-                VentanaEliminarMedicación ventanaEliminar = new VentanaEliminarMedicación(usuarioID, this);
-                ventanaEliminar.setVisible(true);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir ventana de eliminación: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
+
         });
     }
 

@@ -126,15 +126,15 @@ public class VentanaRegistro extends JFrame {
                             campos[4].getText(),
                             "cuidador");
 
-                    controladorUsuarios.registrarUsuario(usuarioCuidador); // esto asigna el ID dentro
+                    controladorUsuarios.registrarUsuario(usuarioCuidador);
 
                     int cuidadorId = controladorUsuarios.obtenerUsuarioIdPorCorreo(usuarioCuidador.getEmail());
                     int usuarioCuidadoId = controladorUsuarios.obtenerUsuarioIdPorCorreo(correoUsuarioCuidado);
 
-                    // Registrar la relación
+                    //Registrar la relación cuidador-cuidado
                     UsuarioCuidador relacion = new UsuarioCuidador();
-                    relacion.setUsuarioId(usuarioCuidadoId); // ID del usuario cuidado
-                    relacion.setCuidadorId(cuidadorId); // ID del cuidador
+                    relacion.setUsuarioId(usuarioCuidadoId);
+                    relacion.setCuidadorId(cuidadorId);
 
                     controladorUsuarios.registrarUsuario(relacion);
 
