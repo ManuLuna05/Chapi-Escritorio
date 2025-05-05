@@ -1,11 +1,17 @@
-// VentanaAreaMedica.java
 package org.example.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.example.model.Recordatorios;
+import org.example.model.Usuario;
 import org.example.service.ControladorRecordatorios;
+import org.example.service.ControladorUsuarios;
 
 public class VentanaAreaMedica extends JFrame {
     private JList<String> listaRecordatorios;
@@ -15,9 +21,25 @@ public class VentanaAreaMedica extends JFrame {
     private int usuarioCuidadorID;
     private String tipoUsuario;
 
-    public VentanaAreaMedica(int usuarioID, int usuarioCuidadorID) {
+    public String getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public VentanaAreaMedica(int usuarioID, int usuarioCuidadorID) throws SQLException {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
+
+        // Determinar el tipo de usuario
+        ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
+        Usuario usuario = controladorUsuarios.obtenerUsuarioPorId(usuarioID);
+        this.tipoUsuario = usuario.getTipo();
+
+        // Inicializar el controlador de recordatorios (solo una vez, como campo de clase)
+        this.controladorRecordatorios = new ControladorRecordatorios();
+
+        // Eliminar recordatorios pasados al abrir el área médica
+        this.controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+
         setTitle("Área Médica");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -134,7 +156,11 @@ public class VentanaAreaMedica extends JFrame {
 
         // Listeners
         backButton.addActionListener(e -> {
-            new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
+            try {
+                new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             dispose();
         });
 
@@ -149,17 +175,46 @@ public class VentanaAreaMedica extends JFrame {
         });
     }
 
-    void cargarRecordatorios() {
+    void cargarRecordatorios() throws SQLException {
         modeloLista.clear();
-        List<Recordatorios> recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
+        List<Recordatorios> recordatorios = new ArrayList<>();
+
+        if ("cuidador".equals(tipoUsuario)) {
+            // Obtener los pacientes asignados
+            ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
+            List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
+
+            // Obtener recordatorios de cada paciente
+            for (Integer pacienteId : pacientes) {
+                List<Recordatorios> recordatoriosPaciente = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
+                if (recordatoriosPaciente != null) {
+                    recordatorios.addAll(recordatoriosPaciente);
+                }
+            }
+
+            // Añadir recordatorios propios del cuidador
+            List<Recordatorios> recordatoriosPropios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
+            if (recordatoriosPropios != null) {
+                recordatorios.addAll(recordatoriosPropios);
+            }
+        } else {
+            // Usuario normal (cuidado)
+            recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
+        }
+
+        // Evitar duplicados usando un Set
+        Set<Integer> idsVistos = new HashSet<>();
         if (recordatorios != null) {
             for (Recordatorios recordatorio : recordatorios) {
-                if ("Medicacion".equals(recordatorio.getTipoEvento())) {
+                if ("Medicacion".equals(recordatorio.getTipoEvento()) &&
+                        !idsVistos.contains(recordatorio.getRecordatorioID())) {
                     modeloLista.addElement(recordatorio.toString());
+                    idsVistos.add(recordatorio.getRecordatorioID());
                 }
             }
         }
     }
+
 
     private JPanel cabeceraVentana() {
         JPanel cabecera = new JPanel(null);
@@ -223,9 +278,5 @@ public class VentanaAreaMedica extends JFrame {
         footer.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         footer.add(new JLabel("© 2025 Chapi"));
         return footer;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new VentanaAreaMedica(1, 1).setVisible(true));
     }
 }

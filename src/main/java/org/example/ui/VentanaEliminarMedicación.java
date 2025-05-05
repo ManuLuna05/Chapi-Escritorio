@@ -7,6 +7,7 @@ import org.example.service.ControladorRecordatorios;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.List;
 
 public class VentanaEliminarMedicación extends JFrame {
@@ -51,9 +52,21 @@ public class VentanaEliminarMedicación extends JFrame {
         // Panel inferior: Botones de acción
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         JButton btnEliminarMedicacion = new JButton("Eliminar Medicación");
-        btnEliminarMedicacion.addActionListener(e -> eliminarMedicacion());
+        btnEliminarMedicacion.addActionListener(e -> {
+            try {
+                eliminarMedicacion();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         JButton btnEliminarRecordatorios = new JButton("Eliminar Recordatorios");
-        btnEliminarRecordatorios.addActionListener(e -> eliminarRecordatorios());
+        btnEliminarRecordatorios.addActionListener(e -> {
+            try {
+                eliminarRecordatorios();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         panelBotones.add(btnEliminarMedicacion);
         panelBotones.add(btnEliminarRecordatorios);
         add(panelBotones, BorderLayout.SOUTH);
@@ -82,7 +95,7 @@ public class VentanaEliminarMedicación extends JFrame {
         }
     }
 
-    private void eliminarMedicacion() {
+    private void eliminarMedicacion() throws SQLException {
         Medicacion medicacionSeleccionada = (Medicacion) comboMedicaciones.getSelectedItem();
         if (medicacionSeleccionada != null) {
             controladorMedicacion.eliminarMedicación(medicacionSeleccionada.getMedicacionID(), usuarioID);
@@ -97,7 +110,7 @@ public class VentanaEliminarMedicación extends JFrame {
         }
     }
 
-    private void eliminarRecordatorios() {
+    private void eliminarRecordatorios() throws SQLException {
         List<Recordatorios> recordatoriosSeleccionados = listaRecordatorios.getSelectedValuesList();
         if (!recordatoriosSeleccionados.isEmpty()) {
             for (Recordatorios recordatorio : recordatoriosSeleccionados) {

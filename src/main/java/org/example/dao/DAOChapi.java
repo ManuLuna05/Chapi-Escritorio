@@ -3,6 +3,8 @@ package org.example.dao;
 import org.example.model.*;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,15 +59,15 @@ public class DAOChapi {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return null; // Si no se encuentra el usuario
+        return null;
     }
 
     public void asignarCuidador(int usuarioCuidadoId, int cuidadorId) throws SQLException {
         String sql = "INSERT INTO Cuidador_Usuario (UsuarioID, UsuarioCuidadorID) VALUES (?, ?)";
 
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, usuarioCuidadoId);      // Usuario cuidado
-            stmt.setInt(2, cuidadorId);            // Usuario cuidador
+            stmt.setInt(1, usuarioCuidadoId);
+            stmt.setInt(2, cuidadorId);
             stmt.executeUpdate();
         }
     }
@@ -143,6 +145,21 @@ public class DAOChapi {
         }
     }
 
+    // En tu clase DAO o ControladorUsuarios
+    public List<Integer> obtenerPacientesDeCuidador(int cuidadorId) throws SQLException {
+        List<Integer> usuariosCuidado = new ArrayList<>();
+        String query = "SELECT UsuarioID FROM Cuidador_Usuario WHERE UsuarioCuidadorID = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, cuidadorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    usuariosCuidado.add(rs.getInt("UsuarioID"));
+                }
+            }
+        }
+        return usuariosCuidado;
+    }
+
     public List<Medicamento> obtenerTodosMedicamentos() throws SQLException {
         List<Medicamento> medicamentos = new ArrayList<>();
         String query = "SELECT * FROM Medicamento";
@@ -180,7 +197,7 @@ public class DAOChapi {
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, recordatorio.getUsuarioID());
-            stmt.setObject(2, recordatorio.getUsuarioCuidadorID()); // Puede ser null
+            stmt.setObject(2, recordatorio.getUsuarioCuidadorID());
             stmt.setString(3, recordatorio.getDescripcion());
             stmt.setString(4, recordatorio.getTipoEvento());
             stmt.setInt(5, recordatorio.getNumeroDosis());
@@ -188,9 +205,9 @@ public class DAOChapi {
             stmt.setTime(7, Time.valueOf(recordatorio.getHora()));
             stmt.setTimestamp(8, Timestamp.valueOf(recordatorio.getFechaInicio()));
             stmt.setTimestamp(9, Timestamp.valueOf(recordatorio.getFechaFin()));
-            stmt.setObject(10, recordatorio.getCitaMedicaID()); // Puede ser null
-            stmt.setObject(11, recordatorio.getMedicacionID()); // Puede ser null
-            stmt.setObject(12, recordatorio.getActividadID()); // Puede ser null
+            stmt.setObject(10, recordatorio.getCitaMedicaID());
+            stmt.setObject(11, recordatorio.getMedicacionID());
+            stmt.setObject(12, recordatorio.getActividadID());
             stmt.executeUpdate();
         }
     }
@@ -200,8 +217,38 @@ public class DAOChapi {
         List<Recordatorios> recordatorios = new ArrayList<>();
         String query = "SELECT * FROM Recordatorio WHERE UsuarioID = ? OR UsuarioCuidadorID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, usuarioID); // Filtrar por el usuario actual
-            stmt.setInt(2, usuarioID); // Filtrar por el cuidador asignado
+            stmt.setInt(1, usuarioID);
+            stmt.setInt(2, usuarioID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Recordatorios recordatorio = new Recordatorios();
+                    recordatorio.setRecordatorioID(rs.getInt("RecordatorioID"));
+                    recordatorio.setUsuarioID(rs.getInt("UsuarioID"));
+                    recordatorio.setUsuarioCuidadorID(rs.getInt("UsuarioCuidadorID"));
+                    recordatorio.setDescripcion(rs.getString("Descripcion"));
+                    recordatorio.setTipoEvento(rs.getString("TipoEvento"));
+                    recordatorio.setNumeroDosis(rs.getInt("NumeroDosis"));
+                    recordatorio.setFecha(rs.getDate("Fecha").toLocalDate());
+                    recordatorio.setHora(rs.getTime("Hora").toLocalTime());
+                    recordatorio.setFechaInicio(rs.getTimestamp("FechaInicio").toLocalDateTime());
+                    recordatorio.setFechaFin(rs.getTimestamp("FechaFin").toLocalDateTime());
+                    recordatorio.setCitaMedicaID(rs.getInt("CitaMedicaID"));
+                    recordatorio.setMedicacionID(rs.getInt("MedicacionID"));
+                    recordatorio.setActividadID(rs.getInt("ActividadID"));
+                    recordatorios.add(recordatorio);
+                }
+            }
+        }
+        return recordatorios;
+    }
+
+    // Método para obtener recordatorios donde el usuario es el cuidador
+    public List<Recordatorios> obtenerRecordatoriosPorCuidador(int cuidadorID) throws SQLException {
+        List<Recordatorios> recordatorios = new ArrayList<>();
+        String query = "SELECT * FROM Recordatorio WHERE UsuarioCuidadorID = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, cuidadorID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Recordatorios recordatorio = new Recordatorios();
@@ -297,8 +344,8 @@ public class DAOChapi {
                     medicacion.setDosis(rs.getInt("Dosis"));
                     medicacion.setFrecuencia(rs.getString("Frecuencia"));
                     medicacion.setDuracion(rs.getInt("Duracion"));
-                    medicacion.setFechaInicio(rs.getDate("FechaInicio").toLocalDate());  // Convertir Date a LocalDate
-                    medicacion.setFechaFin(rs.getDate("FechaFin").toLocalDate());  // Convertir Date a LocalDate
+                    medicacion.setFechaInicio(rs.getDate("FechaInicio").toLocalDate());
+                    medicacion.setFechaFin(rs.getDate("FechaFin").toLocalDate());
                     medicaciones.add(medicacion);
                 }
             }
@@ -320,8 +367,8 @@ public class DAOChapi {
                     medicacion.setDosis(rs.getInt("Dosis"));
                     medicacion.setFrecuencia(rs.getString("Frecuencia"));
                     medicacion.setDuracion(rs.getInt("Duracion"));
-                    medicacion.setFechaInicio(rs.getDate("FechaInicio").toLocalDate());  // Convertir Date a LocalDate
-                    medicacion.setFechaFin(rs.getDate("FechaFin").toLocalDate());  // Convertir Date a LocalDate
+                    medicacion.setFechaInicio(rs.getDate("FechaInicio").toLocalDate());
+                    medicacion.setFechaFin(rs.getDate("FechaFin").toLocalDate());
                     return medicacion;
                 } else {
                     throw new SQLException("No se encontró la medicación con ID: " + medicacionId);

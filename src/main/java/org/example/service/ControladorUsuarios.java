@@ -52,6 +52,10 @@ public class ControladorUsuarios {
         dao.eliminarUsuario(id);
     }
 
+    public void obtenerPacientesDelCuidador(int cuidadorId) throws SQLException {
+        dao.obtenerPacientesDeCuidador(cuidadorId);
+    }
+
     public boolean existeRelacionCuidador(int usuarioCuidadoId, int cuidadorId) throws SQLException {
         String query = "SELECT COUNT(*) FROM Cuidador_Usuario WHERE UsuarioID = ? AND UsuarioCuidadorID = ?";
         try (Connection conn = dao.getConnection();
@@ -80,5 +84,28 @@ public class ControladorUsuarios {
             }
         }
         return pacientes;
+    }
+
+    public Usuario obtenerUsuarioPorId(int usuarioId) throws SQLException {
+        String query = "SELECT * FROM Usuario WHERE UsuarioID = ?";
+        try (Connection conn = dao.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, usuarioId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Usuario usuario = new Usuario(
+                            rs.getInt("UsuarioID"),
+                            rs.getString("Nombre"),
+                            rs.getString("Apellidos"),
+                            rs.getString("Email"),
+                            rs.getString("Password"),
+                            rs.getString("Telefono"),
+                            rs.getString("Tipo")
+                    );
+                    return usuario;
+                }
+            }
+        }
+        return null;
     }
 }

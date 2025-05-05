@@ -1,4 +1,3 @@
-
 package org.example.ui;
 
 import org.example.model.Recordatorios;
@@ -10,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,46 +18,81 @@ public class VentanaPrincipal extends JFrame {
     private int usuarioID;
     private int usuarioCuidadorID;
     private String tipoUsuario;
-    private List<Integer> usuarioCuidado = new ArrayList<>();
+    private List<Integer> pacientesAsignados = new ArrayList<>();
+    private ControladorRecordatorios controladorRecordatorios;
 
-    public VentanaPrincipal(int usuarioID, String tipoUsuario) {
+    public VentanaPrincipal(int usuarioID, String tipoUsuario) throws SQLException {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
+        this.controladorRecordatorios = new ControladorRecordatorios();
 
         // Si es cuidador, obtener sus pacientes
         if ("cuidador".equals(tipoUsuario)) {
             try {
                 ControladorUsuarios controlador = new ControladorUsuarios();
-                this.usuarioCuidado = controlador.obtenerPacientesDeCuidador(usuarioID);
+                this.pacientesAsignados = controlador.obtenerPacientesDeCuidador(usuarioID);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this,
                         "Error al cargar pacientes: " + ex.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+
         setTitle("Chapi");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // Eliminar recordatorios pasados
-        ControladorRecordatorios controladorRecordatorios = new ControladorRecordatorios();
         controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
 
-        // Cargar los recordatorios del día desde la base de datos
-        List<String> recordatorios = new ArrayList<>();
-        List<Recordatorios> listaRecordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
-        for (Recordatorios recordatorio : listaRecordatorios) {
-            if (recordatorio.getFecha().isEqual(java.time.LocalDate.now())) {
-                recordatorios.add(recordatorio.getDescripcion());
-            }
-        }
+        // Cargar los recordatorios del día
+        List<String> recordatoriosHoy = obtenerRecordatoriosDelDia();
 
         // Cabecera, panel principal y footer
         add(cabeceraVentana(), BorderLayout.NORTH);
-        add(panelPrincipal(recordatorios), BorderLayout.CENTER);
+        add(panelPrincipal(recordatoriosHoy), BorderLayout.CENTER);
         add(footerVentana(), BorderLayout.SOUTH);
     }
+
+    private List<String> obtenerRecordatoriosDelDia() throws SQLException {
+        List<String> recordatoriosHoy = new ArrayList<>();
+        List<Recordatorios> todosRecordatorios;
+        LocalDate hoy = LocalDate.now();
+
+        if ("cuidador".equals(tipoUsuario)) {
+            // Para cuidadores: obtener recordatorios de sus pacientes
+            todosRecordatorios = new ArrayList<>();
+            for (Integer pacienteId : pacientesAsignados) {
+                List<Recordatorios> recordatoriosPaciente = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
+                if (recordatoriosPaciente != null) {
+                    todosRecordatorios.addAll(recordatoriosPaciente);
+                }
+            }
+
+            // Añadir los recordatorios propios del cuidador
+            List<Recordatorios> recordatoriosPropios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
+            if (recordatoriosPropios != null) {
+                todosRecordatorios.addAll(recordatoriosPropios);
+            }
+        } else {
+            // Para usuarios normales: solo sus recordatorios
+            todosRecordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
+        }
+
+        // Filtrar solo los de hoy y evitar duplicados
+        for (Recordatorios recordatorio : todosRecordatorios) {
+            if (recordatorio.getFecha().isEqual(hoy)) {
+                String descripcion = recordatorio.getDescripcion();
+                if (!recordatoriosHoy.contains(descripcion)) {
+                    recordatoriosHoy.add(descripcion);
+                }
+            }
+        }
+
+        return recordatoriosHoy;
+    }
+
 
     private JPanel cabeceraVentana() {
         //Panel contenedor para la cabecera
@@ -164,6 +199,7 @@ public class VentanaPrincipal extends JFrame {
             textoArea.setFont(new Font("Arial", Font.PLAIN, 14));
             textoArea.setText("Aquí aparecerán los recordatorios...");
 
+            //Si hay recordatorios, se muestran en el cuadro de texto
             if (recordatorios != null && !recordatorios.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 for (String recordatorio : recordatorios) {
@@ -217,7 +253,11 @@ public class VentanaPrincipal extends JFrame {
                     public void mouseClicked(MouseEvent e) {
                         if (titulo.equals("Área Médica")) {
                             dispose();
-                            new VentanaAreaMedica(usuarioID, usuarioCuidadorID).setVisible(true);
+                            try {
+                                new VentanaAreaMedica(usuarioID, usuarioCuidadorID).setVisible(true);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
                         } else {
                             JOptionPane.showMessageDialog(VentanaPrincipal.this,
                                     "Accediendo a: " + titulo);

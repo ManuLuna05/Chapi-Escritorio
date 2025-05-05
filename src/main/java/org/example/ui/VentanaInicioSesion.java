@@ -1,4 +1,3 @@
-// VentanaInicioSesion.java
 package org.example.ui;
 
 import org.example.model.Usuario;

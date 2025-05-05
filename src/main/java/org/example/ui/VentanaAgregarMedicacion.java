@@ -6,6 +6,7 @@ import org.example.model.Recordatorios;
 import org.example.service.ControladorMedicacion;
 import org.example.service.ControladorRecordatorios;
 import com.toedter.calendar.JDateChooser;
+import org.example.service.ControladorUsuarios;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -24,12 +25,12 @@ public class VentanaAgregarMedicacion extends JFrame {
     private JButton btnGuardar, btnCancelar, btnConfigurarHoras;
     private int usuarioID;
     private List<LocalTime> horasDosis;
-    private VentanaAreaMedica ventanaAreaMedicaPadre;
+    private VentanaAreaMedica ventanaAreaMedica;
 
     public VentanaAgregarMedicacion(int usuarioID, int usuarioCuidadorID, VentanaAreaMedica ventanaAreaMedicaPadre) {
         this.usuarioID = usuarioID;
         this.horasDosis = new ArrayList<>();
-        this.ventanaAreaMedicaPadre = ventanaAreaMedicaPadre;
+        this.ventanaAreaMedica = ventanaAreaMedicaPadre;
 
         setTitle("Agregar Medicación");
         setSize(520, 650);
@@ -60,20 +61,20 @@ public class VentanaAgregarMedicacion extends JFrame {
 
         comboMedicamentos = new JComboBox<>();
         spinnerDosis = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-        dateChooserInicio = createDateChooser();
-        dateChooserFin = createDateChooser();
+        dateChooserInicio = crearSeleccionFecha();
+        dateChooserFin = crearSeleccionFecha();
         txtFrecuencia = new JTextField();
 
-        addCenteredFormField(centerPanel, "Medicamento:", comboMedicamentos);
-        addCenteredFormField(centerPanel, "Dosis:", spinnerDosis);
-        addCenteredFormField(centerPanel, "Fecha de Inicio:", dateChooserInicio);
-        addCenteredFormField(centerPanel, "Fecha de Fin:", dateChooserFin);
-        addCenteredFormField(centerPanel, "Frecuencia:", txtFrecuencia);
+        formularioCentrado(centerPanel, "Medicamento:", comboMedicamentos);
+        formularioCentrado(centerPanel, "Dosis:", spinnerDosis);
+        formularioCentrado(centerPanel, "Fecha de Inicio:", dateChooserInicio);
+        formularioCentrado(centerPanel, "Fecha de Fin:", dateChooserFin);
+        formularioCentrado(centerPanel, "Frecuencia:", txtFrecuencia);
 
         cargarMedicamentos();
 
         btnConfigurarHoras = new JButton("CONFIGURAR HORAS DE DOSIS");
-        styleButton(btnConfigurarHoras, new Color(113, 183, 188));
+        estiloBoton(btnConfigurarHoras, new Color(113, 183, 188));
         btnConfigurarHoras.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnConfigurarHoras.addActionListener(e -> configurarHorasDosis());
 
@@ -86,12 +87,12 @@ public class VentanaAgregarMedicacion extends JFrame {
         buttonPanel.setBackground(new Color(248, 248, 248));
 
         btnGuardar = new JButton("GUARDAR");
-        styleButton(btnGuardar, new Color(113, 183, 188));
+        estiloBoton(btnGuardar, new Color(113, 183, 188));
         btnGuardar.setPreferredSize(new Dimension(150, 40));
         btnGuardar.addActionListener(e -> guardarMedicacion());
 
         btnCancelar = new JButton("CANCELAR");
-        styleButton(btnCancelar, new Color(113, 183, 188));
+        estiloBoton(btnCancelar, new Color(113, 183, 188));
         btnCancelar.setPreferredSize(new Dimension(150, 40));
         btnCancelar.addActionListener(e -> dispose());
 
@@ -106,7 +107,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         add(panel);
     }
 
-    private void addCenteredFormField(JPanel panel, String labelText, JComponent field) {
+    private void formularioCentrado(JPanel panel, String labelText, JComponent field) {
         JPanel fieldPanel = new JPanel();
         fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.Y_AXIS));
         fieldPanel.setBackground(new Color(248, 248, 248));
@@ -137,7 +138,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         panel.add(fieldPanel);
     }
 
-    private JDateChooser createDateChooser() {
+    private JDateChooser crearSeleccionFecha() {
         JDateChooser dateChooser = new JDateChooser();
         dateChooser.setDateFormatString("yyyy-MM-dd");
         dateChooser.getCalendarButton().setBackground(new Color(113, 183, 188));
@@ -148,7 +149,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         return dateChooser;
     }
 
-    private void styleButton(JButton button, Color bgColor) {
+    private void estiloBoton(JButton button, Color bgColor) {
         button.setFont(new Font("Segoe UI", Font.BOLD, 12));
         button.setBackground(bgColor);
         button.setFocusPainted(false);
@@ -197,25 +198,35 @@ public class VentanaAgregarMedicacion extends JFrame {
             Medicamento medicamentoSeleccionado = (Medicamento) comboMedicamentos.getSelectedItem();
             int dosis = (int) spinnerDosis.getValue();
 
-            LocalDate fechaInicio = dateChooserInicio.getDate().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-
-            LocalDate fechaFin = dateChooserFin.getDate().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-
+            LocalDate fechaInicio = dateChooserInicio.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            LocalDate fechaFin = dateChooserFin.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
             String frecuencia = txtFrecuencia.getText();
 
             if (horasDosis.size() != dosis) {
-                JOptionPane.showMessageDialog(this,
-                        "Debe configurar todas las horas de las dosis.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Debe configurar todas las horas de las dosis.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             int duracion = (int) java.time.temporal.ChronoUnit.DAYS.between(fechaInicio, fechaFin);
 
             Medicacion medicacion = new Medicacion();
-            medicacion.setUsuarioID(usuarioID);
+
+            ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
+            int idUsuario = usuarioID; // Por defecto, el usuario actual
+            Integer idCuidador = null;
+
+            if (ventanaAreaMedica != null && "cuidador".equals(ventanaAreaMedica.getTipoUsuario())) {
+                List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
+                if (!pacientes.isEmpty()) {
+                    idUsuario = pacientes.get(0); // Solo el primer paciente
+                    idCuidador = usuarioID;
+                } else {
+                    JOptionPane.showMessageDialog(this, "No hay pacientes asignados.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            medicacion.setUsuarioID(idUsuario);
             medicacion.setMedicamentoID(medicamentoSeleccionado.getId());
             medicacion.setDosis(dosis);
             medicacion.setFrecuencia(frecuencia);
@@ -230,7 +241,8 @@ public class VentanaAgregarMedicacion extends JFrame {
             for (LocalDate fecha = fechaInicio; !fecha.isAfter(fechaFin); fecha = fecha.plusDays(1)) {
                 for (LocalTime hora : horasDosis) {
                     Recordatorios recordatorio = new Recordatorios();
-                    recordatorio.setUsuarioID(usuarioID);
+                    recordatorio.setUsuarioID(idUsuario);
+                    recordatorio.setUsuarioCuidadorID(idCuidador); // Puede ser null si no es cuidador
                     recordatorio.setDescripcion("Tomar " + medicamentoSeleccionado.getNombre());
                     recordatorio.setTipoEvento("Medicacion");
                     recordatorio.setNumeroDosis(1);
@@ -248,8 +260,8 @@ public class VentanaAgregarMedicacion extends JFrame {
                     "Medicación y recordatorios guardados correctamente.",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
-            if (ventanaAreaMedicaPadre != null) {
-                ventanaAreaMedicaPadre.cargarRecordatorios();
+            if (ventanaAreaMedica != null) {
+                ventanaAreaMedica.cargarRecordatorios();
             }
             dispose();
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import org.example.model.Recordatorios;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ControladorRecordatorios {
@@ -58,17 +59,32 @@ public class ControladorRecordatorios {
         }
     }
 
-    public void eliminarRecordatoriosPasados(int usuarioID) {
-        try {
-            List<Recordatorios> recordatorios = dao.obtenerRecordatoriosPorUsuario(usuarioID);
-            for (Recordatorios recordatorio : recordatorios) {
-                if (recordatorio.getFecha().isBefore(LocalDate.now()) ||
-                        (recordatorio.getFecha().isEqual(LocalDate.now()) && recordatorio.getHora().isBefore(LocalTime.now()))) {
-                    dao.eliminarRecordatorio(recordatorio.getRecordatorioID());
-                }
+
+
+    public void eliminarRecordatoriosPasados(int usuarioID) throws SQLException {
+        List<Recordatorios> recordatorios = obtenerRecordatoriosPorUsuarioOCuidador(usuarioID);
+        for (Recordatorios recordatorio : recordatorios) {
+            if (recordatorio.getFecha().isBefore(LocalDate.now()) ||
+                    (recordatorio.getFecha().isEqual(LocalDate.now()) && recordatorio.getHora().isBefore(LocalTime.now()))) {
+                eliminarRecordatorio(recordatorio.getRecordatorioID());
             }
+        }
+    }
+
+    // Método para obtener recordatorios donde el usuario es el cuidador
+    public List<Recordatorios> obtenerRecordatoriosPorCuidador(int cuidadorID) {
+        try {
+            return dao.obtenerRecordatoriosPorCuidador(cuidadorID);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public List<Recordatorios> obtenerRecordatoriosPorUsuarioOCuidador(int usuarioID) throws SQLException {
+        List<Recordatorios> recordatorios = new ArrayList<>();
+        recordatorios.addAll(obtenerRecordatoriosPorUsuario(usuarioID));
+        recordatorios.addAll(obtenerRecordatoriosPorCuidador(usuarioID));
+        return recordatorios;
     }
 }
