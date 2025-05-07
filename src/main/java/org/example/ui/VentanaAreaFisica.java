@@ -1,5 +1,10 @@
 package org.example.ui;
 
+import org.example.model.Recordatorios;
+import org.example.model.Usuario;
+import org.example.service.ControladorRecordatorios;
+import org.example.service.ControladorUsuarios;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -11,11 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.example.model.Recordatorios;
-import org.example.model.Usuario;
-import org.example.service.ControladorRecordatorios;
-import org.example.service.ControladorUsuarios;
 
 public class VentanaAreaFisica extends JFrame {
     private JList<String> listaRecordatorios;
@@ -43,10 +43,10 @@ public class VentanaAreaFisica extends JFrame {
         // Inicializar el controlador de recordatorios
         this.controladorRecordatorios = new ControladorRecordatorios();
 
-        // Eliminar recordatorios pasados al abrir el área médica
+        // Eliminar recordatorios pasados al abrir el área física
         this.controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
 
-        setTitle("Área Médica");
+        setTitle("Área Física");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -135,7 +135,6 @@ public class VentanaAreaFisica extends JFrame {
         backButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         backButton.setFocusPainted(false);
         backButton.setBackground(new Color(113, 183, 188));
-        backButton.setFocusPainted(false);
         backButton.setForeground(Color.WHITE);
         backButton.setContentAreaFilled(true);
         backButton.setOpaque(true);
@@ -144,7 +143,6 @@ public class VentanaAreaFisica extends JFrame {
         searchPanel.add(backButton);
 
         contentPanel.add(searchPanel);
-
         contentPanel.add(Box.createVerticalStrut(40));
 
         // Lista de recordatorios
@@ -158,16 +156,14 @@ public class VentanaAreaFisica extends JFrame {
         scrollPane.setPreferredSize(new Dimension(900, 600));
         scrollPane.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(113, 183, 188), 2),
-                "Recordatorios de Medicación ",
-                0,
-                0,
+                "Recordatorios de Actividad Física",
+                0, 0,
                 new Font("Segoe UI", Font.BOLD, 18),
                 new Color(113, 183, 188)
         ));
         contentPanel.add(scrollPane);
 
         cargarRecordatorios();
-
         contentPanel.add(Box.createVerticalStrut(20));
 
         // Botonera
@@ -178,28 +174,37 @@ public class VentanaAreaFisica extends JFrame {
         addButton.setPreferredSize(new Dimension(140, 45));
         addButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         addButton.setBackground(new Color(113, 183, 188));
-        addButton.setFocusPainted(false);
         addButton.setForeground(Color.WHITE);
         addButton.setContentAreaFilled(true);
         addButton.setOpaque(true);
+        addButton.addActionListener(e -> {
+            VentanaAgregarActividad ventana = new VentanaAgregarActividad(usuarioID, usuarioCuidadorID, this);
+            ventana.setVisible(true);
+        });
 
         JButton deleteButton = new JButton("Eliminar");
         deleteButton.setPreferredSize(new Dimension(140, 45));
         deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         deleteButton.setBackground(new Color(113, 183, 188));
-        deleteButton.setFocusPainted(false);
         deleteButton.setForeground(Color.WHITE);
         deleteButton.setContentAreaFilled(true);
         deleteButton.setOpaque(true);
+        deleteButton.addActionListener(e -> {
+            try {
+                VentanaEliminarActividad ventanaEliminar = new VentanaEliminarActividad(usuarioID, this);
+                ventanaEliminar.setVisible(true);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al abrir ventana de eliminación: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         buttonPanel.add(addButton);
         buttonPanel.add(Box.createHorizontalStrut(30));
         buttonPanel.add(deleteButton);
 
         contentPanel.add(buttonPanel);
-
         centerPanel.add(contentPanel, new GridBagConstraints());
-
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         add(mainPanel);
 
@@ -212,14 +217,6 @@ public class VentanaAreaFisica extends JFrame {
             }
             dispose();
         });
-
-        addButton.addActionListener(e -> {
-
-        });
-
-        deleteButton.addActionListener(e -> {
-
-        });
     }
 
     void cargarRecordatorios() throws SQLException {
@@ -228,11 +225,9 @@ public class VentanaAreaFisica extends JFrame {
         List<Recordatorios> recordatorios = new ArrayList<>();
 
         if ("cuidador".equals(tipoUsuario)) {
-            // Obtener los pacientes asignados
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
 
-            // Obtener recordatorios de cada paciente
             for (Integer pacienteId : pacientes) {
                 List<Recordatorios> recordatoriosPaciente = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
                 if (recordatoriosPaciente != null) {
@@ -240,21 +235,18 @@ public class VentanaAreaFisica extends JFrame {
                 }
             }
 
-            // Añadir recordatorios propios del cuidador
             List<Recordatorios> recordatoriosPropios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
             if (recordatoriosPropios != null) {
                 recordatorios.addAll(recordatoriosPropios);
             }
         } else {
-            // Usuario normal (cuidado)
             recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
         }
 
-        // Evitar duplicados usando un Set
         Set<Integer> idsVistos = new HashSet<>();
         if (recordatorios != null) {
             for (Recordatorios recordatorio : recordatorios) {
-                if ("Medicacion".equals(recordatorio.getTipoEvento()) &&
+                if ("ActividadFisica".equals(recordatorio.getTipoEvento()) &&
                         !idsVistos.contains(recordatorio.getRecordatorioID())) {
                     todosRecordatorios.add(recordatorio);
                     modeloLista.addElement(recordatorio.toString());
@@ -267,7 +259,6 @@ public class VentanaAreaFisica extends JFrame {
     private void filtrarRecordatorios() {
         String textoBusqueda = searchField.getText().toLowerCase();
 
-        // Si es el texto del placeholder o está vacío, mostrar todos
         if (textoBusqueda.equals("buscar...") || textoBusqueda.isEmpty()) {
             cargarTodosRecordatorios();
             return;
@@ -285,6 +276,15 @@ public class VentanaAreaFisica extends JFrame {
         modeloLista.clear();
         for (Recordatorios recordatorio : todosRecordatorios) {
             modeloLista.addElement(recordatorio.toString());
+        }
+    }
+
+    public void recargarRecordatorios() {
+        try {
+            cargarRecordatorios();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al recargar recordatorios: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -330,15 +330,6 @@ public class VentanaAreaFisica extends JFrame {
         cabecera.add(logoEtiqueta);
 
         return cabecera;
-    }
-
-    public void recargarRecordatorios() {
-        try {
-            cargarRecordatorios();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al recargar recordatorios: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     private JPanel footerVentana() {

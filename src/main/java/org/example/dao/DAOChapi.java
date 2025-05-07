@@ -14,12 +14,12 @@ public class DAOChapi {
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
-    // Método para obtener la conexión a la base de datos
+    //Función para obtener la conexión a la base de datos
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    // Métodos CRUD para Usuario
+
     public void registroUsuario(Usuario usuario) throws SQLException {
         String query = "INSERT INTO Usuario (Nombre, Apellidos, Email, Password, Telefono, Tipo) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -86,15 +86,6 @@ public class DAOChapi {
             stmt.setBytes(5, usuario.getTelefono() != null ? usuario.getTelefono().getBytes() : null);
             stmt.setString(6, usuario.getTipo());
             stmt.setInt(7, usuario.getId());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void eliminarCuidador(int usuarioId, int cuidadorId) throws SQLException {
-        String query = "DELETE FROM Cuidador_Usuario WHERE UsuarioID = ? AND UsuarioCuidadorID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, usuarioId);
-            stmt.setInt(2, cuidadorId);
             stmt.executeUpdate();
         }
     }
@@ -218,17 +209,24 @@ public class DAOChapi {
 
     // Método para obtener todos los recordatorios de un usuario
     public List<Recordatorios> obtenerRecordatoriosPorUsuario(int usuarioID) throws SQLException {
-        List<Recordatorios> recordatorios = new ArrayList<>();
-        String query = "SELECT * FROM Recordatorio WHERE UsuarioID = ? OR UsuarioCuidadorID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        List<Recordatorios> lista = new ArrayList<>();
+        String query = "SELECT * FROM Recordatorio WHERE UsuarioID = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, usuarioID);
-            stmt.setInt(2, usuarioID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Recordatorios recordatorio = new Recordatorios();
                     recordatorio.setRecordatorioID(rs.getInt("RecordatorioID"));
                     recordatorio.setUsuarioID(rs.getInt("UsuarioID"));
-                    recordatorio.setUsuarioCuidadorID(rs.getInt("UsuarioCuidadorID"));
+
+                    int cuidadorId = rs.getInt("UsuarioCuidadorID");
+                    if (rs.wasNull()) {
+                        recordatorio.setUsuarioCuidadorID(null);
+                    } else {
+                        recordatorio.setUsuarioCuidadorID(cuidadorId);
+                    }
+
                     recordatorio.setDescripcion(rs.getString("Descripcion"));
                     recordatorio.setTipoEvento(rs.getString("TipoEvento"));
                     recordatorio.setNumeroDosis(rs.getInt("NumeroDosis"));
@@ -236,29 +234,59 @@ public class DAOChapi {
                     recordatorio.setHora(rs.getTime("Hora").toLocalTime());
                     recordatorio.setFechaInicio(rs.getTimestamp("FechaInicio").toLocalDateTime());
                     recordatorio.setFechaFin(rs.getTimestamp("FechaFin").toLocalDateTime());
-                    recordatorio.setCitaMedicaID(rs.getInt("CitaMedicaID"));
-                    recordatorio.setMedicacionID(rs.getInt("MedicacionID"));
-                    recordatorio.setActividadID(rs.getInt("ActividadID"));
-                    recordatorios.add(recordatorio);
+
+                    // ✅ Aquí aplicamos el control correcto para posibles null en IDs opcionales:
+
+                    int citaId = rs.getInt("CitaMedicaID");
+                    if (rs.wasNull()) {
+                        recordatorio.setCitaMedicaID(null);
+                    } else {
+                        recordatorio.setCitaMedicaID(citaId);
+                    }
+
+                    int medicacionId = rs.getInt("MedicacionID");
+                    if (rs.wasNull()) {
+                        recordatorio.setMedicacionID(null);
+                    } else {
+                        recordatorio.setMedicacionID(medicacionId);
+                    }
+
+                    int actividadId = rs.getInt("ActividadID");
+                    if (rs.wasNull()) {
+                        recordatorio.setActividadID(null);
+                    } else {
+                        recordatorio.setActividadID(actividadId);
+                    }
+
+                    lista.add(recordatorio);
                 }
             }
         }
-        return recordatorios;
+        return lista;
     }
 
+
+
     // Método para obtener recordatorios donde el usuario es el cuidador
-    public List<Recordatorios> obtenerRecordatoriosPorCuidador(int cuidadorID) throws SQLException {
-        List<Recordatorios> recordatorios = new ArrayList<>();
+    public List<Recordatorios> obtenerRecordatoriosPorCuidador(int usuarioCuidadorID) throws SQLException {
+        List<Recordatorios> lista = new ArrayList<>();
         String query = "SELECT * FROM Recordatorio WHERE UsuarioCuidadorID = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, cuidadorID);
+            stmt.setInt(1, usuarioCuidadorID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Recordatorios recordatorio = new Recordatorios();
                     recordatorio.setRecordatorioID(rs.getInt("RecordatorioID"));
                     recordatorio.setUsuarioID(rs.getInt("UsuarioID"));
-                    recordatorio.setUsuarioCuidadorID(rs.getInt("UsuarioCuidadorID"));
+
+                    int cuidadorId = rs.getInt("UsuarioCuidadorID");
+                    if (rs.wasNull()) {
+                        recordatorio.setUsuarioCuidadorID(null);
+                    } else {
+                        recordatorio.setUsuarioCuidadorID(cuidadorId);
+                    }
+
                     recordatorio.setDescripcion(rs.getString("Descripcion"));
                     recordatorio.setTipoEvento(rs.getString("TipoEvento"));
                     recordatorio.setNumeroDosis(rs.getInt("NumeroDosis"));
@@ -266,23 +294,51 @@ public class DAOChapi {
                     recordatorio.setHora(rs.getTime("Hora").toLocalTime());
                     recordatorio.setFechaInicio(rs.getTimestamp("FechaInicio").toLocalDateTime());
                     recordatorio.setFechaFin(rs.getTimestamp("FechaFin").toLocalDateTime());
-                    recordatorio.setCitaMedicaID(rs.getInt("CitaMedicaID"));
-                    recordatorio.setMedicacionID(rs.getInt("MedicacionID"));
-                    recordatorio.setActividadID(rs.getInt("ActividadID"));
-                    recordatorios.add(recordatorio);
+
+                    // Control correcto de posibles nulls:
+                    int citaId = rs.getInt("CitaMedicaID");
+                    if (rs.wasNull()) {
+                        recordatorio.setCitaMedicaID(null);
+                    } else {
+                        recordatorio.setCitaMedicaID(citaId);
+                    }
+
+                    int medicacionId = rs.getInt("MedicacionID");
+                    if (rs.wasNull()) {
+                        recordatorio.setMedicacionID(null);
+                    } else {
+                        recordatorio.setMedicacionID(medicacionId);
+                    }
+
+                    int actividadId = rs.getInt("ActividadID");
+                    if (rs.wasNull()) {
+                        recordatorio.setActividadID(null);
+                    } else {
+                        recordatorio.setActividadID(actividadId);
+                    }
+
+                    lista.add(recordatorio);
                 }
             }
         }
-        return recordatorios;
+        return lista;
     }
 
-    // Método para actualizar un recordatorio
+
     public void actualizarRecordatorio(Recordatorios recordatorio) throws SQLException {
-        String query = "UPDATE Recordatorio SET UsuarioID = ?, UsuarioCuidadorID = ?, Descripcion = ?, TipoEvento = ?, NumeroDosis = ?, Fecha = ?, Hora = ?, FechaInicio = ?, FechaFin = ?, CitaMedicaID = ?, MedicacionID = ?, ActividadID = ? " +
-                "WHERE RecordatorioID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        String query = "UPDATE Recordatorio SET UsuarioID = ?, UsuarioCuidadorID = ?, Descripcion = ?, TipoEvento = ?, NumeroDosis = ?, Fecha = ?, Hora = ?, FechaInicio = ?, FechaFin = ?, CitaMedicaID = ?, MedicacionID = ?, ActividadID = ? WHERE RecordatorioID = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, recordatorio.getUsuarioID());
-            stmt.setInt(2, recordatorio.getUsuarioCuidadorID() != null ? recordatorio.getUsuarioCuidadorID() : 0);
+
+            // ✅ Aquí controlamos si es null o no
+            if (recordatorio.getUsuarioCuidadorID() != null) {
+                stmt.setInt(2, recordatorio.getUsuarioCuidadorID());
+            } else {
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            }
+
             stmt.setString(3, recordatorio.getDescripcion());
             stmt.setString(4, recordatorio.getTipoEvento());
             stmt.setInt(5, recordatorio.getNumeroDosis());
@@ -290,13 +346,31 @@ public class DAOChapi {
             stmt.setTime(7, Time.valueOf(recordatorio.getHora()));
             stmt.setTimestamp(8, Timestamp.valueOf(recordatorio.getFechaInicio()));
             stmt.setTimestamp(9, Timestamp.valueOf(recordatorio.getFechaFin()));
-            stmt.setInt(10, recordatorio.getCitaMedicaID() != null ? recordatorio.getCitaMedicaID() : 0);
-            stmt.setInt(11, recordatorio.getMedicacionID() != null ? recordatorio.getMedicacionID() : 0);
-            stmt.setInt(12, recordatorio.getActividadID() != null ? recordatorio.getActividadID() : 0);
+
+            if (recordatorio.getCitaMedicaID() != null) {
+                stmt.setInt(10, recordatorio.getCitaMedicaID());
+            } else {
+                stmt.setNull(10, java.sql.Types.INTEGER);
+            }
+
+            if (recordatorio.getMedicacionID() != null) {
+                stmt.setInt(11, recordatorio.getMedicacionID());
+            } else {
+                stmt.setNull(11, java.sql.Types.INTEGER);
+            }
+
+            if (recordatorio.getActividadID() != null) {
+                stmt.setInt(12, recordatorio.getActividadID());
+            } else {
+                stmt.setNull(12, java.sql.Types.INTEGER);
+            }
+
             stmt.setInt(13, recordatorio.getRecordatorioID());
+
             stmt.executeUpdate();
         }
     }
+
 
     public void eliminarRecordatorio(int recordatorioID) throws SQLException {
         String query = "DELETE FROM Recordatorio WHERE RecordatorioID = ?";
@@ -406,5 +480,114 @@ public class DAOChapi {
         }
     }
 
+
+    public int registrarActividadFisica(ActividadFisica actividad) throws SQLException {
+        String query = "INSERT INTO ActividadFisica (UsuarioID, UsuarioCuidadorID, Nombre, Duracion, HoraInicio, HoraFin) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, actividad.getUsuarioId());
+
+            if (actividad.getUsuarioCuidadorId() != null) {
+                stmt.setInt(2, actividad.getUsuarioCuidadorId());
+            } else {
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            }
+
+            stmt.setString(3, actividad.getNombre());
+            stmt.setInt(4, actividad.getDuracion());
+            stmt.setTime(5, Time.valueOf(actividad.getHoraInicio()));
+            stmt.setTime(6, Time.valueOf(actividad.getHoraFin()));
+            stmt.executeUpdate();
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("No se pudo obtener el ID de la actividad física.");
+                }
+            }
+        }
+    }
+
+
+    public List<ActividadFisica> obtenerActividadesPorUsuario(int usuarioId) throws SQLException {
+        List<ActividadFisica> actividades = new ArrayList<>();
+        String query = "SELECT DISTINCT * FROM ActividadFisica WHERE UsuarioID = ? OR UsuarioCuidadorID = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, usuarioId);
+            stmt.setInt(2, usuarioId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ActividadFisica actividad = new ActividadFisica();
+                    actividad.setId(rs.getInt("ActividadID"));
+                    actividad.setUsuarioId(rs.getInt("UsuarioID"));
+                    actividad.setUsuarioCuidadorId(rs.getInt("UsuarioCuidadorID"));
+                    actividad.setNombre(rs.getString("Nombre"));
+                    actividad.setDuracion(rs.getInt("Duracion"));
+                    actividad.setHoraInicio(rs.getTime("HoraInicio").toLocalTime());
+                    actividad.setHoraFin(rs.getTime("HoraFin").toLocalTime());
+                    actividades.add(actividad);
+                }
+            }
+        }
+        return actividades;
+    }
+
+
+    public ActividadFisica obtenerActividadPorId(int actividadId) throws SQLException {
+        String query = "SELECT * FROM ActividadFisica WHERE ActividadID = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, actividadId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    ActividadFisica actividad = new ActividadFisica();
+                    actividad.setId(rs.getInt("ActividadID"));
+                    actividad.setUsuarioId(rs.getInt("UsuarioID"));
+                    actividad.setUsuarioCuidadorId(rs.getInt("UsuarioCuidadorID"));
+                    actividad.setNombre(rs.getString("Nombre"));
+                    actividad.setDuracion(rs.getInt("Duracion"));
+                    actividad.setHoraInicio(rs.getTime("HoraInicio").toLocalTime());
+                    actividad.setHoraFin(rs.getTime("HoraFin").toLocalTime());
+                    return actividad;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void actualizarActividadFisica(ActividadFisica actividad) throws SQLException {
+        String query = "UPDATE ActividadFisica SET UsuarioID = ?, UsuarioCuidadorID = ?, Nombre = ?, Duracion = ?, HoraInicio = ?, HoraFin = ? WHERE ActividadID = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, actividad.getUsuarioId());
+
+            if (actividad.getUsuarioCuidadorId() != null) {
+                stmt.setInt(2, actividad.getUsuarioCuidadorId());
+            } else {
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            }
+
+            stmt.setString(3, actividad.getNombre());
+            stmt.setInt(4, actividad.getDuracion());
+            stmt.setTime(5, Time.valueOf(actividad.getHoraInicio()));
+            stmt.setTime(6, Time.valueOf(actividad.getHoraFin()));
+            stmt.setInt(7, actividad.getId());
+
+            stmt.executeUpdate();
+        }
+    }
+
+
+    public void eliminarActividadFisica(int actividadId) throws SQLException {
+        String query = "DELETE FROM ActividadFisica WHERE ActividadID = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, actividadId);
+            stmt.executeUpdate();
+        }
+    }
 }
 

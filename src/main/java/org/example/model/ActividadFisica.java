@@ -1,13 +1,15 @@
 package org.example.model;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class ActividadFisica {
     private int id;
     private int usuarioId;
+    private Integer usuarioCuidadorId;
     private String nombre;
-    private String descripcion;
-    private LocalDateTime fechaHora;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
     private int duracion; // Duración en minutos
 
     // Getters y Setters
@@ -27,6 +29,14 @@ public class ActividadFisica {
         this.usuarioId = usuarioId;
     }
 
+    public Integer getUsuarioCuidadorId() {
+        return usuarioCuidadorId;
+    }
+
+    public void setUsuarioCuidadorId(Integer usuarioCuidadorId) {
+        this.usuarioCuidadorId = usuarioCuidadorId;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -35,20 +45,20 @@ public class ActividadFisica {
         this.nombre = nombre;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public LocalTime getHoraInicio() {
+        return horaInicio;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
     }
 
-    public LocalDateTime getFechaHora() {
-        return fechaHora;
+    public LocalTime getHoraFin() {
+        return horaFin;
     }
 
-    public void setFechaHora(LocalDateTime fechaHora) {
-        this.fechaHora = fechaHora;
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
     }
 
     public int getDuracion() {
@@ -57,5 +67,10 @@ public class ActividadFisica {
 
     public void setDuracion(int duracion) {
         this.duracion = duracion;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

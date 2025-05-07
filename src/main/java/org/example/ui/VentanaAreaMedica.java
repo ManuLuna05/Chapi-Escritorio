@@ -339,15 +339,6 @@ public class VentanaAreaMedica extends JFrame {
         return cabecera;
     }
 
-    public void recargarRecordatorios() {
-        try {
-            cargarRecordatorios();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al recargar recordatorios: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     private JPanel footerVentana() {
         JPanel footer = new JPanel();
         footer.setBackground(new Color(113, 183, 188));

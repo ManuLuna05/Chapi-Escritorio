@@ -62,10 +62,12 @@ public class ControladorMedicacion {
             ControladorRecordatorios controladorRecordatorios = new ControladorRecordatorios();
             List<Recordatorios> recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioId);
             for (Recordatorios recordatorio : recordatorios) {
-                if (recordatorio.getMedicacionID() == medicacionId) {
+                if (recordatorio.getMedicacionID() != null &&
+                        recordatorio.getMedicacionID() == medicacionId) {
                     controladorRecordatorios.eliminarRecordatorio(recordatorio.getRecordatorioID());
                 }
             }
+
 
             // Eliminar la medicación
             dao.eliminarMedicación(medicacionId);

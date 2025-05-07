@@ -127,12 +127,14 @@ public class VentanaEliminarMedicación extends JFrame {
             List<Recordatorios> recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(idPacienteActual);
 
             for (Recordatorios recordatorio : recordatorios) {
-                if (recordatorio.getMedicacionID() == medicacionSeleccionada.getMedicacionID()) {
+                if (recordatorio.getMedicacionID() != null &&
+                        recordatorio.getMedicacionID() == medicacionSeleccionada.getMedicacionID()) {
                     modeloLista.addElement(recordatorio);
                 }
             }
         }
     }
+
 
     private void eliminarMedicacionYRecordatorios() throws SQLException {
         Medicacion medicacionSeleccionada = (Medicacion) comboMedicaciones.getSelectedItem();
