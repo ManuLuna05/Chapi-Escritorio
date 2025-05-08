@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class CitaMedica {
     private int id;
     private int usuarioId;
-    private int usuarioCuidadorId;
+    private Integer usuarioCuidadorId;
     private LocalDateTime fechaCita;
     private String lugar;
     private String especialista;
@@ -27,11 +27,11 @@ public class CitaMedica {
         this.usuarioId = usuarioId;
     }
 
-    public int getUsuarioCuidadorId() {
+    public Integer getUsuarioCuidadorId() {
         return usuarioCuidadorId;
     }
 
-    public void setUsuarioCuidadorId(int usuarioCuidadorId) {
+    public void setUsuarioCuidadorId(Integer usuarioCuidadorId) {
         this.usuarioCuidadorId = usuarioCuidadorId;
     }
 

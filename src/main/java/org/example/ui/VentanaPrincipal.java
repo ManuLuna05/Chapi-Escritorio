@@ -273,6 +273,13 @@ public class VentanaPrincipal extends JFrame {
                             } catch (SQLException ex) {
                                 throw new RuntimeException(ex);
                             }
+                        } else if (titulo.equals("Citas Médicas")) {
+                            dispose();
+                            try {
+                                new VentanaCitasMedicas(usuarioID, usuarioCuidadorID).setVisible(true);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
                         } else {
                             JOptionPane.showMessageDialog(VentanaPrincipal.this,
                                     "Accediendo a: " + titulo);

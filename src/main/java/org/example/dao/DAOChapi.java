@@ -4,6 +4,7 @@ import org.example.model.*;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -589,5 +590,39 @@ public class DAOChapi {
             stmt.executeUpdate();
         }
     }
+
+    public int registrarCitaMedica(int usuarioID, Integer usuarioCuidadorID, LocalDate fecha, LocalTime hora, String lugar, String especialista) throws SQLException {
+        String query = "INSERT INTO CitaMedica (UsuarioID, UsuarioCuidadorID, FechaCita, Lugar, Especialista) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, usuarioID);
+
+            if (usuarioCuidadorID != null) {
+                stmt.setInt(2, usuarioCuidadorID);
+            } else {
+                stmt.setNull(2, java.sql.Types.INTEGER);
+            }
+
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.of(fecha, hora)));
+            stmt.setString(4, lugar);
+            stmt.setString(5, especialista);
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) return rs.getInt(1);
+                else throw new SQLException("No se pudo obtener el ID de la cita.");
+            }
+        }
+    }
+
+
+    public void eliminarCitaMedica(int citaID) throws SQLException {
+        String query = "DELETE FROM CitaMedica WHERE CitaMedicaID = ?";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, citaID);
+            stmt.executeUpdate();
+        }
+    }
+
 }
 
