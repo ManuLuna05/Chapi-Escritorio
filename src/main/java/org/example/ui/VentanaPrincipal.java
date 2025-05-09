@@ -132,7 +132,12 @@ public class VentanaPrincipal extends JFrame {
 
         //Acción al hacer clic en la opción del menú
         verPerfilItem.addActionListener(e -> {
-            JOptionPane.showMessageDialog(VentanaPrincipal.this, "Mostrando perfil de usuario...");
+            try {
+                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
+                dispose();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
+            }
         });
 
         //Mostrar el menú desplegable al hacer clic en el botón de perfil

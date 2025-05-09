@@ -320,7 +320,15 @@ public class VentanaAreaMedica extends JFrame {
         JMenuItem verPerfilItem = new JMenuItem("Ver Perfil");
         menuPerfil.add(verPerfilItem);
 
-        verPerfilItem.addActionListener(e -> JOptionPane.showMessageDialog(this, "Mostrando perfil de usuario..."));
+        verPerfilItem.addActionListener(e -> {
+            try {
+                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "medica").setVisible(true);
+                dispose();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
+            }
+        });
+
 
         perfilUsuarioBoton.addActionListener(e -> menuPerfil.show(perfilUsuarioBoton, perfilUsuarioBoton.getWidth() / 2, perfilUsuarioBoton.getHeight() / 2));
 
