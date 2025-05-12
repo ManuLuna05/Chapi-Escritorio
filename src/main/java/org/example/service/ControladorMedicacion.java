@@ -85,4 +85,13 @@ public class ControladorMedicacion {
             return "Error al obtener el nombre del medicamento";
         }
     }
+
+    public void eliminarMedicacionesPasadas(int usuarioID) {
+        try {
+            dao.eliminarMedicacionesPasadas(usuarioID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

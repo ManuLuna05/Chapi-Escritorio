@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.example.model.Recordatorios;
 import org.example.model.Usuario;
+import org.example.service.ControladorMedicacion;
 import org.example.service.ControladorRecordatorios;
 import org.example.service.ControladorUsuarios;
 
@@ -45,6 +46,20 @@ public class VentanaAreaMedica extends JFrame {
 
         // Eliminar recordatorios pasados al abrir el área médica
         this.controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+
+        ControladorMedicacion controladorMedicacion = new ControladorMedicacion();
+
+        // Elimina las propias
+        controladorMedicacion.eliminarMedicacionesPasadas(usuarioID);
+
+        // Si es cuidador, también elimina de sus pacientes
+        if ("cuidador".equals(tipoUsuario)) {
+            List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
+            for (int pacienteId : pacientes) {
+                controladorMedicacion.eliminarMedicacionesPasadas(pacienteId);
+            }
+        }
+
 
         setTitle("Área Médica");
         setSize(800, 600);

@@ -41,4 +41,13 @@ public class ControladorActividadFisica {
         dao.eliminarActividadFisica(actividadId);
     }
 
+    public void eliminarActividadesPasadas(int usuarioID) {
+        try {
+            dao.eliminarActividadesPasadas(usuarioID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

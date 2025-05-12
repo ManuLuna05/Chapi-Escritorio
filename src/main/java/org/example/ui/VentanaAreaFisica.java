@@ -2,6 +2,7 @@ package org.example.ui;
 
 import org.example.model.Recordatorios;
 import org.example.model.Usuario;
+import org.example.service.ControladorActividadFisica;
 import org.example.service.ControladorRecordatorios;
 import org.example.service.ControladorUsuarios;
 
@@ -45,6 +46,24 @@ public class VentanaAreaFisica extends JFrame {
 
         // Eliminar recordatorios pasados al abrir el área física
         this.controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+
+        ControladorActividadFisica controladorActividadFisica = new ControladorActividadFisica();
+
+        // Elimina actividades propias
+        controladorActividadFisica.eliminarActividadesPasadas(usuarioID);
+
+        // Si es cuidador, también elimina las de los pacientes
+        if ("cuidador".equals(tipoUsuario)) {
+            try {
+                List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
+                for (int pacienteId : pacientes) {
+                    controladorActividadFisica.eliminarActividadesPasadas(pacienteId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
 
         setTitle("Área Física");
         setSize(800, 600);

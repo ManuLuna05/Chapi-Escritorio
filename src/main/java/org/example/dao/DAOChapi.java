@@ -431,6 +431,16 @@ public class DAOChapi {
         return medicaciones;
     }
 
+    //Función para eliminar medicaciones que hayan pasado de tiempo
+    public void eliminarMedicacionesPasadas(int usuarioID) throws SQLException {
+        String query = "DELETE FROM Medicacion WHERE (UsuarioID = ?) AND FechaFin < CURDATE()";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, usuarioID);
+            stmt.executeUpdate();
+        }
+    }
+
+
     //Función para actualizar una medicación
     public void actualizarMedicación(Medicacion medicacion) throws SQLException {
         String query = "UPDATE Medicacion SET UsuarioID = ?, MedicamentoID = ?, Dosis = ?, Frecuencia = ?, Duracion = ?, FechaInicio = ?, FechaFin = ? WHERE MedicacionID = ?";
@@ -543,6 +553,17 @@ public class DAOChapi {
             stmt.executeUpdate();
         }
     }
+
+    //Función para eliminar actividades pasadas de tiempo
+    public void eliminarActividadesPasadas(int usuarioID) throws SQLException {
+        String query = "DELETE FROM ActividadFisica WHERE (UsuarioID = ? OR UsuarioCuidadorID = ?) AND HoraFin < CURTIME()";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, usuarioID);
+            stmt.setInt(2, usuarioID);
+            stmt.executeUpdate();
+        }
+    }
+
 
     //Función para registrar una cita médica
     public int registrarCitaMedica(int usuarioID, Integer usuarioCuidadorID, LocalDate fecha, LocalTime hora, String lugar, String especialista) throws SQLException {
