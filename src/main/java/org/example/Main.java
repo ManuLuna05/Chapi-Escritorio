@@ -31,7 +31,7 @@ public class Main {
                 SwingUtilities.invokeLater(() -> new VentanaAcceso().setVisible(true));
             } else {
                 escribe_log(v_log_buf, c_tipo_error, "Error al crear o preparar la base de datos.");
-                System.err.println("❌ Error al crear o preparar la base de datos. Consulta el log.");
+                System.err.println("Error al crear o preparar la base de datos. Consulta el log.");
             }
 
         } catch (IOException e) {
