@@ -103,7 +103,7 @@ public class DAOChapi {
                 if (rs.next()) {
                     return rs.getInt("UsuarioID");
                 } else {
-                    throw new SQLException("No se encontró un usuario con ese correo.");
+                    return -1;
                 }
             }
         }

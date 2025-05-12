@@ -56,12 +56,7 @@ public class ControladorUsuarios {
 
     //Función para verificar si un teléfono tiene un formato válido
     public boolean esTelefonoValido(String telefono) {
-        String soloDigitos = telefono.replaceAll("\\D", "");
-        return soloDigitos.length() == 9;
-    }
-
-    //Función para normalizar un teléfono eliminando caracteres no numéricos
-    public String normalizarTelefono(String telefono) {
-        return telefono.replaceAll("\\D", "");
+        int numDigitos = telefono.replaceAll("\\D", "").length();
+        return numDigitos == 9;
     }
 }

@@ -144,7 +144,7 @@ public class VentanaRegistro extends JFrame {
                             campos[1].getText(),
                             email,
                             new String(((JPasswordField) campos[3]).getPassword()),
-                            controladorUsuarios.normalizarTelefono(telefono),
+                            telefono,
                             "cuidador");
 
                     controladorUsuarios.registrarUsuario(usuarioCuidador);
@@ -164,7 +164,7 @@ public class VentanaRegistro extends JFrame {
                             campos[1].getText(),
                             email,
                             new String(((JPasswordField) campos[3]).getPassword()),
-                            controladorUsuarios.normalizarTelefono(telefono),
+                            telefono,
                             "cuidado");
 
                     controladorUsuarios.registrarUsuario(usuario);
