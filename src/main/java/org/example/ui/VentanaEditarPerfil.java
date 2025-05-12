@@ -12,15 +12,17 @@ public class VentanaEditarPerfil extends JPanel {
     private final int usuarioID;
     private final String tipoUsuario;
     private final String ventanaOrigen;
+    private final VentanaPerfilUsuario ventanaPadre; // Referencia a la ventana que llamó
 
     private JTextField txtNombre, txtApellidos, txtEmail, txtTelefono, txtNombrePaciente, txtApellidosPaciente, txtEmailPaciente, txtTelefonoPaciente;
     private JPasswordField txtPassword;
     private JPanel panelPaciente;
 
-    public VentanaEditarPerfil(int usuarioID, String tipoUsuario, String ventanaOrigen) throws SQLException {
+    public VentanaEditarPerfil(int usuarioID, String tipoUsuario, String ventanaOrigen, VentanaPerfilUsuario ventanaPadre) throws SQLException {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
         this.ventanaOrigen = ventanaOrigen;
+        this.ventanaPadre = ventanaPadre;
 
         setLayout(new BorderLayout());
         JPanel panel = new JPanel();
@@ -92,14 +94,9 @@ public class VentanaEditarPerfil extends JPanel {
             try {
                 if (validarCampos(txtNombre, txtApellidos, txtEmail, txtTelefono)) {
                     String nuevaPassword = new String(txtPassword.getPassword()).trim();
-                    String passwordFinal;
-
-                    if (nuevaPassword.isEmpty()) {
-                        // Recuperar la contraseña original si no se escribió una nueva
-                        passwordFinal = controlador.obtenerUsuarioPorId(usuarioID).getPassword();
-                    } else {
-                        passwordFinal = nuevaPassword;
-                    }
+                    String passwordFinal = nuevaPassword.isEmpty()
+                            ? controlador.obtenerUsuarioPorId(usuarioID).getPassword()
+                            : nuevaPassword;
 
                     Usuario nuevo = new Usuario(
                             usuarioID,
@@ -130,15 +127,8 @@ public class VentanaEditarPerfil extends JPanel {
                     }
 
                     JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
-
-                    // Recargar la ventana de perfil si sigue abierta
-                    Window padre = SwingUtilities.getWindowAncestor(this);
-                    if (padre instanceof JDialog dialogo) {
-                        dialogo.dispose();
-                        JFrame perfil = new VentanaPerfilUsuario(usuarioID, tipoUsuario, ventanaOrigen);
-                        perfil.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                        perfil.setVisible(true);
-                    }
+                    if (ventanaPadre != null) ventanaPadre.recargarContenido();
+                    SwingUtilities.getWindowAncestor(this).dispose();
 
                 } else {
                     JOptionPane.showMessageDialog(this, "Por favor, rellene todos los campos obligatorios.");
@@ -150,8 +140,6 @@ public class VentanaEditarPerfil extends JPanel {
         });
 
         add(panel, BorderLayout.CENTER);
-
-        // Ajustar altura del contenedor según tipo de usuario
         Dimension preferredSize = esCuidador ? new Dimension(700, 850) : new Dimension(650, 750);
         setPreferredSize(new Dimension(preferredSize.width, preferredSize.height + 200));
     }
@@ -199,8 +187,8 @@ public class VentanaEditarPerfil extends JPanel {
         fila.setLayout(new BoxLayout(fila, BoxLayout.Y_AXIS));
         fila.setOpaque(false);
         JLabel lbl = new JLabel(label);
-        lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         field.setMaximumSize(new Dimension(500, 30));
         fila.add(lbl);
         fila.add(field);

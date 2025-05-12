@@ -47,4 +47,17 @@ public class ControladorUsuarios {
         return dao.obtenerUsuarioPorId(usuarioId);
     }
 
+    public boolean esEmailValido(String email) {
+        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+    }
+
+    public boolean esTelefonoValido(String telefono) {
+        String soloDigitos = telefono.replaceAll("\\D", "");
+        return soloDigitos.length() == 9;
+    }
+
+    public String normalizarTelefono(String telefono) {
+        return telefono.replaceAll("\\D", "");
+    }
+
 }

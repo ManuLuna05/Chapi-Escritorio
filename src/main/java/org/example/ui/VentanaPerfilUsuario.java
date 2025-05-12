@@ -77,7 +77,7 @@ public class VentanaPerfilUsuario extends JFrame {
 
         btnEditar.addActionListener(e -> {
             try {
-                VentanaEditarPerfil panelEditar = new VentanaEditarPerfil(usuarioID, tipoUsuario, ventanaOrigen);
+                VentanaEditarPerfil panelEditar = new VentanaEditarPerfil(usuarioID, tipoUsuario, ventanaOrigen, this);
                 JDialog dialogo = new JDialog(this, "Modificar información", true);
                 dialogo.setContentPane(panelEditar);
                 dialogo.pack();
@@ -112,6 +112,20 @@ public class VentanaPerfilUsuario extends JFrame {
         return panel;
     }
 
+    public void recargarContenido() {
+        try {
+            getContentPane().removeAll(); // Limpia el contenido
+            add(cabeceraVentana(), BorderLayout.NORTH);
+            add(contenidoPerfil(), BorderLayout.CENTER);
+            add(footerVentana(), BorderLayout.SOUTH);
+            revalidate(); // Refresca el layout
+            repaint();    // Redibuja la ventana
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al recargar perfil: " + ex.getMessage());
+        }
+    }
+
+
     private JPanel crearBloqueUsuario(String titulo, Usuario usuario) {
         JPanel bloque = new JPanel();
         bloque.setLayout(new BoxLayout(bloque, BoxLayout.Y_AXIS));
@@ -134,10 +148,10 @@ public class VentanaPerfilUsuario extends JFrame {
         fila.setOpaque(false);
 
         JLabel lblCampo = new JLabel(campo + ": ");
-        lblCampo.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblCampo.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
         JLabel lblValor = new JLabel(valor != null ? valor : "No definido");
-        lblValor.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblValor.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
         fila.add(lblCampo, BorderLayout.WEST);
         fila.add(lblValor, BorderLayout.CENTER);

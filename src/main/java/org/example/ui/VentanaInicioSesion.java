@@ -1,7 +1,6 @@
 package org.example.ui;
 
 import org.example.model.Usuario;
-import org.example.model.UsuarioCuidador;
 import org.example.service.ControladorUsuarios;
 
 import javax.swing.*;
@@ -14,20 +13,17 @@ public class VentanaInicioSesion extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        //Panel principal
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         panelPrincipal.setBackground(Color.WHITE);
 
-        //Título
         JLabel etiquetaTitulo = new JLabel("Iniciar Sesión");
         etiquetaTitulo.setFont(new Font("Arial", Font.BOLD, 24));
         etiquetaTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelPrincipal.add(etiquetaTitulo);
         panelPrincipal.add(Box.createVerticalStrut(20));
 
-        //Logo
         JLabel logoLabel = new JLabel();
         try {
             ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
@@ -41,7 +37,6 @@ public class VentanaInicioSesion extends JFrame {
         panelPrincipal.add(logoLabel);
         panelPrincipal.add(Box.createVerticalStrut(50));
 
-        //Formulario de inicio de sesión
         JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 15));
         formPanel.setOpaque(false);
         formPanel.setMaximumSize(new Dimension(400, 150));
@@ -67,7 +62,6 @@ public class VentanaInicioSesion extends JFrame {
         panelPrincipal.add(formPanel);
         panelPrincipal.add(Box.createVerticalStrut(50));
 
-        //Botones
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setOpaque(false);
 
@@ -83,10 +77,9 @@ public class VentanaInicioSesion extends JFrame {
         btnVolver.setBackground(new Color(113, 183, 188));
         btnVolver.setForeground(Color.WHITE);
 
-        //Acción del botón "Aceptar"
         btnAceptar.addActionListener(e -> {
             try {
-                String email = txtEmail.getText();
+                String email = txtEmail.getText().trim();
                 String password = new String(txtPassword.getPassword());
 
                 if (email.isEmpty() || password.isEmpty()) {
@@ -95,26 +88,27 @@ public class VentanaInicioSesion extends JFrame {
                 }
 
                 ControladorUsuarios controlador = new ControladorUsuarios();
+
+                if (!controlador.esEmailValido(email)) {
+                    JOptionPane.showMessageDialog(this, "Por favor, introduzca un correo válido", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 Usuario usuario = controlador.iniciarSesionUsuario(email, password);
 
                 if (usuario != null) {
-                    if (usuario.getTipo().equals("cuidador")) {
-                        JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso como Cuidador");
-                        new VentanaPrincipal(usuario.getId(), usuario.getTipo()).setVisible(true);
-                    } else if (usuario.getTipo().equals("cuidado")) {
-                        JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso como Usuario Cuidado");
-                        new VentanaPrincipal(usuario.getId(), usuario.getTipo()).setVisible(true);
-                    }
+                    JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso como " + usuario.getTipo());
+                    new VentanaPrincipal(usuario.getId(), usuario.getTipo()).setVisible(true);
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Credenciales incorrectas", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error al iniciar sesión: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        //Acción del botón "Volver"
         btnVolver.addActionListener(e -> {
             new VentanaAcceso().setVisible(true);
             dispose();

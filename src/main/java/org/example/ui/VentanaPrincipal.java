@@ -68,7 +68,6 @@ public class VentanaPrincipal extends JFrame {
         LocalDate hoy = LocalDate.now();
 
         if ("cuidador".equals(tipoUsuario)) {
-            // Para cuidadores: obtener recordatorios de sus pacientes
             todosRecordatorios = new ArrayList<>();
             for (Integer pacienteId : pacientesAsignados) {
                 List<Recordatorios> recordatoriosPaciente = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
@@ -77,28 +76,25 @@ public class VentanaPrincipal extends JFrame {
                 }
             }
 
-            // Añadir los recordatorios propios del cuidador
             List<Recordatorios> recordatoriosPropios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
             if (recordatoriosPropios != null) {
                 todosRecordatorios.addAll(recordatoriosPropios);
             }
         } else {
-            // Para usuarios normales: solo sus recordatorios
             todosRecordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
         }
 
-        // Filtrar solo los de hoy y evitar duplicados
         for (Recordatorios recordatorio : todosRecordatorios) {
             if (recordatorio.getFecha().isEqual(hoy)) {
-                String descripcion = recordatorio.getDescripcion();
-                if (!recordatoriosHoy.contains(descripcion)) {
-                    recordatoriosHoy.add(descripcion);
+                String textoCompleto = recordatorio.getHora().toString() + " - " + recordatorio.getDescripcion();
+                if (!recordatoriosHoy.contains(textoCompleto)) {
+                    recordatoriosHoy.add(textoCompleto);
                 }
             }
         }
-
         return recordatoriosHoy;
     }
+
 
 
     private JPanel cabeceraVentana() {
@@ -125,6 +121,12 @@ public class VentanaPrincipal extends JFrame {
         perfilUsuarioBoton.setBounds(673, 50, 50, 50); //Ajuste coordenadas icono usuario
         cabecera.add(perfilUsuarioBoton);
 
+        JLabel textoPerfil = new JLabel("Tus Datos");
+        textoPerfil.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        textoPerfil.setForeground(Color.WHITE);
+        textoPerfil.setBounds(733, 55, 130, 40); // Coordenadas a la derecha del icono
+        cabecera.add(textoPerfil);
+
         //Crear el menú desplegable
         JPopupMenu menuPerfil = new JPopupMenu();
         JMenuItem verPerfilItem = new JMenuItem("Ver Perfil");
@@ -141,7 +143,14 @@ public class VentanaPrincipal extends JFrame {
         });
 
         //Mostrar el menú desplegable al hacer clic en el botón de perfil
-        perfilUsuarioBoton.addActionListener(e -> menuPerfil.show(perfilUsuarioBoton, perfilUsuarioBoton.getWidth() / 2, perfilUsuarioBoton.getHeight() / 2));
+        perfilUsuarioBoton.addActionListener(e -> {
+            try {
+                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
+                dispose();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
+            }
+        });
 
         //Logo de la aplicación
         JLabel logoEtiqueta = new JLabel();
@@ -208,7 +217,7 @@ public class VentanaPrincipal extends JFrame {
             textoArea.setEditable(false);
             textoArea.setLineWrap(true);
             textoArea.setWrapStyleWord(true);
-            textoArea.setFont(new Font("Arial", Font.PLAIN, 14));
+            textoArea.setFont(new Font("Arial", Font.PLAIN, 18));
             textoArea.setText("Aquí aparecerán los recordatorios...");
 
             //Si hay recordatorios, se muestran en el cuadro de texto
@@ -292,7 +301,6 @@ public class VentanaPrincipal extends JFrame {
                     }
                 });
             }
-
             return panel;
         }
     }

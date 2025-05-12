@@ -148,7 +148,7 @@ public class VentanaAreaFisica extends JFrame {
         // Lista de recordatorios
         modeloLista = new DefaultListModel<>();
         listaRecordatorios = new JList<>(modeloLista);
-        listaRecordatorios.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        listaRecordatorios.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         listaRecordatorios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listaRecordatorios.setBorder(BorderFactory.createLineBorder(new Color(113, 183, 188), 2));
         listaRecordatorios.setFixedCellHeight(30);
@@ -156,7 +156,7 @@ public class VentanaAreaFisica extends JFrame {
         scrollPane.setPreferredSize(new Dimension(900, 600));
         scrollPane.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(113, 183, 188), 2),
-                "Recordatorios de Actividad Física",
+                "Recordatorios de Actividad Física ",
                 0, 0,
                 new Font("Segoe UI", Font.BOLD, 18),
                 new Color(113, 183, 188)
@@ -289,10 +289,12 @@ public class VentanaAreaFisica extends JFrame {
     }
 
     private JPanel cabeceraVentana() {
+        //Panel contenedor para la cabecera
         JPanel cabecera = new JPanel(null);
-        cabecera.setBackground(new Color(113, 183, 188));
-        cabecera.setPreferredSize(new Dimension(getWidth(), 150));
+        cabecera.setBackground(new Color(113, 183, 188)); //Color de la cabecera
+        cabecera.setPreferredSize(new Dimension(getWidth(), 150)); //Tamaño que tendrá la cabecera
 
+        //Botón de usuario con imagen
         JButton perfilUsuarioBoton = new JButton();
         try {
             ImageIcon usuarioIcono = new ImageIcon(getClass().getResource("/images/user2.png"));
@@ -303,28 +305,45 @@ public class VentanaAreaFisica extends JFrame {
             System.err.println("Error al cargar user.png: " + e.getMessage());
         }
 
+        //Configuración del botón
         perfilUsuarioBoton.setBorder(BorderFactory.createEmptyBorder());
         perfilUsuarioBoton.setContentAreaFilled(false);
         perfilUsuarioBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        perfilUsuarioBoton.setBounds(673, 50, 50, 50);
+        perfilUsuarioBoton.setBounds(673, 50, 50, 50); //Ajuste coordenadas icono usuario
         cabecera.add(perfilUsuarioBoton);
 
+        JLabel textoPerfil = new JLabel("Tus Datos");
+        textoPerfil.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        textoPerfil.setForeground(Color.WHITE);
+        textoPerfil.setBounds(733, 55, 130, 40); // Coordenadas a la derecha del icono
+        cabecera.add(textoPerfil);
+
+        //Crear el menú desplegable
         JPopupMenu menuPerfil = new JPopupMenu();
         JMenuItem verPerfilItem = new JMenuItem("Ver Perfil");
         menuPerfil.add(verPerfilItem);
 
+        //Acción al hacer clic en la opción del menú
         verPerfilItem.addActionListener(e -> {
             try {
-                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "fisica").setVisible(true);
+                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
                 dispose();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
             }
         });
 
+        //Mostrar el menú desplegable al hacer clic en el botón de perfil
+        perfilUsuarioBoton.addActionListener(e -> {
+            try {
+                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
+                dispose();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
+            }
+        });
 
-        perfilUsuarioBoton.addActionListener(e -> menuPerfil.show(perfilUsuarioBoton, perfilUsuarioBoton.getWidth() / 2, perfilUsuarioBoton.getHeight() / 2));
-
+        //Logo de la aplicación
         JLabel logoEtiqueta = new JLabel();
         try {
             ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
@@ -334,11 +353,12 @@ public class VentanaAreaFisica extends JFrame {
             logoEtiqueta.setText("LOGO APP");
             System.err.println("Error al cargar el logo: " + e.getMessage());
         }
-        logoEtiqueta.setBounds(1190, 0, 200, 150);
+        logoEtiqueta.setBounds(1190, 0, 200, 150); //Ajuste de coordenadas del logo
         cabecera.add(logoEtiqueta);
 
         return cabecera;
     }
+
 
     private JPanel footerVentana() {
         JPanel footer = new JPanel();
