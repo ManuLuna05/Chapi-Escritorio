@@ -9,7 +9,7 @@ public class Usuario {
     private String telefono;
     private String tipo;
 
-    // Constructor con parámetros (usado en inicioSesionUsuario)
+
     public Usuario(int id, String nombre, String apellidos, String email, String password, String telefono, String tipo) {
         this.id = id;
         this.nombre = nombre;
@@ -20,8 +20,7 @@ public class Usuario {
         this.tipo = tipo;
     }
 
-    // Getters y setters para cada campo
-
+    //Getters y setters
     public int getId() {
         return id;
     }

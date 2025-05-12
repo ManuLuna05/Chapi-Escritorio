@@ -10,9 +10,9 @@ public class ActividadFisica {
     private String nombre;
     private LocalTime horaInicio;
     private LocalTime horaFin;
-    private int duracion; // Duración en minutos
+    private int duracion;
 
-    // Getters y Setters
+    //Getters y Setters
     public int getId() {
         return id;
     }

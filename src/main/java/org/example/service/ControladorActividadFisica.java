@@ -22,16 +22,12 @@ public class ControladorActividadFisica {
         return dao.obtenerActividadesPorUsuario(usuarioId);
     }
 
-    public ActividadFisica obtenerActividadPorId(int actividadId) throws SQLException {
-        return dao.obtenerActividadPorId(actividadId);
-    }
-
     public void actualizarActividad(ActividadFisica actividad) throws SQLException {
         dao.actualizarActividadFisica(actividad);
     }
 
     public void eliminarActividad(int actividadId, int usuarioId) throws SQLException {
-        // Eliminar recordatorios asociados primero
+        //Eliminar recordatorios asociados primero
         ControladorRecordatorios controladorRecordatorios = new ControladorRecordatorios();
         List<Recordatorios> recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioId);
 

@@ -21,8 +21,8 @@ public class VentanaEliminarActividad extends JFrame {
     private DefaultListModel<Recordatorios> modeloLista;
     private ControladorActividadFisica controladorActividad;
     private ControladorRecordatorios controladorRecordatorios;
-    private int usuarioID; // quien ha iniciado sesión
-    private int usuarioCuidadorID; // si es cuidador, será su ID; si no, será 0
+    private int usuarioID;
+    private int usuarioCuidadorID;
     private VentanaAreaFisica ventanaAreaFisica;
 
     public VentanaEliminarActividad(int usuarioID, VentanaAreaFisica ventanaAreaFisica) throws SQLException {

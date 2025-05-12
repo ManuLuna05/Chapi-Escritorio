@@ -14,7 +14,7 @@ public class Medicacion {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
 
-    // Getters y Setters
+    //Getters y Setters
     public int getMedicacionID() {
         return medicacionID;
     }

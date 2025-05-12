@@ -20,4 +20,13 @@ public class ControladorCitasMedicas {
             e.printStackTrace();
         }
     }
+
+    public void eliminarCitasPasadas(int usuarioID) {
+        try {
+            dao.eliminarCitasPasadas(usuarioID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

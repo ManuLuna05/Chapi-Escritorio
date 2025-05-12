@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.example.model.Recordatorios;
 import org.example.model.Usuario;
+import org.example.service.ControladorCitasMedicas;
 import org.example.service.ControladorRecordatorios;
 import org.example.service.ControladorUsuarios;
 
@@ -41,6 +42,10 @@ public class VentanaCitasMedicas extends JFrame {
 
         controladorRecordatorios = new ControladorRecordatorios();
         controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+
+        ControladorCitasMedicas controladorCitas = new ControladorCitasMedicas();
+        controladorCitas.eliminarCitasPasadas(usuarioID);
+
 
         setTitle("Área de Citas Médicas");
         setSize(800, 600);

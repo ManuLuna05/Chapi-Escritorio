@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DAOChapi {
-    // Declaración de las variables de conexión a la base de datos
+    //Declaración de las variables de conexión a la base de datos
     private static final String URL = "jdbc:mysql://localhost:3306/chapi";
     private static final String USER = "root";
     private static final String PASSWORD = "root";
@@ -20,7 +20,7 @@ public class DAOChapi {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-
+    //Función para registrar un usuario
     public void registroUsuario(Usuario usuario) throws SQLException {
         String query = "INSERT INTO Usuario (Nombre, Apellidos, Email, Password, Telefono, Tipo) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -34,7 +34,7 @@ public class DAOChapi {
         }
     }
 
-    // Inicio de sesión del usuario
+    //Inicio de sesión del usuario
     public Usuario inicioSesionUsuario(String email, String password) {
         // Conexión con el mismo usuario y contraseña para acceder a la base de datos
         try (Connection conn = getConnection()) {
@@ -45,14 +45,14 @@ public class DAOChapi {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        // Obtener los datos del usuario
+                        //Obtener los datos del usuario
                         int id = rs.getInt("UsuarioID");
                         String nombre = rs.getString("Nombre");
                         String apellidos = rs.getString("Apellidos");
                         String tipo = rs.getString("Tipo");
                         String telefono = rs.getString("Telefono");
 
-                        // Crear el objeto Usuario y devolverlo
+                        //Crear el objeto Usuario y devolverlo
                         return new Usuario(id, nombre, apellidos, email, password, telefono, tipo);
                     }
                 }
@@ -63,6 +63,7 @@ public class DAOChapi {
         return null;
     }
 
+    //Función para registrar un usuario cuidador
     public void registrarUsuarioCuidador(UsuarioCuidador usuarioCuidador) throws SQLException {
         String sql = "INSERT INTO Cuidador_Usuario (UsuarioID, UsuarioCuidadorID) VALUES (?, ?)";
 
@@ -77,6 +78,7 @@ public class DAOChapi {
         }
     }
 
+    //Función para editar un usuario
     public void editarUsuario(Usuario usuario) throws SQLException {
         String query = "UPDATE Usuario SET Nombre = ?, Apellidos = ?, Email = ?, Password = ?, Telefono = ?, Tipo = ? WHERE UsuarioID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -91,18 +93,7 @@ public class DAOChapi {
         }
     }
 
-    // Métodos CRUD para Medicamento
-    public void registrarMedicamento(Medicamento medicamento) throws SQLException {
-        String query = "INSERT INTO Medicamento (Nombre, FechaCaducidad, Descripcion, Foto) VALUES (?, ?, ?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, medicamento.getNombre());
-            stmt.setDate(2, Date.valueOf(medicamento.getFechaCaducidad()));
-            stmt.setString(3, medicamento.getDescripcion());
-            stmt.setString(4, medicamento.getFoto());
-            stmt.executeUpdate();
-        }
-    }
-
+    //Función para obtener el ID de un usuario por su correo electrónico
     public int obtenerUsuarioIdPorCorreo(String email) throws SQLException {
         try (Connection connection = getConnection()) {
             String sql = "SELECT UsuarioID FROM Usuario WHERE Email = ?";
@@ -118,6 +109,7 @@ public class DAOChapi {
         }
     }
 
+    //Función para obtener el ID de un usuario por su ID, de tal forma que se obtenga al usuario cuidado asignado a un cuidador
     public List<Integer> obtenerPacientesDeCuidador(int cuidadorId) throws SQLException {
         List<Integer> pacientes = new ArrayList<>();
         String query = "SELECT UsuarioID FROM Cuidador_Usuario WHERE UsuarioCuidadorID = ?";
@@ -133,6 +125,7 @@ public class DAOChapi {
         return pacientes;
     }
 
+    //Función para obtener un usuario por su ID
     public Usuario obtenerUsuarioPorId(int usuarioId) throws SQLException {
         String query = "SELECT * FROM Usuario WHERE UsuarioID = ?";
         try (Connection conn = getConnection();
@@ -156,6 +149,7 @@ public class DAOChapi {
         return null;
     }
 
+    //Función para obtener los medicamentos de la base de datos
     public List<Medicamento> obtenerTodosMedicamentos() throws SQLException {
         List<Medicamento> medicamentos = new ArrayList<>();
         String query = "SELECT * FROM Medicamento";
@@ -173,6 +167,7 @@ public class DAOChapi {
         return medicamentos;
     }
 
+    // Función para obtener el nombre de un medicamento por su ID
     public String obtenerNombreMedicamentoPorId(int medicamentoId) throws SQLException {
         String query = "SELECT Nombre FROM Medicamento WHERE MedicamentoID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -187,7 +182,7 @@ public class DAOChapi {
         }
     }
 
-    // Método para crear un nuevo recordatorio
+    // Función para crear un nuevo recordatorio
     public void crearRecordatorio(Recordatorios recordatorio) throws SQLException {
         String query = "INSERT INTO Recordatorio (UsuarioID, UsuarioCuidadorID, Descripcion, TipoEvento, NumeroDosis, Fecha, Hora, FechaInicio, FechaFin, CitaMedicaID, MedicacionID, ActividadID) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -208,7 +203,7 @@ public class DAOChapi {
         }
     }
 
-    // Método para obtener todos los recordatorios de un usuario
+    //Función para obtener todos los recordatorios de un usuario
     public List<Recordatorios> obtenerRecordatoriosPorUsuario(int usuarioID) throws SQLException {
         List<Recordatorios> lista = new ArrayList<>();
         String query = "SELECT * FROM Recordatorio WHERE UsuarioID = ?";
@@ -216,18 +211,21 @@ public class DAOChapi {
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, usuarioID);
             try (ResultSet rs = stmt.executeQuery()) {
+                //Mientras haya resultados, se van añadiendo a la lista
                 while (rs.next()) {
                     Recordatorios recordatorio = new Recordatorios();
                     recordatorio.setRecordatorioID(rs.getInt("RecordatorioID"));
                     recordatorio.setUsuarioID(rs.getInt("UsuarioID"));
 
+                    //Control correcto de posibles usuarios nulos
                     int cuidadorId = rs.getInt("UsuarioCuidadorID");
-                    if (rs.wasNull()) {
+                    if (rs.wasNull()) { //Si el resultado es nulo, se asigna null
                         recordatorio.setUsuarioCuidadorID(null);
                     } else {
                         recordatorio.setUsuarioCuidadorID(cuidadorId);
                     }
 
+                    //Asignación de los valores a la clase Recordatorios
                     recordatorio.setDescripcion(rs.getString("Descripcion"));
                     recordatorio.setTipoEvento(rs.getString("TipoEvento"));
                     recordatorio.setNumeroDosis(rs.getInt("NumeroDosis"));
@@ -236,15 +234,15 @@ public class DAOChapi {
                     recordatorio.setFechaInicio(rs.getTimestamp("FechaInicio").toLocalDateTime());
                     recordatorio.setFechaFin(rs.getTimestamp("FechaFin").toLocalDateTime());
 
-                    // ✅ Aquí aplicamos el control correcto para posibles null en IDs opcionales:
-
+                    // Control correcto de posibles nulos
                     int citaId = rs.getInt("CitaMedicaID");
-                    if (rs.wasNull()) {
+                    if (rs.wasNull()) { // Si el resultado es nulo, se asigna null
                         recordatorio.setCitaMedicaID(null);
                     } else {
                         recordatorio.setCitaMedicaID(citaId);
                     }
 
+                    //Lo mismo que los anteriores pero para la medicación y la actividad
                     int medicacionId = rs.getInt("MedicacionID");
                     if (rs.wasNull()) {
                         recordatorio.setMedicacionID(null);
@@ -268,7 +266,7 @@ public class DAOChapi {
 
 
 
-    // Método para obtener recordatorios donde el usuario es el cuidador
+    //Función para obtener recordatorios donde el usuario es el cuidador
     public List<Recordatorios> obtenerRecordatoriosPorCuidador(int usuarioCuidadorID) throws SQLException {
         List<Recordatorios> lista = new ArrayList<>();
         String query = "SELECT * FROM Recordatorio WHERE UsuarioCuidadorID = ?";
@@ -296,7 +294,7 @@ public class DAOChapi {
                     recordatorio.setFechaInicio(rs.getTimestamp("FechaInicio").toLocalDateTime());
                     recordatorio.setFechaFin(rs.getTimestamp("FechaFin").toLocalDateTime());
 
-                    // Control correcto de posibles nulls:
+                    // Control correcto de posibles nulls, similar a los de la función anterior
                     int citaId = rs.getInt("CitaMedicaID");
                     if (rs.wasNull()) {
                         recordatorio.setCitaMedicaID(null);
@@ -326,6 +324,7 @@ public class DAOChapi {
     }
 
 
+    //Función para actualizar los recordatorios
     public void actualizarRecordatorio(Recordatorios recordatorio) throws SQLException {
         String query = "UPDATE Recordatorio SET UsuarioID = ?, UsuarioCuidadorID = ?, Descripcion = ?, TipoEvento = ?, NumeroDosis = ?, Fecha = ?, Hora = ?, FechaInicio = ?, FechaFin = ?, CitaMedicaID = ?, MedicacionID = ?, ActividadID = ? WHERE RecordatorioID = ?";
         try (Connection conn = getConnection();
@@ -333,7 +332,6 @@ public class DAOChapi {
 
             stmt.setInt(1, recordatorio.getUsuarioID());
 
-            // ✅ Aquí controlamos si es null o no
             if (recordatorio.getUsuarioCuidadorID() != null) {
                 stmt.setInt(2, recordatorio.getUsuarioCuidadorID());
             } else {
@@ -348,6 +346,7 @@ public class DAOChapi {
             stmt.setTimestamp(8, Timestamp.valueOf(recordatorio.getFechaInicio()));
             stmt.setTimestamp(9, Timestamp.valueOf(recordatorio.getFechaFin()));
 
+            // Control correcto de posibles nulls, similar a los de las funciones anteriores
             if (recordatorio.getCitaMedicaID() != null) {
                 stmt.setInt(10, recordatorio.getCitaMedicaID());
             } else {
@@ -367,12 +366,12 @@ public class DAOChapi {
             }
 
             stmt.setInt(13, recordatorio.getRecordatorioID());
-
             stmt.executeUpdate();
         }
     }
 
 
+    //Función para eliminar un recordatorio
     public void eliminarRecordatorio(int recordatorioID) throws SQLException {
         String query = "DELETE FROM Recordatorio WHERE RecordatorioID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -384,9 +383,9 @@ public class DAOChapi {
         }
     }
 
+    //Función para registrar una medicación
     public int registrarMedicación(Medicacion medicacion) throws SQLException {
-        String query = "INSERT INTO Medicacion (UsuarioID, MedicamentoID, Dosis, Frecuencia, Duracion, FechaInicio, FechaFin) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Medicacion (UsuarioID, MedicamentoID, Dosis, Frecuencia, Duracion, FechaInicio, FechaFin) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, medicacion.getUsuarioID());
             stmt.setInt(2, medicacion.getMedicamentoID());
@@ -397,7 +396,7 @@ public class DAOChapi {
             stmt.setDate(7, Date.valueOf(medicacion.getFechaFin()));
             stmt.executeUpdate();
 
-            // Obtener el ID generado
+            //Obtener el ID generado para la medicación
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     return generatedKeys.getInt(1);
@@ -408,7 +407,7 @@ public class DAOChapi {
         }
     }
 
-    // Método para obtener todas las medicaciones de un usuario
+    //Función para obtener todas las medicaciones de un usuario
     public List<Medicacion> obtenerMedicacionesPorUsuario(int usuarioId) throws SQLException {
         List<Medicacion> medicaciones = new ArrayList<>();
         String query = "SELECT * FROM Medicacion WHERE UsuarioID = ?";
@@ -432,31 +431,7 @@ public class DAOChapi {
         return medicaciones;
     }
 
-    // Método para obtener una medicación por su ID
-    public Medicacion obtenerMedicaciónPorId(int medicacionId) throws SQLException {
-        String query = "SELECT * FROM Medicacion WHERE MedicacionID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, medicacionId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Medicacion medicacion = new Medicacion();
-                    medicacion.setMedicacionID(rs.getInt("MedicacionID"));
-                    medicacion.setUsuarioID(rs.getInt("UsuarioID"));
-                    medicacion.setMedicamentoID(rs.getInt("MedicamentoID"));
-                    medicacion.setDosis(rs.getInt("Dosis"));
-                    medicacion.setFrecuencia(rs.getString("Frecuencia"));
-                    medicacion.setDuracion(rs.getInt("Duracion"));
-                    medicacion.setFechaInicio(rs.getDate("FechaInicio").toLocalDate());
-                    medicacion.setFechaFin(rs.getDate("FechaFin").toLocalDate());
-                    return medicacion;
-                } else {
-                    throw new SQLException("No se encontró la medicación con ID: " + medicacionId);
-                }
-            }
-        }
-    }
-
-    // Método para actualizar una medicación
+    //Función para actualizar una medicación
     public void actualizarMedicación(Medicacion medicacion) throws SQLException {
         String query = "UPDATE Medicacion SET UsuarioID = ?, MedicamentoID = ?, Dosis = ?, Frecuencia = ?, Duracion = ?, FechaInicio = ?, FechaFin = ? WHERE MedicacionID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -472,7 +447,7 @@ public class DAOChapi {
         }
     }
 
-    // Método para eliminar una medicación
+    //Función para eliminar una medicación
     public void eliminarMedicación(int medicacionId) throws SQLException {
         String query = "DELETE FROM Medicacion WHERE MedicacionID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -481,7 +456,7 @@ public class DAOChapi {
         }
     }
 
-
+    //Función para registrar una actividad física
     public int registrarActividadFisica(ActividadFisica actividad) throws SQLException {
         String query = "INSERT INTO ActividadFisica (UsuarioID, UsuarioCuidadorID, Nombre, Duracion, HoraInicio, HoraFin) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
@@ -511,7 +486,7 @@ public class DAOChapi {
         }
     }
 
-
+    //Función para obtener todas las actividades físicas de un usuario
     public List<ActividadFisica> obtenerActividadesPorUsuario(int usuarioId) throws SQLException {
         List<ActividadFisica> actividades = new ArrayList<>();
         String query = "SELECT DISTINCT * FROM ActividadFisica WHERE UsuarioID = ? OR UsuarioCuidadorID = ?";
@@ -536,29 +511,7 @@ public class DAOChapi {
         return actividades;
     }
 
-
-    public ActividadFisica obtenerActividadPorId(int actividadId) throws SQLException {
-        String query = "SELECT * FROM ActividadFisica WHERE ActividadID = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, actividadId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    ActividadFisica actividad = new ActividadFisica();
-                    actividad.setId(rs.getInt("ActividadID"));
-                    actividad.setUsuarioId(rs.getInt("UsuarioID"));
-                    actividad.setUsuarioCuidadorId(rs.getInt("UsuarioCuidadorID"));
-                    actividad.setNombre(rs.getString("Nombre"));
-                    actividad.setDuracion(rs.getInt("Duracion"));
-                    actividad.setHoraInicio(rs.getTime("HoraInicio").toLocalTime());
-                    actividad.setHoraFin(rs.getTime("HoraFin").toLocalTime());
-                    return actividad;
-                }
-            }
-        }
-        return null;
-    }
-
+    //Función para actualizar una actividad física
     public void actualizarActividadFisica(ActividadFisica actividad) throws SQLException {
         String query = "UPDATE ActividadFisica SET UsuarioID = ?, UsuarioCuidadorID = ?, Nombre = ?, Duracion = ?, HoraInicio = ?, HoraFin = ? WHERE ActividadID = ?";
         try (Connection conn = getConnection();
@@ -582,7 +535,7 @@ public class DAOChapi {
         }
     }
 
-
+    //Función para eliminar una actividad física
     public void eliminarActividadFisica(int actividadId) throws SQLException {
         String query = "DELETE FROM ActividadFisica WHERE ActividadID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -591,6 +544,7 @@ public class DAOChapi {
         }
     }
 
+    //Función para registrar una cita médica
     public int registrarCitaMedica(int usuarioID, Integer usuarioCuidadorID, LocalDate fecha, LocalTime hora, String lugar, String especialista) throws SQLException {
         String query = "INSERT INTO CitaMedica (UsuarioID, UsuarioCuidadorID, FechaCita, Lugar, Especialista) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -615,7 +569,7 @@ public class DAOChapi {
         }
     }
 
-
+    //Función para obtener todas las citas médicas de un usuario
     public void eliminarCitaMedica(int citaID) throws SQLException {
         String query = "DELETE FROM CitaMedica WHERE CitaMedicaID = ?";
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -624,5 +578,12 @@ public class DAOChapi {
         }
     }
 
+    public void eliminarCitasPasadas(int usuarioID) throws SQLException {
+        String query = "DELETE FROM CitaMedica WHERE (UsuarioID = ? OR UsuarioCuidadorID = ?) AND FechaCita < NOW()";
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, usuarioID);
+            stmt.setInt(2, usuarioID);
+            stmt.executeUpdate();
+        }
+    }
 }
-

@@ -4,7 +4,7 @@ public class UsuarioCuidador {
     private int usuarioId;
     private int cuidadorId;
 
-    // Getters y Setters
+    //Getters y Setters
     public int getUsuarioId() {
         return usuarioId;
     }

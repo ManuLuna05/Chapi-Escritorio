@@ -36,16 +36,6 @@ public class ControladorMedicacion {
         return null;
     }
 
-    // Obtener medicación por ID
-    public Medicacion obtenerMedicaciónPorId(int medicacionId) {
-        try {
-            return dao.obtenerMedicaciónPorId(medicacionId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     // Actualizar medicación
     public void actualizarMedicación(Medicacion medicacion) {
         try {

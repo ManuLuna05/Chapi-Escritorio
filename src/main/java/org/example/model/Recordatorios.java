@@ -9,17 +9,17 @@ public class Recordatorios {
     private int usuarioID;
     private Integer usuarioCuidadorID;
     private String descripcion;
-    private String tipoEvento; // "Medicacion", "ActividadFisica", "CitaMedica"
+    private String tipoEvento;
     private int numeroDosis;
-    private LocalDate fecha;  // Fecha de la dosis o actividad
-    private LocalTime hora;   // Hora de la dosis o actividad
+    private LocalDate fecha;
+    private LocalTime hora;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
     private Integer citaMedicaID;
     private Integer medicacionID;
     private Integer actividadID;
 
-    // Getters y Setters
+    //Getters y Setters
     public int getRecordatorioID() {
         return recordatorioID;
     }

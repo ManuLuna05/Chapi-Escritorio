@@ -10,7 +10,7 @@ public class CitaMedica {
     private String lugar;
     private String especialista;
 
-    // Getters y Setters
+    //Getters y Setters
     public int getId() {
         return id;
     }

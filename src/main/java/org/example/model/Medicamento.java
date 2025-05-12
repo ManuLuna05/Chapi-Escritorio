@@ -7,7 +7,7 @@ public class Medicamento {
     private String descripcion;
     private String foto;
 
-    // Getters y Setters
+    //Getters y Setters
     public int getId() {
         return id;
     }
@@ -50,6 +50,6 @@ public class Medicamento {
 
     @Override
     public String toString() {
-        return nombre; // Devuelve el nombre del medicamento
+        return nombre;
     }
 }
