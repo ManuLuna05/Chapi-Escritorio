@@ -15,18 +15,18 @@ import org.example.service.ControladorRecordatorios;
 import org.example.service.ControladorUsuarios;
 
 public class VentanaAgregarCita extends JFrame {
-    private JTextField txtLugar, txtEspecialista;
-    private JDateChooser dateChooserFecha;
+    private JTextField textoLugar, textoEspecialista;
+    private JDateChooser selectorFecha;
     private JSpinner spinnerHora;
-    private JButton btnGuardar, btnCancelar;
+    private JButton botonGuardar, botonCancelar;
     private int usuarioID;
     private int usuarioCuidadorID;
     private VentanaCitasMedicas ventanaCitasMedicas;
 
-    public VentanaAgregarCita(int usuarioID, int usuarioCuidadorID, VentanaCitasMedicas padre) {
+    public VentanaAgregarCita(int usuarioID, int usuarioCuidadorID, VentanaCitasMedicas ventanaCitasPrincipal) {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
-        this.ventanaCitasMedicas = padre;
+        this.ventanaCitasMedicas = ventanaCitasPrincipal;
 
         setTitle("Agregar Cita Médica");
         setSize(520, 450);
@@ -45,89 +45,87 @@ public class VentanaAgregarCita extends JFrame {
         panel.add(titulo);
         panel.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        txtLugar = new JTextField();
-        txtEspecialista = new JTextField();
-        dateChooserFecha = new JDateChooser();
-        dateChooserFecha.setDateFormatString("yyyy-MM-dd");
+        textoLugar = new JTextField();
+        textoEspecialista = new JTextField();
+        selectorFecha = new JDateChooser();
+        selectorFecha.setDateFormatString("yyyy-MM-dd");
 
         spinnerHora = new JSpinner(new SpinnerDateModel());
         spinnerHora.setEditor(new JSpinner.DateEditor(spinnerHora, "HH:mm"));
 
-        formularioCentrado(panel, "Lugar:", txtLugar);
-        formularioCentrado(panel, "Especialista:", txtEspecialista);
-        formularioCentrado(panel, "Fecha:", dateChooserFecha);
-        formularioCentrado(panel, "Hora:", spinnerHora);
+        formulario(panel, "Lugar:", textoLugar);
+        formulario(panel, "Especialista:", textoEspecialista);
+        formulario(panel, "Fecha:", selectorFecha);
+        formulario(panel, "Hora:", spinnerHora);
 
         panel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.setBackground(new Color(248, 248, 248));
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        panelInferior.setBackground(new Color(248, 248, 248));
 
-        btnGuardar = new JButton("GUARDAR");
-        estiloBoton(btnGuardar);
-        btnGuardar.addActionListener(e -> guardarCita());
+        botonGuardar = new JButton("GUARDAR");
+        estiloBoton(botonGuardar);
+        botonGuardar.addActionListener(e -> guardarCita());
 
-        btnCancelar = new JButton("CANCELAR");
-        estiloBoton(btnCancelar);
-        btnCancelar.addActionListener(e -> dispose());
+        botonCancelar = new JButton("CANCELAR");
+        estiloBoton(botonCancelar);
+        botonCancelar.addActionListener(e -> dispose());
 
-        buttonPanel.add(btnGuardar);
-        buttonPanel.add(btnCancelar);
+        panelInferior.add(botonGuardar);
+        panelInferior.add(botonCancelar);
 
-        panel.add(buttonPanel);
+        panel.add(panelInferior);
         add(panel);
     }
 
-    private void formularioCentrado(JPanel panel, String labelText, JComponent field) {
-        JPanel fieldPanel = new JPanel();
-        fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.Y_AXIS));
-        fieldPanel.setBackground(new Color(248, 248, 248));
-        fieldPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    private void formulario(JPanel panel, String etiquetaTexto, JComponent campo) {
+        JPanel panelCampo = new JPanel();
+        panelCampo.setLayout(new BoxLayout(panelCampo, BoxLayout.Y_AXIS));
+        panelCampo.setBackground(new Color(248, 248, 248));
+        panelCampo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel label = new JLabel(labelText);
+        JLabel label = new JLabel(etiquetaTexto);
         label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         label.setForeground(new Color(80, 80, 80));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setMaximumSize(new Dimension(300, 30));
-        field.setAlignmentX(Component.CENTER_ALIGNMENT);
+        campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        campo.setMaximumSize(new Dimension(300, 30));
+        campo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        fieldPanel.add(label);
-        fieldPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        fieldPanel.add(field);
-        fieldPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCampo.add(label);
+        panelCampo.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelCampo.add(campo);
+        panelCampo.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        panel.add(fieldPanel);
+        panel.add(panelCampo);
     }
 
-    private void estiloBoton(JButton button) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setBackground(new Color(113, 183, 188));
-        button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(150, 40));
+    private void estiloBoton(JButton boton) {
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        boton.setBackground(new Color(113, 183, 188));
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(150, 40));
     }
 
     private void guardarCita() {
         try {
-            String lugar = txtLugar.getText().trim();
-            String especialista = txtEspecialista.getText().trim();
+            String lugar = textoLugar.getText().trim();
+            String especialista = textoEspecialista.getText().trim();
 
             if (lugar.isEmpty() || especialista.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Debe completar el lugar y el especialista.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            if (dateChooserFecha.getDate() == null) {
+            if (selectorFecha.getDate() == null) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            LocalDate fecha = dateChooserFecha.getDate().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-
-            LocalTime hora = ((Date)spinnerHora.getValue()).toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalTime();
+            //Se convierte la fecha y hora a LocalDate y LocalTime para un mejor manejo de los datos
+            LocalDate fecha = selectorFecha.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            LocalTime hora = ((Date)spinnerHora.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime();
 
             int pacienteId = usuarioID;
             Integer cuidadorId = null;
@@ -145,10 +143,7 @@ public class VentanaAgregarCita extends JFrame {
             }
 
             ControladorCitasMedicas controlador = new ControladorCitasMedicas();
-            int citaID = controlador.registrarCita(
-                    pacienteId,
-                    cuidadorId,
-                    fecha, hora, lugar, especialista);
+            int citaID = controlador.registrarCita(pacienteId, cuidadorId, fecha, hora, lugar, especialista);
 
             Recordatorios recordatorio = new Recordatorios();
             recordatorio.setUsuarioID(pacienteId);

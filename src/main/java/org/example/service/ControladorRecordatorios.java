@@ -17,7 +17,7 @@ public class ControladorRecordatorios {
         dao = new DAOChapi();
     }
 
-    // Crear nuevo recordatorio
+    //Función para crear un recordatorio por medio de la función presente en el dao
     public void crearRecordatorio(Recordatorios recordatorio) {
         try {
             if (recordatorio.getFechaInicio() == null || recordatorio.getFechaFin() == null) {
@@ -31,7 +31,7 @@ public class ControladorRecordatorios {
         }
     }
 
-    // Obtener todos los recordatorios de un usuario
+    //Función que obtiene todos los recordatorios de un usuario por medio de la función presente en el dao
     public List<Recordatorios> obtenerRecordatoriosPorUsuario(int usuarioID) {
         try {
             return dao.obtenerRecordatoriosPorUsuario(usuarioID);
@@ -41,7 +41,7 @@ public class ControladorRecordatorios {
         return null;
     }
 
-    // Actualizar recordatorio
+    //Función para actualizar un recordatorio por medio de la función presente en el dao
     public void actualizarRecordatorio(Recordatorios recordatorio) {
         try {
             dao.actualizarRecordatorio(recordatorio);
@@ -50,7 +50,7 @@ public class ControladorRecordatorios {
         }
     }
 
-    // Eliminar recordatorio
+    //Función para eliminar recordatorio por medio de la función presente en el dao
     public void eliminarRecordatorio(int recordatorioID) {
         try {
             dao.eliminarRecordatorio(recordatorioID);
@@ -59,7 +59,7 @@ public class ControladorRecordatorios {
         }
     }
 
-
+    //Función para eliminar recordatorios pasados de un usuario
     public void eliminarRecordatoriosPasados(int usuarioID) throws SQLException {
         List<Recordatorios> recordatorios = obtenerRecordatoriosPorUsuarioOCuidador(usuarioID);
         for (Recordatorios recordatorio : recordatorios) {
@@ -70,7 +70,7 @@ public class ControladorRecordatorios {
         }
     }
 
-    // Método para obtener recordatorios donde el usuario es el cuidador
+    //Función para obtener recordatorios donde el usuario es el cuidador por medio de la función presente en el dao
     public List<Recordatorios> obtenerRecordatoriosPorCuidador(int cuidadorID) {
         try {
             return dao.obtenerRecordatoriosPorCuidador(cuidadorID);
@@ -80,6 +80,7 @@ public class ControladorRecordatorios {
         return null;
     }
 
+    //Función para obtener recordatorios de un usuario o cuidador
     public List<Recordatorios> obtenerRecordatoriosPorUsuarioOCuidador(int usuarioID) throws SQLException {
         List<Recordatorios> recordatorios = new ArrayList<>();
         recordatorios.addAll(obtenerRecordatoriosPorUsuario(usuarioID));

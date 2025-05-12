@@ -39,25 +39,29 @@ public class ControladorUsuarios {
         dao.editarUsuario(usuario);
     }
 
+    //Función para obtener el paciente de un cuidador
     public List<Integer> obtenerPacientesDeCuidador(int cuidadorId) throws SQLException {
         return dao.obtenerPacientesDeCuidador(cuidadorId);
     }
 
+    //Función para obtener los usuarios por su id
     public Usuario obtenerUsuarioPorId(int usuarioId) throws SQLException {
         return dao.obtenerUsuarioPorId(usuarioId);
     }
 
+    //Función para verificar si un correo electrónico tiene un formato válido
     public boolean esEmailValido(String email) {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
     }
 
+    //Función para verificar si un teléfono tiene un formato válido
     public boolean esTelefonoValido(String telefono) {
         String soloDigitos = telefono.replaceAll("\\D", "");
         return soloDigitos.length() == 9;
     }
 
+    //Función para normalizar un teléfono eliminando caracteres no numéricos
     public String normalizarTelefono(String telefono) {
         return telefono.replaceAll("\\D", "");
     }
-
 }

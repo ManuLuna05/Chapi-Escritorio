@@ -16,17 +16,17 @@ public class ControladorMedicacion {
         dao = new DAOChapi();
     }
 
-    // Clase ControladorMedicacion
+    //Función para registrar una medicación por medio de la función presente en el dao
     public int registrarMedicacion(Medicacion medicacion) {
         try {
-            return dao.registrarMedicación(medicacion); // Retorna el ID generado
+            return dao.registrarMedicación(medicacion);
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1; // Retorna un valor de error en caso de excepción
+            return -1;
         }
     }
 
-    // Obtener todas las medicaciones de un usuario
+    //Obtener todas las medicaciones de un usuario por medio de la función presente en el dao
     public List<Medicacion> obtenerMedicacionesPorUsuario(int usuarioId) {
         try {
             return dao.obtenerMedicacionesPorUsuario(usuarioId);
@@ -36,7 +36,7 @@ public class ControladorMedicacion {
         return null;
     }
 
-    // Actualizar medicación
+    //Función para actualizar medicación por medio de la función presente en el dao
     public void actualizarMedicación(Medicacion medicacion) {
         try {
             dao.actualizarMedicación(medicacion);
@@ -45,10 +45,10 @@ public class ControladorMedicacion {
         }
     }
 
-    // Eliminar medicación
+    //Función para eliminar medicación por medio de la función presente en el dao
     public void eliminarMedicación(int medicacionId, int usuarioId) {
         try {
-            // Eliminar los recordatorios vinculados a la medicación
+            //Eliminar los recordatorios vinculados a la medicación
             ControladorRecordatorios controladorRecordatorios = new ControladorRecordatorios();
             List<Recordatorios> recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioId);
             for (Recordatorios recordatorio : recordatorios) {
@@ -58,15 +58,14 @@ public class ControladorMedicacion {
                 }
             }
 
-
-            // Eliminar la medicación
+            //Eliminar la medicación
             dao.eliminarMedicación(medicacionId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // Obtener todos los medicamentos disponibles
+    //Función que obtiene todos los medicamentos disponibles
     public List<Medicamento> obtenerTodosMedicamentos() {
         try {
             return dao.obtenerTodosMedicamentos();
@@ -76,7 +75,7 @@ public class ControladorMedicacion {
         return null;
     }
 
-    // Obtener nombre del medicamento por ID
+    //Función que obtiene el nombre del medicamento por ID
     public String obtenerNombreMedicamentoPorId(int medicamentoId) {
         try {
             return dao.obtenerNombreMedicamentoPorId(medicamentoId);
@@ -86,6 +85,7 @@ public class ControladorMedicacion {
         }
     }
 
+    //Función para eliminar todas las medicaciones pasadas de un usuario por medio de la función presente en el dao
     public void eliminarMedicacionesPasadas(int usuarioID) {
         try {
             dao.eliminarMedicacionesPasadas(usuarioID);
@@ -93,5 +93,4 @@ public class ControladorMedicacion {
             e.printStackTrace();
         }
     }
-
 }

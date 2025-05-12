@@ -17,13 +17,13 @@ import java.util.Date;
 import java.util.Calendar;
 
 public class VentanaAgregarActividad extends JFrame {
-    private JTextField txtNombre;
-    private JTextField txtDuracion;
+    private JTextField textoNombre;
+    private JTextField textoDuracion;
     private JSpinner spinnerHoraInicio;
     private JSpinner spinnerHoraFin;
-    private JDateChooser dateChooserFecha;
+    private JDateChooser selectorFecha;
     private JComboBox<Integer> comboPacientes;
-    private JButton btnGuardar, btnCancelar;
+    private JButton botonGuardar, botonCancelar;
 
     private int usuarioID;
     private int usuarioCuidadorID;
@@ -53,11 +53,11 @@ public class VentanaAgregarActividad extends JFrame {
         panel.add(titulo);
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        txtNombre = new JTextField();
-        txtDuracion = new JTextField();
-        txtDuracion.setEditable(false); // campo de solo lectura
-        dateChooserFecha = new JDateChooser();
-        dateChooserFecha.setDateFormatString("yyyy-MM-dd");
+        textoNombre = new JTextField();
+        textoDuracion = new JTextField();
+        textoDuracion.setEditable(false);
+        selectorFecha = new JDateChooser();
+        selectorFecha.setDateFormatString("yyyy-MM-dd");
 
         spinnerHoraInicio = new JSpinner(new SpinnerDateModel());
         spinnerHoraInicio.setEditor(new JSpinner.DateEditor(spinnerHoraInicio, "HH:mm"));
@@ -65,127 +65,106 @@ public class VentanaAgregarActividad extends JFrame {
         spinnerHoraFin = new JSpinner(new SpinnerDateModel());
         spinnerHoraFin.setEditor(new JSpinner.DateEditor(spinnerHoraFin, "HH:mm"));
 
-        panel.add(crearCampo("Nombre de la actividad:", txtNombre));
-        panel.add(crearCampo("Duración (minutos):", txtDuracion));
-        panel.add(crearCampo("Fecha:", dateChooserFecha));
+        panel.add(crearCampo("Nombre de la actividad:", textoNombre));
+        panel.add(crearCampo("Duración (minutos):", textoDuracion));
+        panel.add(crearCampo("Fecha:", selectorFecha));
         panel.add(crearCampo("Hora de inicio:", spinnerHoraInicio));
         panel.add(crearCampo("Hora de fin:", spinnerHoraFin));
 
         panel.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.setBackground(new Color(248, 248, 248));
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        panelInferior.setBackground(new Color(248, 248, 248));
 
-        btnGuardar = new JButton("GUARDAR");
-        estiloBoton(btnGuardar);
-        btnGuardar.addActionListener(e -> guardarActividad());
+        botonGuardar = new JButton("GUARDAR");
+        estiloBoton(botonGuardar);
+        botonGuardar.addActionListener(e -> guardarActividad());
 
-        btnCancelar = new JButton("CANCELAR");
-        estiloBoton(btnCancelar);
-        btnCancelar.addActionListener(e -> dispose());
+        botonCancelar = new JButton("CANCELAR");
+        estiloBoton(botonCancelar);
+        botonCancelar.addActionListener(e -> dispose());
 
-        buttonPanel.add(btnGuardar);
-        buttonPanel.add(btnCancelar);
-        panel.add(buttonPanel);
+        panelInferior.add(botonGuardar);
+        panelInferior.add(botonCancelar);
+        panel.add(panelInferior);
 
         add(panel);
 
-        // Actualizar duración automáticamente
         spinnerHoraInicio.addChangeListener(e -> actualizarDuracion());
         spinnerHoraFin.addChangeListener(e -> actualizarDuracion());
     }
 
-    private JPanel crearCampo(String labelText, JComponent field) {
+    private JPanel crearCampo(String etiquetaTexto, JComponent campo) {
         JPanel panelCampo = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelCampo.setBackground(new Color(248, 248, 248));
         panelCampo.setMaximumSize(new Dimension(400, 50));
 
-        JLabel label = new JLabel(labelText);
-        label.setPreferredSize(new Dimension(150, 30));
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        JLabel etiqueta = new JLabel(etiquetaTexto);
+        etiqueta.setPreferredSize(new Dimension(150, 30));
+        etiqueta.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        field.setPreferredSize(new Dimension(200, 30));
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        campo.setPreferredSize(new Dimension(200, 30));
+        campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        panelCampo.add(label);
-        panelCampo.add(field);
+        panelCampo.add(etiqueta);
+        panelCampo.add(campo);
 
         return panelCampo;
     }
 
-    private void estiloBoton(JButton button) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setBackground(new Color(113, 183, 188));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(150, 40));
+    private void estiloBoton(JButton boton) {
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        boton.setBackground(new Color(113, 183, 188));
+        boton.setForeground(Color.WHITE);
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(150, 40));
     }
 
-    private void cargarPacientes() {
-        try {
-            ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
-            List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
-
-            if (pacientes.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No tienes pacientes asignados.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                for (Integer pacienteId : pacientes) {
-                    comboPacientes.addItem(pacienteId);
-                }
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar pacientes: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
+    //Función para actualizar la duración de la actividad
     private void actualizarDuracion() {
         try {
             LocalTime inicio = convertirSpinnerAHora(spinnerHoraInicio);
             LocalTime fin = convertirSpinnerAHora(spinnerHoraFin);
 
             long minutos = java.time.Duration.between(inicio, fin).toMinutes();
-            if (minutos < 0) minutos += 1440; // cruzar medianoche
+            if (minutos < 0) minutos += 1440;
 
-            txtDuracion.setText(String.valueOf(minutos));
+            textoDuracion.setText(String.valueOf(minutos));
         } catch (Exception ex) {
-            txtDuracion.setText("");
+            textoDuracion.setText("");
         }
     }
 
+    //Función para convertir el valor del spinner a LocalTime y manejar correctamente el tiempo
     private LocalTime convertirSpinnerAHora(JSpinner spinner) {
-        Date date = (Date) spinner.getValue();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return LocalTime.of(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+        Date fecha = (Date) spinner.getValue();
+        Calendar calendario = Calendar.getInstance();
+        calendario.setTime(fecha);
+        return LocalTime.of(calendario.get(Calendar.HOUR_OF_DAY), calendario.get(Calendar.MINUTE));
     }
 
+    //Función para guardar la actividad física
     private void guardarActividad() {
         try {
-            String nombre = txtNombre.getText();
-            int duracion = Integer.parseInt(txtDuracion.getText());
+            String nombre = textoNombre.getText();
+            int duracion = Integer.parseInt(textoDuracion.getText());
 
-            // Validar que el nombre no esté vacío
+            //Se valida que el nombre no esté vacío
             if (nombre.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "El nombre de la actividad es obligatorio",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Nombre de la actividad obligatorio", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Validar que se haya seleccionado una fecha
-            if (dateChooserFecha.getDate() == null) {
-                JOptionPane.showMessageDialog(this, "Debes seleccionar una fecha para la actividad.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+            //Se valida que se haya seleccionado una fecha
+            if (selectorFecha.getDate() == null) {
+                JOptionPane.showMessageDialog(this, "Selecciona una fecha para la actividad.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            LocalDate fecha = dateChooserFecha.getDate().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-
-            LocalTime horaInicio = ((java.util.Date) spinnerHoraInicio.getValue()).toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalTime();
-            LocalTime horaFin = ((java.util.Date) spinnerHoraFin.getValue()).toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalTime();
+            //Se pasan las fechas y horas a LocalDate y LocalTime para un mejor manejo de los datos
+            LocalDate fecha = selectorFecha.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            LocalTime horaInicio = ((java.util.Date) spinnerHoraInicio.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime();
+            LocalTime horaFin = ((java.util.Date) spinnerHoraFin.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime();
 
             int pacienteId = usuarioID;
             Integer cuidadorId = (usuarioCuidadorID > 0) ? usuarioCuidadorID : null;
@@ -194,7 +173,7 @@ public class VentanaAgregarActividad extends JFrame {
                 ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
                 List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
                 if (!pacientes.isEmpty()) {
-                    pacienteId = pacientes.get(0); // O permite seleccionar el paciente
+                    pacienteId = pacientes.get(0);
                     cuidadorId = usuarioID;
                 } else {
                     JOptionPane.showMessageDialog(this, "No tienes pacientes asignados.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -202,22 +181,23 @@ public class VentanaAgregarActividad extends JFrame {
                 }
             }
 
-            // 👇 Debug por consola
+            //Se imprimen ID por consola para realizar comprobaciones con los identificadores de los usuarios
             System.out.println("Paciente ID: " + pacienteId);
             System.out.println("Cuidador ID: " + cuidadorId);
 
+            //Se crea la actividad física y se guarda en la base de datos
             ActividadFisica actividad = new ActividadFisica();
             actividad.setUsuarioId(pacienteId);
-            actividad.setUsuarioCuidadorId(cuidadorId);  // Ahora sí puede ser null sin problemas
+            actividad.setUsuarioCuidadorId(cuidadorId);
             actividad.setNombre(nombre);
             actividad.setDuracion(duracion);
             actividad.setHoraInicio(horaInicio);
             actividad.setHoraFin(horaFin);
 
-            ControladorActividadFisica controlador = new ControladorActividadFisica();
-            int actividadId = controlador.registrarActividad(actividad);
+            ControladorActividadFisica controladorActividad = new ControladorActividadFisica();
+            int actividadId = controladorActividad.registrarActividad(actividad);
 
-            // Crear recordatorio
+            //Se crea el recordatorio para la actividad y se guarda en la base de datos
             Recordatorios recordatorio = new Recordatorios();
             recordatorio.setUsuarioID(pacienteId);
             recordatorio.setUsuarioCuidadorID(cuidadorId);
@@ -229,22 +209,21 @@ public class VentanaAgregarActividad extends JFrame {
             recordatorio.setFechaFin(LocalDateTime.of(fecha, horaFin));
             recordatorio.setActividadID(actividadId);
 
+            //Se guarda el recordatorio en la base de datos
             ControladorRecordatorios controladorRecordatorios = new ControladorRecordatorios();
             controladorRecordatorios.crearRecordatorio(recordatorio);
 
-            JOptionPane.showMessageDialog(this, "Actividad y recordatorio guardados correctamente",
-                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Actividad creada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
+            //Recargar la lista de actividades en la ventana principal
             if (ventanaAreaFisica != null) {
                 ventanaAreaFisica.recargarRecordatorios();
             }
             dispose();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al guardar la actividad: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al crear la actividad: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
-
 }

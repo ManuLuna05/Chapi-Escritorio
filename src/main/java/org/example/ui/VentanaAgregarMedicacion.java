@@ -19,18 +19,18 @@ import java.util.List;
 
 public class VentanaAgregarMedicacion extends JFrame {
     private JSpinner spinnerDosis;
-    private JDateChooser dateChooserInicio, dateChooserFin;
+    private JDateChooser selectorFechaInicio, selectorFechaFin;
     private JComboBox<Medicamento> comboMedicamentos;
-    private JTextField txtFrecuencia;
-    private JButton btnGuardar, btnCancelar, btnConfigurarHoras;
+    private JTextField textoFrecuencia;
+    private JButton botonGuardar, botonCancelar, botonConfigurarHoras;
     private int usuarioID;
     private List<LocalTime> horasDosis;
     private VentanaAreaMedica ventanaAreaMedica;
 
-    public VentanaAgregarMedicacion(int usuarioID, int usuarioCuidadorID, VentanaAreaMedica ventanaAreaMedicaPadre) {
+    public VentanaAgregarMedicacion(int usuarioID, int usuarioCuidadorID, VentanaAreaMedica ventanaAreaMedicaPrincipal) {
         this.usuarioID = usuarioID;
         this.horasDosis = new ArrayList<>();
-        this.ventanaAreaMedica = ventanaAreaMedicaPadre;
+        this.ventanaAreaMedica = ventanaAreaMedicaPrincipal;
 
         setTitle("Agregar Medicación");
         setSize(520, 650);
@@ -41,117 +41,117 @@ public class VentanaAgregarMedicacion extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(248, 248, 248));
 
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(25, 50, 25, 50));
-        centerPanel.setBackground(new Color(248, 248, 248));
+        JPanel panelCentral = new JPanel();
+        panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
+        panelCentral.setBorder(BorderFactory.createEmptyBorder(25, 50, 25, 50));
+        panelCentral.setBackground(new Color(248, 248, 248));
 
         JLabel titulo = new JLabel("AGREGAR MEDICACIÓN");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titulo.setForeground(new Color(113, 183, 188));
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         titulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0));
-        centerPanel.add(titulo);
+        panelCentral.add(titulo);
 
         comboMedicamentos = new JComboBox<>();
         spinnerDosis = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-        dateChooserInicio = crearSeleccionFecha();
-        dateChooserFin = crearSeleccionFecha();
-        txtFrecuencia = new JTextField();
+        selectorFechaInicio = crearSeleccionFecha();
+        selectorFechaFin = crearSeleccionFecha();
+        textoFrecuencia = new JTextField();
 
-        formularioCentrado(centerPanel, "Medicamento:", comboMedicamentos);
-        formularioCentrado(centerPanel, "Dosis:", spinnerDosis);
-        formularioCentrado(centerPanel, "Fecha de Inicio:", dateChooserInicio);
-        formularioCentrado(centerPanel, "Fecha de Fin:", dateChooserFin);
-        formularioCentrado(centerPanel, "Frecuencia:", txtFrecuencia);
+        formularioCentrado(panelCentral, "Medicamento:", comboMedicamentos);
+        formularioCentrado(panelCentral, "Dosis:", spinnerDosis);
+        formularioCentrado(panelCentral, "Fecha de Inicio:", selectorFechaInicio);
+        formularioCentrado(panelCentral, "Fecha de Fin:", selectorFechaFin);
+        formularioCentrado(panelCentral, "Frecuencia:", textoFrecuencia);
 
         cargarMedicamentos();
 
-        btnConfigurarHoras = new JButton("CONFIGURAR HORAS DE DOSIS");
-        estiloBoton(btnConfigurarHoras, new Color(113, 183, 188));
-        btnConfigurarHoras.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnConfigurarHoras.addActionListener(e -> configurarHorasDosis());
+        botonConfigurarHoras = new JButton("CONFIGURAR HORAS DE DOSIS");
+        estiloBoton(botonConfigurarHoras, new Color(113, 183, 188));
+        botonConfigurarHoras.setAlignmentX(Component.CENTER_ALIGNMENT);
+        botonConfigurarHoras.addActionListener(e -> configurarHorasDosis());
 
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        centerPanel.add(btnConfigurarHoras);
-        centerPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        panelCentral.add(Box.createRigidArea(new Dimension(0, 20)));
+        panelCentral.add(botonConfigurarHoras);
+        panelCentral.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 0));
-        buttonPanel.setBackground(new Color(248, 248, 248));
+        JPanel panelInferior = new JPanel();
+        panelInferior.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 0));
+        panelInferior.setBackground(new Color(248, 248, 248));
 
-        btnGuardar = new JButton("GUARDAR");
-        estiloBoton(btnGuardar, new Color(113, 183, 188));
-        btnGuardar.setPreferredSize(new Dimension(150, 40));
-        btnGuardar.addActionListener(e -> guardarMedicacion());
+        botonGuardar = new JButton("GUARDAR");
+        estiloBoton(botonGuardar, new Color(113, 183, 188));
+        botonGuardar.setPreferredSize(new Dimension(150, 40));
+        botonGuardar.addActionListener(e -> guardarMedicacion());
 
-        btnCancelar = new JButton("CANCELAR");
-        estiloBoton(btnCancelar, new Color(113, 183, 188));
-        btnCancelar.setPreferredSize(new Dimension(150, 40));
-        btnCancelar.addActionListener(e -> dispose());
+        botonCancelar = new JButton("CANCELAR");
+        estiloBoton(botonCancelar, new Color(113, 183, 188));
+        botonCancelar.setPreferredSize(new Dimension(150, 40));
+        botonCancelar.addActionListener(e -> dispose());
 
-        buttonPanel.add(btnGuardar);
-        buttonPanel.add(btnCancelar);
-        centerPanel.add(buttonPanel);
+        panelInferior.add(botonGuardar);
+        panelInferior.add(botonCancelar);
+        panelCentral.add(panelInferior);
 
         panel.add(Box.createVerticalGlue());
-        panel.add(centerPanel);
+        panel.add(panelCentral);
         panel.add(Box.createVerticalGlue());
 
         add(panel);
     }
 
-    private void formularioCentrado(JPanel panel, String labelText, JComponent field) {
-        JPanel fieldPanel = new JPanel();
-        fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.Y_AXIS));
-        fieldPanel.setBackground(new Color(248, 248, 248));
-        fieldPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    private void formularioCentrado(JPanel panel, String etiquetaTexto, JComponent campo) {
+        JPanel panelCampo = new JPanel();
+        panelCampo.setLayout(new BoxLayout(panelCampo, BoxLayout.Y_AXIS));
+        panelCampo.setBackground(new Color(248, 248, 248));
+        panelCampo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        label.setForeground(new Color(80, 80, 80));
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel etiqueta = new JLabel(etiquetaTexto);
+        etiqueta.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        etiqueta.setForeground(new Color(80, 80, 80));
+        etiqueta.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setMaximumSize(new Dimension(300, 30));
-        field.setAlignmentX(Component.CENTER_ALIGNMENT);
+        campo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        campo.setMaximumSize(new Dimension(300, 30));
+        campo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        if (field instanceof JSpinner) {
-            ((JSpinner.DefaultEditor)((JSpinner)field).getEditor()).getTextField().setBackground(Color.WHITE);
-        } else if (field instanceof JComboBox) {
-            field.setBackground(Color.WHITE);
-        } else if (field instanceof JTextField) {
-            ((JTextField)field).setBackground(Color.WHITE);
+        if (campo instanceof JSpinner) {
+            ((JSpinner.DefaultEditor)((JSpinner) campo).getEditor()).getTextField().setBackground(Color.WHITE);
+        } else if (campo instanceof JComboBox) {
+            campo.setBackground(Color.WHITE);
+        } else if (campo instanceof JTextField) {
+            ((JTextField) campo).setBackground(Color.WHITE);
         }
 
-        fieldPanel.add(label);
-        fieldPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        fieldPanel.add(field);
-        fieldPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelCampo.add(etiqueta);
+        panelCampo.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelCampo.add(campo);
+        panelCampo.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        panel.add(fieldPanel);
+        panel.add(panelCampo);
     }
 
     private JDateChooser crearSeleccionFecha() {
-        JDateChooser dateChooser = new JDateChooser();
-        dateChooser.setDateFormatString("yyyy-MM-dd");
-        dateChooser.getCalendarButton().setBackground(new Color(113, 183, 188));
-        dateChooser.getCalendarButton().setForeground(Color.WHITE);
-        dateChooser.getDateEditor().getUiComponent().setBackground(Color.WHITE);
-        dateChooser.setPreferredSize(new Dimension(300, 30));
-        dateChooser.setMaximumSize(new Dimension(300, 30));
-        return dateChooser;
+        JDateChooser selectorFecha = new JDateChooser();
+        selectorFecha.setDateFormatString("yyyy-MM-dd");
+        selectorFecha.getCalendarButton().setBackground(new Color(113, 183, 188));
+        selectorFecha.getCalendarButton().setForeground(Color.WHITE);
+        selectorFecha.getDateEditor().getUiComponent().setBackground(Color.WHITE);
+        selectorFecha.setPreferredSize(new Dimension(300, 30));
+        selectorFecha.setMaximumSize(new Dimension(300, 30));
+        return selectorFecha;
     }
 
-    private void estiloBoton(JButton button, Color bgColor) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setBackground(bgColor);
-        button.setFocusPainted(false);
-        button.setMaximumSize(new Dimension(300, 40));
+    private void estiloBoton(JButton boton, Color color) {
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        boton.setBackground(color);
+        boton.setFocusPainted(false);
+        boton.setMaximumSize(new Dimension(300, 40));
 
-        Border lineBorder = BorderFactory.createLineBorder(new Color(200, 200, 200));
-        Border emptyBorder = BorderFactory.createEmptyBorder(8, 20, 8, 20);
-        button.setBorder(BorderFactory.createCompoundBorder(lineBorder, emptyBorder));
+        Border lineaBorde = BorderFactory.createLineBorder(new Color(200, 200, 200));
+        Border vacioBorde = BorderFactory.createEmptyBorder(8, 20, 8, 20);
+        boton.setBorder(BorderFactory.createCompoundBorder(lineaBorde, vacioBorde));
     }
 
     private void configurarHorasDosis() {
@@ -164,9 +164,9 @@ public class VentanaAgregarMedicacion extends JFrame {
 
         List<JSpinner> spinnersHoras = new ArrayList<>();
         for (int i = 0; i < dosis; i++) {
-            JLabel lblHora = new JLabel("Hora de la dosis " + (i + 1) + ":");
-            lblHora.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-            panelHoras.add(lblHora);
+            JLabel etiquetaHora = new JLabel("Hora de la dosis " + (i + 1) + ":");
+            etiquetaHora.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            panelHoras.add(etiquetaHora);
 
             JSpinner spinnerHora = new JSpinner(new SpinnerDateModel());
             spinnerHora.setEditor(new JSpinner.DateEditor(spinnerHora, "HH:mm"));
@@ -176,13 +176,11 @@ public class VentanaAgregarMedicacion extends JFrame {
             panelHoras.add(Box.createRigidArea(new Dimension(0, 10)));
         }
 
-        int result = JOptionPane.showConfirmDialog(this, panelHoras,
-                "Configurar Horas de Dosis", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int resultado = JOptionPane.showConfirmDialog(this, panelHoras, "Configurar Horas de Dosis", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        if (result == JOptionPane.OK_OPTION) {
+        if (resultado == JOptionPane.OK_OPTION) {
             for (JSpinner spinner : spinnersHoras) {
-                horasDosis.add(((java.util.Date) spinner.getValue()).toInstant()
-                        .atZone(java.time.ZoneId.systemDefault()).toLocalTime());
+                horasDosis.add(((java.util.Date) spinner.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime());
             }
         }
     }
@@ -192,9 +190,9 @@ public class VentanaAgregarMedicacion extends JFrame {
             Medicamento medicamentoSeleccionado = (Medicamento) comboMedicamentos.getSelectedItem();
             int dosis = (int) spinnerDosis.getValue();
 
-            LocalDate fechaInicio = dateChooserInicio.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-            LocalDate fechaFin = dateChooserFin.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-            String frecuencia = txtFrecuencia.getText();
+            LocalDate fechaInicio = selectorFechaInicio.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            LocalDate fechaFin = selectorFechaFin.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            String frecuencia = textoFrecuencia.getText();
 
             if (horasDosis.size() != dosis) {
                 JOptionPane.showMessageDialog(this, "Debe configurar todas las horas de las dosis.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -206,13 +204,13 @@ public class VentanaAgregarMedicacion extends JFrame {
             Medicacion medicacion = new Medicacion();
 
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
-            int idUsuario = usuarioID; // Por defecto, el usuario actual
+            int idUsuario = usuarioID;
             Integer idCuidador = null;
 
             if (ventanaAreaMedica != null && "cuidador".equals(ventanaAreaMedica.getTipoUsuario())) {
                 List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
                 if (!pacientes.isEmpty()) {
-                    idUsuario = pacientes.get(0); // Solo el primer paciente
+                    idUsuario = pacientes.get(0);
                     idCuidador = usuarioID;
                 } else {
                     JOptionPane.showMessageDialog(this, "No hay pacientes asignados.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -236,7 +234,7 @@ public class VentanaAgregarMedicacion extends JFrame {
                 for (LocalTime hora : horasDosis) {
                     Recordatorios recordatorio = new Recordatorios();
                     recordatorio.setUsuarioID(idUsuario);
-                    recordatorio.setUsuarioCuidadorID(idCuidador); // Puede ser null si no es cuidador
+                    recordatorio.setUsuarioCuidadorID(idCuidador);
                     recordatorio.setDescripcion("Tomar " + medicamentoSeleccionado.getNombre());
                     recordatorio.setTipoEvento("Medicacion");
                     recordatorio.setNumeroDosis(1);
@@ -251,8 +249,7 @@ public class VentanaAgregarMedicacion extends JFrame {
             }
 
             JOptionPane.showMessageDialog(this,
-                    "Medicación y recordatorios guardados correctamente.",
-                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    "Medicación y recordatorios guardados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             if (ventanaAreaMedica != null) {
                 ventanaAreaMedica.cargarRecordatorios();
@@ -260,8 +257,7 @@ public class VentanaAgregarMedicacion extends JFrame {
             dispose();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                    "Error al guardar la medicación: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Error al guardar la medicación: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

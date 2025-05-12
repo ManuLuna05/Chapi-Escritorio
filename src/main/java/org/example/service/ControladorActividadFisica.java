@@ -14,18 +14,22 @@ public class ControladorActividadFisica {
         dao = new DAOChapi();
     }
 
+    //Función para registrar una actividad física por medio de la función presente en el dao
     public int registrarActividad(ActividadFisica actividad) throws SQLException {
         return dao.registrarActividadFisica(actividad);
     }
 
+    //Función para obtener todas las actividades físicas de un usuario por medio de la función presente en el dao
     public List<ActividadFisica> obtenerActividadesPorUsuario(int usuarioId) throws SQLException {
         return dao.obtenerActividadesPorUsuario(usuarioId);
     }
 
+    //Función para actualizar una actividad por medio de la función presente en el dao
     public void actualizarActividad(ActividadFisica actividad) throws SQLException {
         dao.actualizarActividadFisica(actividad);
     }
 
+    //Función para eliminar una actividad física por medio de la función presente en el dao
     public void eliminarActividad(int actividadId, int usuarioId) throws SQLException {
         //Eliminar recordatorios asociados primero
         ControladorRecordatorios controladorRecordatorios = new ControladorRecordatorios();
@@ -37,10 +41,11 @@ public class ControladorActividadFisica {
             }
         }
 
-        // Eliminar la actividad
+        //Eliminar la actividad
         dao.eliminarActividadFisica(actividadId);
     }
 
+    //Función para eliminar todas las actividades pasadas de un usuario por medio de la función presente en el dao
     public void eliminarActividadesPasadas(int usuarioID) {
         try {
             dao.eliminarActividadesPasadas(usuarioID);
@@ -48,6 +53,4 @@ public class ControladorActividadFisica {
             e.printStackTrace();
         }
     }
-
-
 }
