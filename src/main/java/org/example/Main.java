@@ -1,5 +1,6 @@
 package org.example;
 
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +21,10 @@ public class Main {
         try {
             v_log_buf = new BufferedWriter(new FileWriter(nombre_fichero_log));
             escribe_log(v_log_buf, c_tipo_info, "Inicio de la aplicación");
+
+            //Se lanza la ventana de acceso
+            SwingUtilities.invokeLater(() -> new org.example.ui.VentanaAcceso().setVisible(true));
+
         } catch (IOException e) {
             System.out.printf("Error de IO en el fichero de log: " + e.toString());
             System.exit(1);
@@ -28,6 +33,7 @@ public class Main {
             System.exit(1);
         }
     }
+
 
     /* Función encargada de la creación de los logs */
     public static void escribe_log(BufferedWriter v_log_buf, String v_tipo, String v_traza) {

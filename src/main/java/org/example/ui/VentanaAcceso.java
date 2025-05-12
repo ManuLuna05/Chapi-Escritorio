@@ -80,10 +80,4 @@ public class VentanaAcceso extends JFrame {
 
         add(panelPrincipal);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new VentanaAcceso().setVisible(true);
-        });
-    }
 }
