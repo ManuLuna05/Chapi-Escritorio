@@ -50,7 +50,7 @@ public class VentanaPrincipal extends JFrame {
         add(footerVentana(), BorderLayout.SOUTH);
     }
 
-    private List<String> obtenerRecordatoriosDelDia() throws SQLException {
+    private List<String> obtenerRecordatoriosDelDia() {
         List<String> recordatoriosHoy = new ArrayList<>();
         List<Recordatorios> todosRecordatorios = new ArrayList<>();
         LocalDate hoy = LocalDate.now();
@@ -78,7 +78,6 @@ public class VentanaPrincipal extends JFrame {
         cabecera.setBackground(new Color(113, 183, 188));
         cabecera.setPreferredSize(new Dimension(0, 150));
 
-        // Panel WEST (icono + texto)
         JPanel panelIzq = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 45));
         panelIzq.setOpaque(false);
 
