@@ -36,23 +36,15 @@ public class VentanaAreaMedica extends JFrame {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
 
-        // Determinar el tipo de usuario
         ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
         Usuario usuario = controladorUsuarios.obtenerUsuarioPorId(usuarioID);
         this.tipoUsuario = usuario.getTipo();
 
-        // Inicializar el controlador de recordatorios
         this.controladorRecordatorios = new ControladorRecordatorios();
-
-        // Eliminar recordatorios pasados al abrir el área médica
-        this.controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
+        controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
 
         ControladorMedicacion controladorMedicacion = new ControladorMedicacion();
-
-        // Elimina las propias
         controladorMedicacion.eliminarMedicacionesPasadas(usuarioID);
-
-        // Si es cuidador, también elimina de sus pacientes
         if ("cuidador".equals(tipoUsuario)) {
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
             for (int pacienteId : pacientes) {
@@ -60,18 +52,13 @@ public class VentanaAreaMedica extends JFrame {
             }
         }
 
-
         setTitle("Área Médica");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.WHITE);
-
-        mainPanel.add(cabeceraVentana(), BorderLayout.NORTH);
-        mainPanel.add(footerVentana(), BorderLayout.SOUTH);
+        add(cabeceraVentana(), BorderLayout.NORTH);
+        add(footerVentana(), BorderLayout.SOUTH);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(Color.WHITE);
@@ -79,27 +66,21 @@ public class VentanaAreaMedica extends JFrame {
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Color.WHITE);
-        contentPanel.setPreferredSize(new Dimension(1450, 950));
-        contentPanel.setMaximumSize(new Dimension(1450, 950));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Título
-        JPanel titlePanel = new JPanel();
-        titlePanel.setOpaque(false);
-        JLabel tituloLabel = new JLabel("MEDICACIÓN", JLabel.CENTER);
+        JLabel tituloLabel = new JLabel("MEDICACIÓN", SwingConstants.CENTER);
         tituloLabel.setFont(new Font("Segoe UI", Font.BOLD, 72));
         tituloLabel.setForeground(new Color(113, 183, 188));
-        titlePanel.add(tituloLabel);
-        contentPanel.add(titlePanel);
+        tituloLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPanel.add(tituloLabel);
+        contentPanel.add(Box.createVerticalStrut(50));
 
-        contentPanel.add(Box.createVerticalStrut(70));
-
-        // Search panel
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
         searchPanel.setOpaque(false);
-        searchPanel.setMaximumSize(new Dimension(1000, 50));
 
         searchField = new JTextField("Buscar...");
+        searchField.setMaximumSize(new Dimension(800, 38));
         searchField.setPreferredSize(new Dimension(600, 38));
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         searchField.setForeground(Color.GRAY);
@@ -108,9 +89,7 @@ public class VentanaAreaMedica extends JFrame {
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
-        // Listeners para el placeholder
         searchField.addFocusListener(new FocusAdapter() {
-            @Override
             public void focusGained(FocusEvent e) {
                 if (searchField.getText().equals("Buscar...")) {
                     searchField.setText("");
@@ -118,7 +97,6 @@ public class VentanaAreaMedica extends JFrame {
                 }
             }
 
-            @Override
             public void focusLost(FocusEvent e) {
                 if (searchField.getText().isEmpty()) {
                     searchField.setForeground(Color.GRAY);
@@ -127,122 +105,98 @@ public class VentanaAreaMedica extends JFrame {
             }
         });
 
-        // Listener para búsqueda en tiempo real
         searchField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                filtrarRecordatorios();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                filtrarRecordatorios();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                filtrarRecordatorios();
-            }
+            public void insertUpdate(DocumentEvent e) { filtrarRecordatorios(); }
+            public void removeUpdate(DocumentEvent e) { filtrarRecordatorios(); }
+            public void changedUpdate(DocumentEvent e) { filtrarRecordatorios(); }
         });
 
         JButton backButton = new JButton("Volver");
-        backButton.setPreferredSize(new Dimension(120, 40));
         backButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         backButton.setFocusPainted(false);
         backButton.setBackground(new Color(113, 183, 188));
-        backButton.setFocusPainted(false);
         backButton.setForeground(Color.WHITE);
-        backButton.setContentAreaFilled(true);
-        backButton.setOpaque(true);
+        backButton.setMaximumSize(new Dimension(100, 38));
 
         searchPanel.add(searchField);
+        searchPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         searchPanel.add(backButton);
-
         contentPanel.add(searchPanel);
-
         contentPanel.add(Box.createVerticalStrut(40));
 
-        // Lista de recordatorios
         modeloLista = new DefaultListModel<>();
         listaRecordatorios = new JList<>(modeloLista);
         listaRecordatorios.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         listaRecordatorios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listaRecordatorios.setBorder(BorderFactory.createLineBorder(new Color(113, 183, 188), 2));
         listaRecordatorios.setFixedCellHeight(30);
+
         JScrollPane scrollPane = new JScrollPane(listaRecordatorios);
-        scrollPane.setPreferredSize(new Dimension(900, 600));
+        scrollPane.setMaximumSize(new Dimension(1000, 400));
         scrollPane.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(113, 183, 188), 2),
-                "Recordatorios de Medicación ",
-                0,
-                0,
+                "Recordatorios de Medicación",
+                0, 0,
                 new Font("Segoe UI", Font.BOLD, 18),
                 new Color(113, 183, 188)
         ));
         contentPanel.add(scrollPane);
 
         cargarRecordatorios();
-
         contentPanel.add(Box.createVerticalStrut(20));
 
-        // Botonera
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setOpaque(false);
 
         JButton addButton = new JButton("Añadir");
         addButton.setPreferredSize(new Dimension(140, 45));
         addButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         addButton.setBackground(new Color(113, 183, 188));
-        addButton.setFocusPainted(false);
         addButton.setForeground(Color.WHITE);
-        addButton.setContentAreaFilled(true);
-        addButton.setOpaque(true);
 
         JButton deleteButton = new JButton("Eliminar");
         deleteButton.setPreferredSize(new Dimension(140, 45));
         deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         deleteButton.setBackground(new Color(113, 183, 188));
-        deleteButton.setFocusPainted(false);
         deleteButton.setForeground(Color.WHITE);
-        deleteButton.setContentAreaFilled(true);
-        deleteButton.setOpaque(true);
 
-        buttonPanel.add(addButton);
-        buttonPanel.add(Box.createHorizontalStrut(30));
-        buttonPanel.add(deleteButton);
-
+        GridBagConstraints gbcButtons = new GridBagConstraints();
+        gbcButtons.insets = new Insets(0, 10, 0, 10);
+        gbcButtons.gridx = 0;
+        buttonPanel.add(addButton, gbcButtons);
+        gbcButtons.gridx = 1;
+        buttonPanel.add(deleteButton, gbcButtons);
         contentPanel.add(buttonPanel);
 
-        centerPanel.add(contentPanel, new GridBagConstraints());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        centerPanel.add(contentPanel, gbc);
 
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-        add(mainPanel);
+        add(centerPanel, BorderLayout.CENTER);
 
-        // Listeners
         backButton.addActionListener(e -> {
             try {
                 new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
+                dispose();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            dispose();
         });
 
-        addButton.addActionListener(e -> {
-            VentanaAgregarMedicacion ventana = new VentanaAgregarMedicacion(usuarioID, usuarioCuidadorID, this);
-            ventana.setVisible(true);
-        });
-
+        addButton.addActionListener(e -> new VentanaAgregarMedicacion(usuarioID, usuarioCuidadorID, this).setVisible(true));
         deleteButton.addActionListener(e -> {
             try {
-                VentanaEliminarMedicación ventanaEliminar = new VentanaEliminarMedicación(usuarioID, this);
-                ventanaEliminar.setVisible(true);
+                new VentanaEliminarMedicación(usuarioID, this).setVisible(true);
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir ventana de eliminación: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al abrir ventana de eliminación: " + ex.getMessage());
             }
         });
     }
+
 
     void cargarRecordatorios() throws SQLException {
         modeloLista.clear();
@@ -311,72 +265,88 @@ public class VentanaAreaMedica extends JFrame {
     }
 
     private JPanel cabeceraVentana() {
-        //Panel contenedor para la cabecera
-        JPanel cabecera = new JPanel(null);
-        cabecera.setBackground(new Color(113, 183, 188)); //Color de la cabecera
-        cabecera.setPreferredSize(new Dimension(getWidth(), 150)); //Tamaño que tendrá la cabecera
+        JPanel cabecera = new JPanel(new BorderLayout());
+        cabecera.setBackground(new Color(113, 183, 188));
+        cabecera.setPreferredSize(new Dimension(0, 150));
 
-        //Botón de usuario con imagen
-        JButton perfilUsuarioBoton = new JButton();
+        JPanel panelIzq = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 45));
+        panelIzq.setOpaque(false);
+
+        JButton perfilBoton = new JButton();
         try {
-            ImageIcon usuarioIcono = new ImageIcon(getClass().getResource("/images/user2.png"));
-            Image imagenUsuario = usuarioIcono.getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
-            perfilUsuarioBoton.setIcon(new ImageIcon(imagenUsuario));
+            ImageIcon icono = new ImageIcon(getClass().getResource("/images/user2.png"));
+            perfilBoton.setIcon(new ImageIcon(icono.getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
-            perfilUsuarioBoton.setText("Perfil");
-            System.err.println("Error al cargar user.png: " + e.getMessage());
+            perfilBoton.setText("Perfil");
+        }
+        perfilBoton.setBorder(BorderFactory.createEmptyBorder());
+        perfilBoton.setContentAreaFilled(false);
+        perfilBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // Obtener nombre de usuario logado
+        String nombreUsuario = "";
+        try {
+            ControladorUsuarios controlador = new ControladorUsuarios();
+            Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
+            nombreUsuario = u.getNombre();
+        } catch (SQLException e) {
+            nombreUsuario = "Usuario";
         }
 
-        //Configuración del botón
-        perfilUsuarioBoton.setBorder(BorderFactory.createEmptyBorder());
-        perfilUsuarioBoton.setContentAreaFilled(false);
-        perfilUsuarioBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        perfilUsuarioBoton.setBounds(673, 50, 50, 50); //Ajuste coordenadas icono usuario
-        cabecera.add(perfilUsuarioBoton);
+        JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
+        texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        texto.setForeground(Color.WHITE);
 
-        JLabel textoPerfil = new JLabel("Tus Datos");
-        textoPerfil.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        textoPerfil.setForeground(Color.WHITE);
-        textoPerfil.setBounds(733, 55, 130, 40); // Coordenadas a la derecha del icono
-        cabecera.add(textoPerfil);
+        panelIzq.add(perfilBoton);
+        panelIzq.add(texto);
 
-        //Crear el menú desplegable
+        // Menú desplegable del botón de perfil
         JPopupMenu menuPerfil = new JPopupMenu();
-        JMenuItem verPerfilItem = new JMenuItem("Ver Perfil");
-        menuPerfil.add(verPerfilItem);
+        JMenuItem verDatos = new JMenuItem("Ver Datos");
+        JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
 
-        //Acción al hacer clic en la opción del menú
-        verPerfilItem.addActionListener(e -> {
+        menuPerfil.add(verDatos);
+        menuPerfil.add(cerrarSesion);
+
+        perfilBoton.addActionListener(e -> {
+            menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0);
+        });
+
+        verDatos.addActionListener(e -> {
             try {
-                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
+                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "medica").setVisible(true);
                 dispose();
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error al abrir el perfil.");
             }
         });
 
-        //Mostrar el menú desplegable al hacer clic en el botón de perfil
-        perfilUsuarioBoton.addActionListener(e -> {
-            try {
-                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
-                dispose();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
-            }
+        cerrarSesion.addActionListener(e -> {
+            new VentanaInicioSesion().setVisible(true);
+            dispose();
         });
 
-        //Logo de la aplicación
-        JLabel logoEtiqueta = new JLabel();
+        // Panel centro con logo centrado
+        JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        panelCentro.setOpaque(false);
+
+        JLabel logo = new JLabel();
         try {
-            ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
-            Image logoImagen = logoIcono.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
-            logoEtiqueta.setIcon(new ImageIcon(logoImagen));
+            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
+            logo.setIcon(new ImageIcon(logoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
-            logoEtiqueta.setText("LOGO APP");
-            System.err.println("Error al cargar el logo: " + e.getMessage());
+            logo.setText("LOGO");
         }
-        logoEtiqueta.setBounds(1190, 0, 200, 150); //Ajuste de coordenadas del logo
-        cabecera.add(logoEtiqueta);
+        panelCentro.add(logo);
+
+        // Panel derecho vacío para equilibrio
+        JPanel panelDer = new JPanel();
+        panelDer.setOpaque(false);
+        panelDer.setPreferredSize(new Dimension(250, 150));
+
+        cabecera.add(panelIzq, BorderLayout.WEST);
+        cabecera.add(panelCentro, BorderLayout.CENTER);
+        cabecera.add(panelDer, BorderLayout.EAST);
 
         return cabecera;
     }

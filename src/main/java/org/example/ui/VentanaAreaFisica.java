@@ -32,6 +32,7 @@ public class VentanaAreaFisica extends JFrame {
         return tipoUsuario;
     }
 
+
     public VentanaAreaFisica(int usuarioID, int usuarioCuidadorID) throws SQLException {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
@@ -227,22 +228,50 @@ public class VentanaAreaFisica extends JFrame {
         perfilBoton.setContentAreaFilled(false);
         perfilBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        JLabel texto = new JLabel("Tus Datos");
+        // Obtener nombre de usuario logado
+        String nombreUsuario = "";
+        try {
+            ControladorUsuarios controlador = new ControladorUsuarios();
+            Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
+            nombreUsuario = u.getNombre();
+        } catch (SQLException e) {
+            nombreUsuario = "Usuario";
+        }
+
+        JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
         texto.setForeground(Color.WHITE);
 
         panelIzq.add(perfilBoton);
         panelIzq.add(texto);
 
+        // Menú desplegable del botón de perfil
+        JPopupMenu menuPerfil = new JPopupMenu();
+        JMenuItem verDatos = new JMenuItem("Ver Datos");
+        JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
+
+        menuPerfil.add(verDatos);
+        menuPerfil.add(cerrarSesion);
+
         perfilBoton.addActionListener(e -> {
+            menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0);
+        });
+
+        verDatos.addActionListener(e -> {
             try {
-                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
+                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "fisica").setVisible(true);
                 dispose();
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir el perfil: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error al abrir el perfil.");
             }
         });
 
+        cerrarSesion.addActionListener(e -> {
+            new VentanaInicioSesion().setVisible(true);
+            dispose();
+        });
+
+        // Panel centro con logo centrado
         JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         panelCentro.setOpaque(false);
 
@@ -255,6 +284,7 @@ public class VentanaAreaFisica extends JFrame {
         }
         panelCentro.add(logo);
 
+        // Panel derecho vacío para equilibrio
         JPanel panelDer = new JPanel();
         panelDer.setOpaque(false);
         panelDer.setPreferredSize(new Dimension(250, 150));

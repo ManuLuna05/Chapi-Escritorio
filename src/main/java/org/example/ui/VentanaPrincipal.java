@@ -1,6 +1,7 @@
 package org.example.ui;
 
 import org.example.model.Recordatorios;
+import org.example.model.Usuario;
 import org.example.service.ControladorRecordatorios;
 import org.example.service.ControladorUsuarios;
 
@@ -92,14 +93,36 @@ public class VentanaPrincipal extends JFrame {
         perfilBoton.setContentAreaFilled(false);
         perfilBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        JLabel texto = new JLabel("Tus Datos");
+        // Obtener nombre de usuario logado
+        String nombreUsuario = "";
+        try {
+            ControladorUsuarios controlador = new ControladorUsuarios();
+            Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
+            nombreUsuario = u.getNombre();
+        } catch (SQLException e) {
+            nombreUsuario = "Usuario";
+        }
+
+        JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
         texto.setForeground(Color.WHITE);
 
         panelIzq.add(perfilBoton);
         panelIzq.add(texto);
 
+        // Menú desplegable del botón de perfil
+        JPopupMenu menuPerfil = new JPopupMenu();
+        JMenuItem verDatos = new JMenuItem("Ver Datos");
+        JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
+
+        menuPerfil.add(verDatos);
+        menuPerfil.add(cerrarSesion);
+
         perfilBoton.addActionListener(e -> {
+            menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0);
+        });
+
+        verDatos.addActionListener(e -> {
             try {
                 new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
                 dispose();
@@ -108,7 +131,12 @@ public class VentanaPrincipal extends JFrame {
             }
         });
 
-        // Panel CENTER con logo centrado
+        cerrarSesion.addActionListener(e -> {
+            new VentanaInicioSesion().setVisible(true);
+            dispose();
+        });
+
+        // Panel centro con logo centrado
         JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         panelCentro.setOpaque(false);
 
@@ -121,10 +149,10 @@ public class VentanaPrincipal extends JFrame {
         }
         panelCentro.add(logo);
 
-        // Panel EAST vacío pero del mismo tamaño que panelIzq
+        // Panel derecho vacío para equilibrio
         JPanel panelDer = new JPanel();
         panelDer.setOpaque(false);
-        panelDer.setPreferredSize(new Dimension(250, 150)); // mismo ancho estimado que el izquierdo
+        panelDer.setPreferredSize(new Dimension(250, 150));
 
         cabecera.add(panelIzq, BorderLayout.WEST);
         cabecera.add(panelCentro, BorderLayout.CENTER);

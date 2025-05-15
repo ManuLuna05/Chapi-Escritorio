@@ -161,23 +161,41 @@ public class VentanaPerfilUsuario extends JFrame {
     }
 
     private JPanel cabeceraVentana() {
-        JPanel cabecera = new JPanel(null);
+        JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.setBackground(new Color(113, 183, 188));
-        cabecera.setPreferredSize(new Dimension(getWidth(), 150));
+        cabecera.setPreferredSize(new Dimension(0, 150));
 
-        JLabel logoEtiqueta = new JLabel();
+        // Panel izquierdo vacío para equilibrar visualmente
+        JPanel panelIzq = new JPanel();
+        panelIzq.setOpaque(false);
+        panelIzq.setPreferredSize(new Dimension(250, 150));
+
+        // Panel central con el logo
+        JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        panelCentro.setOpaque(false);
+
+        JLabel logo = new JLabel();
         try {
-            ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
-            Image logoImagen = logoIcono.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
-            logoEtiqueta.setIcon(new ImageIcon(logoImagen));
+            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
+            Image logoImagen = logoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            logo.setIcon(new ImageIcon(logoImagen));
         } catch (Exception e) {
-            logoEtiqueta.setText("LOGO APP");
+            logo.setText("LOGO");
         }
-        logoEtiqueta.setBounds(1190, 0, 200, 150);
-        cabecera.add(logoEtiqueta);
+        panelCentro.add(logo);
+
+        // Panel derecho vacío para equilibrio
+        JPanel panelDer = new JPanel();
+        panelDer.setOpaque(false);
+        panelDer.setPreferredSize(new Dimension(250, 150));
+
+        cabecera.add(panelIzq, BorderLayout.WEST);
+        cabecera.add(panelCentro, BorderLayout.CENTER);
+        cabecera.add(panelDer, BorderLayout.EAST);
 
         return cabecera;
     }
+
 
     private JPanel footerVentana() {
         JPanel footer = new JPanel();
