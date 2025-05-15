@@ -79,6 +79,7 @@ public class VentanaPrincipal extends JFrame {
         cabecera.setBackground(new Color(113, 183, 188));
         cabecera.setPreferredSize(new Dimension(0, 150));
 
+        // Panel izquierdo con icono + texto
         JPanel panelIzq = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 45));
         panelIzq.setOpaque(false);
 
@@ -93,7 +94,6 @@ public class VentanaPrincipal extends JFrame {
         perfilBoton.setContentAreaFilled(false);
         perfilBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Obtener nombre de usuario logado
         String nombreUsuario = "";
         try {
             ControladorUsuarios controlador = new ControladorUsuarios();
@@ -110,7 +110,7 @@ public class VentanaPrincipal extends JFrame {
         panelIzq.add(perfilBoton);
         panelIzq.add(texto);
 
-        // Menú desplegable del botón de perfil
+        // Menú desplegable
         JPopupMenu menuPerfil = new JPopupMenu();
         JMenuItem verDatos = new JMenuItem("Ver Datos");
         JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
@@ -118,9 +118,7 @@ public class VentanaPrincipal extends JFrame {
         menuPerfil.add(verDatos);
         menuPerfil.add(cerrarSesion);
 
-        perfilBoton.addActionListener(e -> {
-            menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0);
-        });
+        perfilBoton.addActionListener(e -> menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0));
 
         verDatos.addActionListener(e -> {
             try {
@@ -136,7 +134,7 @@ public class VentanaPrincipal extends JFrame {
             dispose();
         });
 
-        // Panel centro con logo centrado
+        // Panel central con logo
         JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         panelCentro.setOpaque(false);
 
@@ -149,10 +147,10 @@ public class VentanaPrincipal extends JFrame {
         }
         panelCentro.add(logo);
 
-        // Panel derecho vacío para equilibrio
+        // Panel derecho vacío para equilibrar el ancho del izquierdo
         JPanel panelDer = new JPanel();
         panelDer.setOpaque(false);
-        panelDer.setPreferredSize(new Dimension(250, 150));
+        panelDer.setPreferredSize(new Dimension(400, 150)); // ajusta este valor según lo que ocupe el texto largo
 
         cabecera.add(panelIzq, BorderLayout.WEST);
         cabecera.add(panelCentro, BorderLayout.CENTER);
@@ -160,6 +158,7 @@ public class VentanaPrincipal extends JFrame {
 
         return cabecera;
     }
+
 
 
     private JPanel panelPrincipal(List<String> recordatorios) {
