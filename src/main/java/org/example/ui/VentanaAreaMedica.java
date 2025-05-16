@@ -6,7 +6,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +31,7 @@ public class VentanaAreaMedica extends JFrame {
         return tipoUsuario;
     }
 
-    public VentanaAreaMedica(int usuarioID, int usuarioCuidadorID) throws SQLException {
+    public VentanaAreaMedica(int usuarioID, int usuarioCuidadorID) {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
 
@@ -179,26 +178,20 @@ public class VentanaAreaMedica extends JFrame {
         add(centerPanel, BorderLayout.CENTER);
 
         backButton.addActionListener(e -> {
-            try {
-                new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
-                dispose();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+            new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
+            dispose();
         });
 
         addButton.addActionListener(e -> new VentanaAgregarMedicacion(usuarioID, usuarioCuidadorID, this).setVisible(true));
         deleteButton.addActionListener(e -> {
-            try {
-                new VentanaEliminarMedicación(usuarioID, this).setVisible(true);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir ventana de eliminación: " + ex.getMessage());
-            }
+
+            new VentanaEliminarMedicación(usuarioID, this).setVisible(true);
+
         });
     }
 
 
-    void cargarRecordatorios() throws SQLException {
+    void cargarRecordatorios() {
         modeloLista.clear();
         todosRecordatorios.clear();
         List<Recordatorios> recordatorios = new ArrayList<>();
@@ -285,13 +278,9 @@ public class VentanaAreaMedica extends JFrame {
 
         // Obtener nombre de usuario logado
         String nombreUsuario = "";
-        try {
-            ControladorUsuarios controlador = new ControladorUsuarios();
-            Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
-            nombreUsuario = u.getNombre();
-        } catch (SQLException e) {
-            nombreUsuario = "Usuario";
-        }
+        ControladorUsuarios controlador = new ControladorUsuarios();
+        Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
+        nombreUsuario = u.getNombre();
 
         JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -313,12 +302,8 @@ public class VentanaAreaMedica extends JFrame {
         });
 
         verDatos.addActionListener(e -> {
-            try {
-                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "medica").setVisible(true);
-                dispose();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir el perfil.");
-            }
+            new VentanaPerfilUsuario(usuarioID, tipoUsuario, "medica").setVisible(true);
+            dispose();
         });
 
         cerrarSesion.addActionListener(e -> {

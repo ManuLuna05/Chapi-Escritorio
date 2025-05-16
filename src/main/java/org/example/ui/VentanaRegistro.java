@@ -115,68 +115,64 @@ public class VentanaRegistro extends JFrame {
                 return;
             }
 
-            try {
-                if (controladorUsuarios.obtenerUsuarioIdPorCorreo(email) != -1) {
-                    JOptionPane.showMessageDialog(this, "Este correo ya está registrado. Por favor, use otro.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (controladorUsuarios.obtenerUsuarioIdPorCorreo(email) != -1) {
+                JOptionPane.showMessageDialog(this, "Este correo ya está registrado. Por favor, use otro.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (seleccionaCuidador.isSelected()) {
+                String correoUsuarioCuidado = campoUsuarioCuidado.getText().trim();
+
+                if (correoUsuarioCuidado.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Por favor ingrese el correo del usuario cuidado", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (seleccionaCuidador.isSelected()) {
-                    String correoUsuarioCuidado = campoUsuarioCuidado.getText().trim();
-
-                    if (correoUsuarioCuidado.isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "Por favor ingrese el correo del usuario cuidado", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (!controladorUsuarios.esEmailValido(correoUsuarioCuidado)) {
-                        JOptionPane.showMessageDialog(this, "El correo del usuario cuidado no tiene un formato válido", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (controladorUsuarios.obtenerUsuarioIdPorCorreo(correoUsuarioCuidado) == -1) {
-                        JOptionPane.showMessageDialog(this, "El usuario cuidado con ese correo no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    Usuario usuarioCuidador = new Usuario(0,
-                            campos[0].getText(),
-                            campos[1].getText(),
-                            email,
-                            new String(((JPasswordField) campos[3]).getPassword()),
-                            telefono,
-                            "cuidador");
-
-                    controladorUsuarios.registrarUsuario(usuarioCuidador);
-
-                    int cuidadorId = controladorUsuarios.obtenerUsuarioIdPorCorreo(email);
-                    int usuarioCuidadoId = controladorUsuarios.obtenerUsuarioIdPorCorreo(correoUsuarioCuidado);
-
-                    UsuarioCuidador relacion = new UsuarioCuidador();
-                    relacion.setUsuarioId(usuarioCuidadoId);
-                    relacion.setCuidadorId(cuidadorId);
-
-                    controladorUsuarios.registrarUsuario(relacion);
-
-                } else {
-                    Usuario usuario = new Usuario(0,
-                            campos[0].getText(),
-                            campos[1].getText(),
-                            email,
-                            new String(((JPasswordField) campos[3]).getPassword()),
-                            telefono,
-                            "cuidado");
-
-                    controladorUsuarios.registrarUsuario(usuario);
+                if (!controladorUsuarios.esEmailValido(correoUsuarioCuidado)) {
+                    JOptionPane.showMessageDialog(this, "El correo del usuario cuidado no tiene un formato válido", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
-                JOptionPane.showMessageDialog(this, "Registro exitoso");
-                new VentanaInicioSesion().setVisible(true);
-                dispose();
+                if (controladorUsuarios.obtenerUsuarioIdPorCorreo(correoUsuarioCuidado) == -1) {
+                    JOptionPane.showMessageDialog(this, "El usuario cuidado con ese correo no está registrado", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al registrar el usuario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                Usuario usuarioCuidador = new Usuario(0,
+                        campos[0].getText(),
+                        campos[1].getText(),
+                        email,
+                        new String(((JPasswordField) campos[3]).getPassword()),
+                        telefono,
+                        "cuidador");
+
+                controladorUsuarios.registrarUsuario(usuarioCuidador);
+
+                int cuidadorId = controladorUsuarios.obtenerUsuarioIdPorCorreo(email);
+                int usuarioCuidadoId = controladorUsuarios.obtenerUsuarioIdPorCorreo(correoUsuarioCuidado);
+
+                UsuarioCuidador relacion = new UsuarioCuidador();
+                relacion.setUsuarioId(usuarioCuidadoId);
+                relacion.setCuidadorId(cuidadorId);
+
+                controladorUsuarios.registrarUsuario(relacion);
+
+            } else {
+                Usuario usuario = new Usuario(0,
+                        campos[0].getText(),
+                        campos[1].getText(),
+                        email,
+                        new String(((JPasswordField) campos[3]).getPassword()),
+                        telefono,
+                        "cuidado");
+
+                controladorUsuarios.registrarUsuario(usuario);
             }
+
+            JOptionPane.showMessageDialog(this, "Registro exitoso");
+            new VentanaInicioSesion().setVisible(true);
+            dispose();
+
         });
 
         botonVolver.addActionListener(e -> {

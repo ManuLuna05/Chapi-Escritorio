@@ -5,14 +5,13 @@ import org.example.service.ControladorUsuarios;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 
 public class VentanaPerfilUsuario extends JFrame {
     private final int usuarioID;
     private final String tipoUsuario;
     private final String ventanaOrigen;
 
-    public VentanaPerfilUsuario(int usuarioID, String tipoUsuario, String ventanaOrigen) throws SQLException {
+    public VentanaPerfilUsuario(int usuarioID, String tipoUsuario, String ventanaOrigen) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
         this.ventanaOrigen = ventanaOrigen;
@@ -27,7 +26,7 @@ public class VentanaPerfilUsuario extends JFrame {
         add(footerVentana(), BorderLayout.SOUTH);
     }
 
-    private JPanel contenidoPerfil() throws SQLException {
+    private JPanel contenidoPerfil() {
         ControladorUsuarios controlador = new ControladorUsuarios();
         Usuario usuario = controlador.obtenerUsuarioPorId(usuarioID);
 
@@ -76,53 +75,41 @@ public class VentanaPerfilUsuario extends JFrame {
         panel.add(botones);
 
         btnEditar.addActionListener(e -> {
-            try {
-                VentanaEditarPerfil panelEditar = new VentanaEditarPerfil(usuarioID, tipoUsuario, ventanaOrigen, this);
-                JDialog dialogo = new JDialog(this, "Modificar información", true);
-                dialogo.setContentPane(panelEditar);
-                dialogo.pack();
-                dialogo.setSize(900, 1100);
-                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                dialogo.setLocation(
-                        (screenSize.width - dialogo.getWidth()) / 2,
-                        (screenSize.height - dialogo.getHeight()) / 2
+            VentanaEditarPerfil panelEditar = new VentanaEditarPerfil(usuarioID, tipoUsuario, ventanaOrigen, this);
+            JDialog dialogo = new JDialog(this, "Modificar información", true);
+            dialogo.setContentPane(panelEditar);
+            dialogo.pack();
+            dialogo.setSize(900, 1100);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            dialogo.setLocation(
+                    (screenSize.width - dialogo.getWidth()) / 2,
+                    (screenSize.height - dialogo.getHeight()) / 2
                 );
-                dialogo.setResizable(false);
-                dialogo.setVisible(true);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir la edición: " + ex.getMessage());
-            }
+            dialogo.setResizable(false);
+            dialogo.setVisible(true);
         });
 
         btnVolver.addActionListener(e -> {
-            try {
-                switch (ventanaOrigen) {
-                    case "principal" -> new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
-                    case "citas" -> new VentanaCitasMedicas(usuarioID, usuarioID).setVisible(true);
-                    case "medica" -> new VentanaAreaMedica(usuarioID, usuarioID).setVisible(true);
-                    case "fisica" -> new VentanaAreaFisica(usuarioID, usuarioID).setVisible(true);
-                    default -> new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
-                }
-                dispose();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al volver: " + ex.getMessage());
+            switch (ventanaOrigen) {
+                case "principal" -> new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
+                case "citas" -> new VentanaCitasMedicas(usuarioID, usuarioID).setVisible(true);
+                case "medica" -> new VentanaAreaMedica(usuarioID, usuarioID).setVisible(true);
+                case "fisica" -> new VentanaAreaFisica(usuarioID, usuarioID).setVisible(true);
+                default -> new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
             }
+            dispose();
         });
 
         return panel;
     }
 
     public void recargarContenido() {
-        try {
-            getContentPane().removeAll(); // Limpia el contenido
-            add(cabeceraVentana(), BorderLayout.NORTH);
-            add(contenidoPerfil(), BorderLayout.CENTER);
-            add(footerVentana(), BorderLayout.SOUTH);
-            revalidate(); // Refresca el layout
-            repaint();    // Redibuja la ventana
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al recargar perfil: " + ex.getMessage());
-        }
+        getContentPane().removeAll(); // Limpia el contenido
+        add(cabeceraVentana(), BorderLayout.NORTH);
+        add(contenidoPerfil(), BorderLayout.CENTER);
+        add(footerVentana(), BorderLayout.SOUTH);
+        revalidate(); // Refresca el layout
+        repaint();    // Redibuja la ventana
     }
 
 

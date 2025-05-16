@@ -12,7 +12,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +32,7 @@ public class VentanaAreaFisica extends JFrame {
     }
 
 
-    public VentanaAreaFisica(int usuarioID, int usuarioCuidadorID) throws SQLException {
+    public VentanaAreaFisica(int usuarioID, int usuarioCuidadorID) {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
 
@@ -173,11 +172,7 @@ public class VentanaAreaFisica extends JFrame {
         deleteButton.setBackground(new Color(113, 183, 188));
         deleteButton.setForeground(Color.WHITE);
         deleteButton.addActionListener(e -> {
-            try {
-                new VentanaEliminarActividad(usuarioID, this).setVisible(true);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir ventana de eliminación: " + ex.getMessage());
-            }
+            new VentanaEliminarActividad(usuarioID, this).setVisible(true);
         });
 
         GridBagConstraints gbcButtons = new GridBagConstraints();
@@ -200,12 +195,9 @@ public class VentanaAreaFisica extends JFrame {
         add(mainPanel);
 
         backButton.addActionListener(e -> {
-            try {
                 new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
                 dispose();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+
         });
     }
 
@@ -230,13 +222,9 @@ public class VentanaAreaFisica extends JFrame {
 
         // Obtener nombre de usuario logado
         String nombreUsuario = "";
-        try {
-            ControladorUsuarios controlador = new ControladorUsuarios();
-            Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
-            nombreUsuario = u.getNombre();
-        } catch (SQLException e) {
-            nombreUsuario = "Usuario";
-        }
+        ControladorUsuarios controlador = new ControladorUsuarios();
+        Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
+        nombreUsuario = u.getNombre();
 
         JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -258,12 +246,8 @@ public class VentanaAreaFisica extends JFrame {
         });
 
         verDatos.addActionListener(e -> {
-            try {
-                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "fisica").setVisible(true);
-                dispose();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir el perfil.");
-            }
+            new VentanaPerfilUsuario(usuarioID, tipoUsuario, "fisica").setVisible(true);
+            dispose();
         });
 
         cerrarSesion.addActionListener(e -> {
@@ -305,14 +289,10 @@ public class VentanaAreaFisica extends JFrame {
     }
 
     public void recargarRecordatorios() {
-        try {
-            cargarRecordatorios();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al recargar recordatorios: " + ex.getMessage());
-        }
+        cargarRecordatorios();
     }
 
-    void cargarRecordatorios() throws SQLException {
+    void cargarRecordatorios()  {
         modeloLista.clear();
         todosRecordatorios.clear();
         List<Recordatorios> recordatorios = new ArrayList<>();

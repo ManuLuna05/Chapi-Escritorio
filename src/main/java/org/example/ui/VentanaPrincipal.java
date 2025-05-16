@@ -22,7 +22,7 @@ public class VentanaPrincipal extends JFrame {
     private List<Integer> pacientesAsignados = new ArrayList<>();
     private ControladorRecordatorios controladorRecordatorios;
 
-    public VentanaPrincipal(int usuarioID, String tipoUsuario) throws SQLException {
+    public VentanaPrincipal(int usuarioID, String tipoUsuario) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
         this.controladorRecordatorios = new ControladorRecordatorios();
@@ -95,13 +95,9 @@ public class VentanaPrincipal extends JFrame {
         perfilBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         String nombreUsuario = "";
-        try {
-            ControladorUsuarios controlador = new ControladorUsuarios();
-            Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
-            nombreUsuario = u.getNombre();
-        } catch (SQLException e) {
-            nombreUsuario = "Usuario";
-        }
+        ControladorUsuarios controlador = new ControladorUsuarios();
+        Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
+        nombreUsuario = u.getNombre();
 
         JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -121,12 +117,8 @@ public class VentanaPrincipal extends JFrame {
         perfilBoton.addActionListener(e -> menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0));
 
         verDatos.addActionListener(e -> {
-            try {
-                new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
-                dispose();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al abrir el perfil.");
-            }
+            new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
+            dispose();
         });
 
         cerrarSesion.addActionListener(e -> {
@@ -218,16 +210,12 @@ public class VentanaPrincipal extends JFrame {
                 panel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        try {
-                            switch (titulo) {
-                                case "Área Médica" -> new VentanaAreaMedica(usuarioID, usuarioCuidadorID).setVisible(true);
-                                case "Área Física" -> new VentanaAreaFisica(usuarioID, usuarioCuidadorID).setVisible(true);
-                                case "Citas Médicas" -> new VentanaCitasMedicas(usuarioID, usuarioCuidadorID).setVisible(true);
-                            }
-                            dispose();
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(panel, "Error al abrir la ventana.");
+                        switch (titulo) {
+                            case "Área Médica" -> new VentanaAreaMedica(usuarioID, usuarioCuidadorID).setVisible(true);
+                            case "Área Física" -> new VentanaAreaFisica(usuarioID, usuarioCuidadorID).setVisible(true);
+                            case "Citas Médicas" -> new VentanaCitasMedicas(usuarioID, usuarioCuidadorID).setVisible(true);
                         }
+                        dispose();
                     }
                 });
             }

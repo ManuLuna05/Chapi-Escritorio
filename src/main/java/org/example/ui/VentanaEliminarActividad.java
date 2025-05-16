@@ -2,14 +2,12 @@ package org.example.ui;
 
 import org.example.model.ActividadFisica;
 import org.example.model.Recordatorios;
-import org.example.model.Usuario;
 import org.example.service.ControladorActividadFisica;
 import org.example.service.ControladorRecordatorios;
 import org.example.service.ControladorUsuarios;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +23,7 @@ public class VentanaEliminarActividad extends JFrame {
     private int usuarioCuidadorID;
     private VentanaAreaFisica ventanaAreaFisica;
 
-    public VentanaEliminarActividad(int usuarioID, VentanaAreaFisica ventanaAreaFisica) throws SQLException {
+    public VentanaEliminarActividad(int usuarioID, VentanaAreaFisica ventanaAreaFisica)  {
         this.usuarioID = usuarioID;
         this.ventanaAreaFisica = ventanaAreaFisica;
         this.controladorActividad = new ControladorActividadFisica();
@@ -91,7 +89,7 @@ public class VentanaEliminarActividad extends JFrame {
         button.setPreferredSize(new Dimension(180, 40));
     }
 
-    private void cargarActividades() throws SQLException {
+    private void cargarActividades() {
         comboActividades.removeAllItems();
 
         // Usamos Set para evitar duplicados

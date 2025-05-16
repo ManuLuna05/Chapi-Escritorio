@@ -60,13 +60,17 @@ public class ControladorRecordatorios {
     }
 
     //Función para eliminar recordatorios pasados de un usuario
-    public void eliminarRecordatoriosPasados(int usuarioID) throws SQLException {
-        List<Recordatorios> recordatorios = obtenerRecordatoriosPorUsuarioOCuidador(usuarioID);
-        for (Recordatorios recordatorio : recordatorios) {
-            if (recordatorio.getFecha().isBefore(LocalDate.now()) ||
-                    (recordatorio.getFecha().isEqual(LocalDate.now()) && recordatorio.getHora().isBefore(LocalTime.now()))) {
-                eliminarRecordatorio(recordatorio.getRecordatorioID());
+    public void eliminarRecordatoriosPasados(int usuarioID) {
+        try {
+            List<Recordatorios> recordatorios = obtenerRecordatoriosPorUsuarioOCuidador(usuarioID);
+            for (Recordatorios recordatorio : recordatorios) {
+                if (recordatorio.getFecha().isBefore(LocalDate.now()) ||
+                        (recordatorio.getFecha().isEqual(LocalDate.now()) && recordatorio.getHora().isBefore(LocalTime.now()))) {
+                    eliminarRecordatorio(recordatorio.getRecordatorioID());
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

@@ -5,7 +5,6 @@ import org.example.service.ControladorUsuarios;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.List;
 
 public class VentanaEditarPerfil extends JPanel {
@@ -18,7 +17,7 @@ public class VentanaEditarPerfil extends JPanel {
     private JPasswordField txtPassword;
     private JPanel panelPaciente;
 
-    public VentanaEditarPerfil(int usuarioID, String tipoUsuario, String ventanaOrigen, VentanaPerfilUsuario ventanaPadre) throws SQLException {
+    public VentanaEditarPerfil(int usuarioID, String tipoUsuario, String ventanaOrigen, VentanaPerfilUsuario ventanaPadre) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
         this.ventanaOrigen = ventanaOrigen;

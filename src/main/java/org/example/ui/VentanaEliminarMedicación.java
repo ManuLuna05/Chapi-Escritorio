@@ -9,7 +9,6 @@ import org.example.service.ControladorUsuarios;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.List;
 
 public class VentanaEliminarMedicación extends JFrame {
@@ -22,7 +21,7 @@ public class VentanaEliminarMedicación extends JFrame {
     private VentanaAreaMedica ventanaAreaMedicaPadre;
     private int idPacienteActual; // ID del paciente cuyas medicaciones se muestran
 
-    public VentanaEliminarMedicación(int usuarioID, VentanaAreaMedica ventanaAreaMedicaPadre) throws SQLException {
+    public VentanaEliminarMedicación(int usuarioID, VentanaAreaMedica ventanaAreaMedicaPadre) {
         this.usuarioID = usuarioID;
         this.ventanaAreaMedicaPadre = ventanaAreaMedicaPadre;
         this.controladorMedicacion = new ControladorMedicacion();
@@ -82,22 +81,12 @@ public class VentanaEliminarMedicación extends JFrame {
 
         JButton btnEliminarTodo = new JButton("Eliminar Medicación y Recordatorios");
         btnEliminarTodo.addActionListener(e -> {
-            try {
-                eliminarMedicacionYRecordatorios();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al eliminar: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            eliminarMedicacionYRecordatorios();
         });
 
         JButton btnEliminarRecordatorios = new JButton("Eliminar Solo Recordatorios");
         btnEliminarRecordatorios.addActionListener(e -> {
-            try {
-                eliminarRecordatoriosSeleccionados();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al eliminar recordatorios: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            eliminarRecordatoriosSeleccionados();
         });
 
         panelBotones.add(btnEliminarTodo);
@@ -136,7 +125,7 @@ public class VentanaEliminarMedicación extends JFrame {
     }
 
 
-    private void eliminarMedicacionYRecordatorios() throws SQLException {
+    private void eliminarMedicacionYRecordatorios() {
         Medicacion medicacionSeleccionada = (Medicacion) comboMedicaciones.getSelectedItem();
 
         if (medicacionSeleccionada != null) {
@@ -171,7 +160,7 @@ public class VentanaEliminarMedicación extends JFrame {
         }
     }
 
-    private void eliminarRecordatoriosSeleccionados() throws SQLException {
+    private void eliminarRecordatoriosSeleccionados() {
         List<Recordatorios> seleccionados = listaRecordatorios.getSelectedValuesList();
 
         if (!seleccionados.isEmpty()) {

@@ -2,7 +2,6 @@ package org.example.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +23,7 @@ public class VentanaEliminarCita extends JFrame {
     private VentanaCitasMedicas ventanaCitasMedicas;
     private String tipoUsuario;
 
-    public VentanaEliminarCita(int usuarioID, VentanaCitasMedicas ventanaCitasMedicas) throws SQLException {
+    public VentanaEliminarCita(int usuarioID, VentanaCitasMedicas ventanaCitasMedicas) {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = ventanaCitasMedicas.getTipoUsuario().equals("cuidador") ? usuarioID : 0;
         this.tipoUsuario = ventanaCitasMedicas.getTipoUsuario();
@@ -72,11 +71,7 @@ public class VentanaEliminarCita extends JFrame {
         JButton btnEliminarCita = new JButton("Eliminar Cita(s) y Recordatorio(s)");
         estiloBoton(btnEliminarCita);
         btnEliminarCita.addActionListener(e -> {
-            try {
-                eliminarCita();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+            eliminarCita();
         });
 
         panelInferior.add(btnEliminarCita);
@@ -114,22 +109,18 @@ public class VentanaEliminarCita extends JFrame {
 
     private List<Recordatorios> obtenerTodosRecordatorios() {
         List<Recordatorios> recordatorios = new ArrayList<>();
-        try {
-            if ("cuidador".equals(tipoUsuario)) {
-                ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
-                List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
+        if ("cuidador".equals(tipoUsuario)) {
+            ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
+            List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
 
-                for (Integer pacienteId : pacientes) {
-                    List<Recordatorios> r = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
-                    if (r != null) recordatorios.addAll(r);
-                }
-                List<Recordatorios> propios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
-                if (propios != null) recordatorios.addAll(propios);
-            } else {
-                recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
+            for (Integer pacienteId : pacientes) {
+                List<Recordatorios> r = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
+                if (r != null) recordatorios.addAll(r);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            List<Recordatorios> propios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
+            if (propios != null) recordatorios.addAll(propios);
+        } else {
+            recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
         }
         return recordatorios;
     }
@@ -149,7 +140,7 @@ public class VentanaEliminarCita extends JFrame {
         }
     }
 
-    private void eliminarCita() throws SQLException {
+    private void eliminarCita() {
         String especialistaSeleccionado = (String) comboEspecialistas.getSelectedItem();
 
         if (especialistaSeleccionado == null || especialistaSeleccionado.equals("Todos")) {
