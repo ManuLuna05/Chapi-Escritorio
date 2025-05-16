@@ -52,8 +52,8 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private List<String> obtenerRecordatoriosDelDia() {
-        List<String> recordatoriosHoy = new ArrayList<>();
         List<Recordatorios> todosRecordatorios = new ArrayList<>();
+        List<String> recordatoriosHoy = new ArrayList<>();
         LocalDate hoy = LocalDate.now();
 
         if ("cuidador".equals(tipoUsuario)) {
@@ -63,16 +63,28 @@ public class VentanaPrincipal extends JFrame {
         }
         todosRecordatorios.addAll(controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID));
 
+        // Filtrar los del día actual
+        List<Recordatorios> recordatoriosFiltrados = new ArrayList<>();
         for (Recordatorios r : todosRecordatorios) {
             if (r.getFecha().isEqual(hoy)) {
-                String texto = r.getHora() + " - " + r.getDescripcion();
-                if (!recordatoriosHoy.contains(texto)) {
-                    recordatoriosHoy.add(texto);
-                }
+                recordatoriosFiltrados.add(r);
             }
         }
+
+        // Ordenar por hora (asumiendo que r.getHora() es LocalTime o formato HH:mm válido)
+        recordatoriosFiltrados.sort((r1, r2) -> r1.getHora().compareTo(r2.getHora()));
+
+        // Transformar en texto
+        for (Recordatorios r : recordatoriosFiltrados) {
+            String texto = r.getHora() + " - " + r.getDescripcion();
+            if (!recordatoriosHoy.contains(texto)) {
+                recordatoriosHoy.add(texto);
+            }
+        }
+
         return recordatoriosHoy;
     }
+
 
     private JPanel cabeceraVentana() {
         JPanel cabecera = new JPanel(new BorderLayout());
