@@ -6,7 +6,6 @@ import org.example.service.ControladorUsuarios;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 
 public class VentanaRegistro extends JFrame {
 
@@ -38,23 +37,23 @@ public class VentanaRegistro extends JFrame {
         };
 
         for (int i = 0; i < nombreCampos.length; i++) {
-            JLabel label = new JLabel(nombreCampos[i]);
-            label.setFont(new Font("Arial", Font.PLAIN, 16));
-            panelFormulario.add(label);
+            JLabel etiqueta = new JLabel(nombreCampos[i]);
+            etiqueta.setFont(new Font("Arial", Font.PLAIN, 16));
+            panelFormulario.add(etiqueta);
 
             campos[i].setFont(new Font("Arial", Font.PLAIN, 16));
             campos[i].setPreferredSize(new Dimension(300, 35));
             panelFormulario.add(campos[i]);
         }
 
-        JLabel labelUsuarioCuidado = new JLabel("Correo usuario cuidado:");
-        labelUsuarioCuidado.setFont(new Font("Arial", Font.PLAIN, 16));
+        JLabel etiquetaUsuarioCuidado = new JLabel("Correo usuario cuidado:");
+        etiquetaUsuarioCuidado.setFont(new Font("Arial", Font.PLAIN, 16));
         JTextField campoUsuarioCuidado = new JTextField();
         campoUsuarioCuidado.setFont(new Font("Arial", Font.PLAIN, 16));
         campoUsuarioCuidado.setPreferredSize(new Dimension(300, 35));
-        labelUsuarioCuidado.setVisible(false);
+        etiquetaUsuarioCuidado.setVisible(false);
         campoUsuarioCuidado.setVisible(false);
-        panelFormulario.add(labelUsuarioCuidado);
+        panelFormulario.add(etiquetaUsuarioCuidado);
         panelFormulario.add(campoUsuarioCuidado);
 
         panelPrincipal.add(panelFormulario);
@@ -68,12 +67,12 @@ public class VentanaRegistro extends JFrame {
 
         seleccionaCuidador.addItemListener(e -> {
             boolean visible = seleccionaCuidador.isSelected();
-            labelUsuarioCuidado.setVisible(visible);
+            etiquetaUsuarioCuidado.setVisible(visible);
             campoUsuarioCuidado.setVisible(visible);
         });
 
-        JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        panelBoton.setOpaque(false);
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        panelBotones.setOpaque(false);
 
         JButton botonAceptar = new JButton("Aceptar");
         botonAceptar.setFont(new Font("Arial", Font.BOLD, 14));
@@ -180,9 +179,9 @@ public class VentanaRegistro extends JFrame {
             dispose();
         });
 
-        panelBoton.add(botonAceptar);
-        panelBoton.add(botonVolver);
-        panelPrincipal.add(panelBoton);
+        panelBotones.add(botonAceptar);
+        panelBotones.add(botonVolver);
+        panelPrincipal.add(panelBotones);
         panelPrincipal.add(Box.createVerticalGlue());
 
         add(panelPrincipal);

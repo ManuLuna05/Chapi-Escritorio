@@ -17,9 +17,9 @@ public class VentanaEliminarMedicación extends JFrame {
     private DefaultListModel<Recordatorios> modeloLista;
     private ControladorMedicacion controladorMedicacion;
     private ControladorRecordatorios controladorRecordatorios;
-    private int usuarioID; // ID del usuario actual (cuidador o paciente)
+    private int usuarioID;
     private VentanaAreaMedica ventanaAreaMedicaPadre;
-    private int idPacienteActual; // ID del paciente cuyas medicaciones se muestran
+    private int idPacienteActual;
 
     public VentanaEliminarMedicación(int usuarioID, VentanaAreaMedica ventanaAreaMedicaPadre) {
         this.usuarioID = usuarioID;
@@ -27,34 +27,31 @@ public class VentanaEliminarMedicación extends JFrame {
         this.controladorMedicacion = new ControladorMedicacion();
         this.controladorRecordatorios = new ControladorRecordatorios();
 
-        // Determinar si es cuidador y cargar el primer paciente por defecto
         ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
         Usuario usuarioActual = controladorUsuarios.obtenerUsuarioPorId(usuarioID);
 
         if (usuarioActual.getTipo().equals("cuidador")) {
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
             if (!pacientes.isEmpty()) {
-                this.idPacienteActual = pacientes.get(0); // Tomar el primer paciente
+                this.idPacienteActual = pacientes.get(0);
             } else {
                 JOptionPane.showMessageDialog(this, "No tiene pacientes asignados", "Error", JOptionPane.ERROR_MESSAGE);
                 dispose();
                 return;
             }
         } else {
-            this.idPacienteActual = usuarioID; // Si es paciente, es él mismo
+            this.idPacienteActual = usuarioID;
         }
-
-        initUI();
+        interfazVentana();
     }
 
-    private void initUI() {
+    private void interfazVentana() {
         setTitle("Eliminar Medicación");
         setSize(600, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // Panel superior: Selección de medicación
         JPanel panelSuperior = new JPanel(new BorderLayout());
         panelSuperior.add(new JLabel("Medicaciones disponibles:"), BorderLayout.NORTH);
 
@@ -65,7 +62,6 @@ public class VentanaEliminarMedicación extends JFrame {
 
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel central: Lista de recordatorios
         JPanel panelCentral = new JPanel(new BorderLayout());
         panelCentral.setBorder(BorderFactory.createTitledBorder("Recordatorios asociados"));
 
@@ -76,21 +72,20 @@ public class VentanaEliminarMedicación extends JFrame {
 
         add(panelCentral, BorderLayout.CENTER);
 
-        // Panel inferior: Botones de acción
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        JButton btnEliminarTodo = new JButton("Eliminar Medicación y Recordatorios");
-        btnEliminarTodo.addActionListener(e -> {
+        JButton botonEliminarTodo = new JButton("Eliminar Medicación y Recordatorios");
+        botonEliminarTodo.addActionListener(e -> {
             eliminarMedicacionYRecordatorios();
         });
 
-        JButton btnEliminarRecordatorios = new JButton("Eliminar Solo Recordatorios");
-        btnEliminarRecordatorios.addActionListener(e -> {
+        JButton botonEliminarRecordatorios = new JButton("Eliminar Solo Recordatorios");
+        botonEliminarRecordatorios.addActionListener(e -> {
             eliminarRecordatoriosSeleccionados();
         });
 
-        panelBotones.add(btnEliminarTodo);
-        panelBotones.add(btnEliminarRecordatorios);
+        panelBotones.add(botonEliminarTodo);
+        panelBotones.add(botonEliminarRecordatorios);
         add(panelBotones, BorderLayout.SOUTH);
     }
 
@@ -129,29 +124,26 @@ public class VentanaEliminarMedicación extends JFrame {
         Medicacion medicacionSeleccionada = (Medicacion) comboMedicaciones.getSelectedItem();
 
         if (medicacionSeleccionada != null) {
-            // Confirmación antes de eliminar
             int confirmacion = JOptionPane.showConfirmDialog(this,
                     "¿Está seguro que desea eliminar esta medicación y todos sus recordatorios?",
                     "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
             if (confirmacion == JOptionPane.YES_OPTION) {
-                // Eliminar todos los recordatorios asociados
                 for (int i = 0; i < modeloLista.size(); i++) {
                     Recordatorios recordatorio = modeloLista.get(i);
                     controladorRecordatorios.eliminarRecordatorio(recordatorio.getRecordatorioID());
                 }
 
-                // Eliminar la medicación
                 controladorMedicacion.eliminarMedicación(
                         medicacionSeleccionada.getMedicacionID(),
                         idPacienteActual
                 );
 
                 JOptionPane.showMessageDialog(this, "Medicación y recordatorios eliminados correctamente");
-                cargarMedicaciones(); // Actualizar la lista
+                cargarMedicaciones();
 
                 if (ventanaAreaMedicaPadre != null) {
-                    ventanaAreaMedicaPadre.cargarRecordatorios(); // Actualizar la ventana principal
+                    ventanaAreaMedicaPadre.cargarRecordatorios();
                 }
             }
         } else {
@@ -174,10 +166,10 @@ public class VentanaEliminarMedicación extends JFrame {
                 }
 
                 JOptionPane.showMessageDialog(this, "Recordatorios eliminados correctamente");
-                cargarRecordatorios(); // Actualizar la lista
+                cargarRecordatorios();
 
                 if (ventanaAreaMedicaPadre != null) {
-                    ventanaAreaMedicaPadre.cargarRecordatorios(); // Actualizar la ventana principal
+                    ventanaAreaMedicaPadre.cargarRecordatorios();
                 }
             }
         } else {

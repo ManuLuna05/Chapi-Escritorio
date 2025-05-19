@@ -24,63 +24,63 @@ public class VentanaInicioSesion extends JFrame {
         panelPrincipal.add(etiquetaTitulo);
         panelPrincipal.add(Box.createVerticalStrut(20));
 
-        JLabel logoLabel = new JLabel();
+        JLabel logoEtiqueta = new JLabel();
         try {
             ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
             Image logoImagen = logoIcono.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-            logoLabel.setIcon(new ImageIcon(logoImagen));
+            logoEtiqueta.setIcon(new ImageIcon(logoImagen));
         } catch (Exception e) {
-            logoLabel.setText("LOGO APP");
-            logoLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            logoEtiqueta.setText("LOGO APP");
+            logoEtiqueta.setFont(new Font("Arial", Font.BOLD, 24));
         }
-        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelPrincipal.add(logoLabel);
+        logoEtiqueta.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelPrincipal.add(logoEtiqueta);
         panelPrincipal.add(Box.createVerticalStrut(50));
 
-        JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 15));
-        formPanel.setOpaque(false);
-        formPanel.setMaximumSize(new Dimension(400, 150));
+        JPanel panelFormulario = new JPanel(new GridLayout(2, 2, 10, 15));
+        panelFormulario.setOpaque(false);
+        panelFormulario.setMaximumSize(new Dimension(400, 150));
 
-        JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setFont(new Font("Arial", Font.PLAIN, 16));
-        formPanel.add(lblEmail);
+        JLabel etiquetaEmail = new JLabel("Email:");
+        etiquetaEmail.setFont(new Font("Arial", Font.PLAIN, 16));
+        panelFormulario.add(etiquetaEmail);
 
-        JTextField txtEmail = new JTextField();
-        txtEmail.setFont(new Font("Arial", Font.PLAIN, 16));
-        txtEmail.setPreferredSize(new Dimension(300, 35));
-        formPanel.add(txtEmail);
+        JTextField textoEmail = new JTextField();
+        textoEmail.setFont(new Font("Arial", Font.PLAIN, 16));
+        textoEmail.setPreferredSize(new Dimension(300, 35));
+        panelFormulario.add(textoEmail);
 
-        JLabel lblPassword = new JLabel("Contraseña:");
-        lblPassword.setFont(new Font("Arial", Font.PLAIN, 16));
-        formPanel.add(lblPassword);
+        JLabel etiquetaPassword = new JLabel("Contraseña:");
+        etiquetaPassword.setFont(new Font("Arial", Font.PLAIN, 16));
+        panelFormulario.add(etiquetaPassword);
 
-        JPasswordField txtPassword = new JPasswordField();
-        txtPassword.setFont(new Font("Arial", Font.PLAIN, 16));
-        txtPassword.setPreferredSize(new Dimension(300, 35));
-        formPanel.add(txtPassword);
+        JPasswordField textoPassword = new JPasswordField();
+        textoPassword.setFont(new Font("Arial", Font.PLAIN, 16));
+        textoPassword.setPreferredSize(new Dimension(300, 35));
+        panelFormulario.add(textoPassword);
 
-        panelPrincipal.add(formPanel);
+        panelPrincipal.add(panelFormulario);
         panelPrincipal.add(Box.createVerticalStrut(50));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.setOpaque(false);
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        panelBotones.setOpaque(false);
 
-        JButton btnAceptar = new JButton("Aceptar");
-        btnAceptar.setFont(new Font("Arial", Font.BOLD, 14));
-        btnAceptar.setPreferredSize(new Dimension(150, 40));
-        btnAceptar.setBackground(new Color(113, 183, 188));
-        btnAceptar.setForeground(Color.WHITE);
+        JButton botonAceptar = new JButton("Aceptar");
+        botonAceptar.setFont(new Font("Arial", Font.BOLD, 14));
+        botonAceptar.setPreferredSize(new Dimension(150, 40));
+        botonAceptar.setBackground(new Color(113, 183, 188));
+        botonAceptar.setForeground(Color.WHITE);
 
-        JButton btnVolver = new JButton("Volver");
-        btnVolver.setFont(new Font("Arial", Font.BOLD, 14));
-        btnVolver.setPreferredSize(new Dimension(150, 40));
-        btnVolver.setBackground(new Color(113, 183, 188));
-        btnVolver.setForeground(Color.WHITE);
+        JButton botonVolver = new JButton("Volver");
+        botonVolver.setFont(new Font("Arial", Font.BOLD, 14));
+        botonVolver.setPreferredSize(new Dimension(150, 40));
+        botonVolver.setBackground(new Color(113, 183, 188));
+        botonVolver.setForeground(Color.WHITE);
 
-        btnAceptar.addActionListener(e -> {
+        botonAceptar.addActionListener(e -> {
             try {
-                String email = txtEmail.getText().trim();
-                String password = new String(txtPassword.getPassword());
+                String email = textoEmail.getText().trim();
+                String password = new String(textoPassword.getPassword());
 
                 if (email.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
@@ -109,15 +109,15 @@ public class VentanaInicioSesion extends JFrame {
             }
         });
 
-        btnVolver.addActionListener(e -> {
+        botonVolver.addActionListener(e -> {
             new VentanaAcceso().setVisible(true);
             dispose();
         });
 
-        buttonPanel.add(btnAceptar);
-        buttonPanel.add(btnVolver);
+        panelBotones.add(botonAceptar);
+        panelBotones.add(botonVolver);
 
-        panelPrincipal.add(buttonPanel);
+        panelPrincipal.add(panelBotones);
         panelPrincipal.add(Box.createVerticalGlue());
 
         add(panelPrincipal);

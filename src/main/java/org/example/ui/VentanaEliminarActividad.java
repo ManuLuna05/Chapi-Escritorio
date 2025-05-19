@@ -29,7 +29,6 @@ public class VentanaEliminarActividad extends JFrame {
         this.controladorActividad = new ControladorActividadFisica();
         this.controladorRecordatorios = new ControladorRecordatorios();
 
-        // Detectar si es cuidador
         if (ventanaAreaFisica.getTipoUsuario().equals("cuidador")) {
             this.usuarioCuidadorID = usuarioID;
         } else {
@@ -46,16 +45,15 @@ public class VentanaEliminarActividad extends JFrame {
         panelSuperior.setLayout(new BoxLayout(panelSuperior, BoxLayout.Y_AXIS));
         panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel lblActividades = new JLabel("Seleccionar Actividad:");
+        JLabel etiquetaActividades = new JLabel("Seleccionar Actividad:");
         comboActividades = new JComboBox<>();
         cargarActividades();
         comboActividades.addActionListener(e -> cargarRecordatorios());
 
-        panelSuperior.add(lblActividades);
+        panelSuperior.add(etiquetaActividades);
         panelSuperior.add(comboActividades);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel central con lista de recordatorios
         JPanel panelCentral = new JPanel(new BorderLayout());
         panelCentral.setBorder(BorderFactory.createTitledBorder("Recordatorios asociados"));
 
@@ -65,38 +63,35 @@ public class VentanaEliminarActividad extends JFrame {
         panelCentral.add(new JScrollPane(listaRecordatorios), BorderLayout.CENTER);
         add(panelCentral, BorderLayout.CENTER);
 
-        // Panel inferior con botones
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        JButton btnEliminarActividad = new JButton("Eliminar Actividad");
-        btnEliminarActividad.addActionListener(e -> eliminarActividad());
-        estiloBoton(btnEliminarActividad);
+        JButton botonEliminarActividad = new JButton("Eliminar Actividad");
+        botonEliminarActividad.addActionListener(e -> eliminarActividad());
+        estiloBoton(botonEliminarActividad);
 
-        JButton btnEliminarRecordatorio = new JButton("Eliminar Recordatorio");
-        btnEliminarRecordatorio.addActionListener(e -> eliminarRecordatorio());
-        estiloBoton(btnEliminarRecordatorio);
+        JButton botonEliminarRecordatorio = new JButton("Eliminar Recordatorio");
+        botonEliminarRecordatorio.addActionListener(e -> eliminarRecordatorio());
+        estiloBoton(botonEliminarRecordatorio);
 
-        panelInferior.add(btnEliminarActividad);
-        panelInferior.add(btnEliminarRecordatorio);
+        panelInferior.add(botonEliminarActividad);
+        panelInferior.add(botonEliminarRecordatorio);
         add(panelInferior, BorderLayout.SOUTH);
     }
 
-    private void estiloBoton(JButton button) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setBackground(new Color(113, 183, 188));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(180, 40));
+    private void estiloBoton(JButton boton) {
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        boton.setBackground(new Color(113, 183, 188));
+        boton.setForeground(Color.WHITE);
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(180, 40));
     }
 
     private void cargarActividades() {
         comboActividades.removeAllItems();
 
-        // Usamos Set para evitar duplicados
         Set<ActividadFisica> actividades = new HashSet<>();
 
         if (ventanaAreaFisica.getTipoUsuario().equals("cuidador")) {
-            // Cuidador: cargar actividades de todos sus pacientes
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
 
@@ -104,7 +99,6 @@ public class VentanaEliminarActividad extends JFrame {
                 actividades.addAll(controladorActividad.obtenerActividadesPorUsuario(pacienteId));
             }
         } else {
-            // Paciente: solo sus actividades
             actividades.addAll(controladorActividad.obtenerActividadesPorUsuario(usuarioID));
         }
 
@@ -151,7 +145,6 @@ public class VentanaEliminarActividad extends JFrame {
 
             if (confirmacion == JOptionPane.YES_OPTION) {
                 try {
-                    // Usa el usuario dueño de la actividad (paciente)
                     controladorActividad.eliminarActividad(actividadSeleccionada.getId(), actividadSeleccionada.getUsuarioId());
 
                     JOptionPane.showMessageDialog(this, "Actividad eliminada correctamente");

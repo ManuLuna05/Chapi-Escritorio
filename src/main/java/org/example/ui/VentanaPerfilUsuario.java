@@ -9,12 +9,12 @@ import java.awt.*;
 public class VentanaPerfilUsuario extends JFrame {
     private final int usuarioID;
     private final String tipoUsuario;
-    private final String ventanaOrigen;
+    private final String ventanaInicial;
 
-    public VentanaPerfilUsuario(int usuarioID, String tipoUsuario, String ventanaOrigen) {
+    public VentanaPerfilUsuario(int usuarioID, String tipoUsuario, String ventanaInicial) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
-        this.ventanaOrigen = ventanaOrigen;
+        this.ventanaInicial = ventanaInicial;
 
         setTitle("Perfil de Usuario");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -58,39 +58,39 @@ public class VentanaPerfilUsuario extends JFrame {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         botones.setOpaque(false);
 
-        JButton btnEditar = new JButton("Modificar Información");
-        btnEditar.setPreferredSize(new Dimension(200, 40));
-        btnEditar.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnEditar.setBackground(new Color(113, 183, 188));
-        btnEditar.setForeground(Color.WHITE);
+        JButton botonEditar = new JButton("Modificar Información");
+        botonEditar.setPreferredSize(new Dimension(200, 40));
+        botonEditar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        botonEditar.setBackground(new Color(113, 183, 188));
+        botonEditar.setForeground(Color.WHITE);
 
-        JButton btnVolver = new JButton("Volver");
-        btnVolver.setPreferredSize(new Dimension(120, 40));
-        btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnVolver.setBackground(new Color(113, 183, 188));
-        btnVolver.setForeground(Color.WHITE);
+        JButton botonVolver = new JButton("Volver");
+        botonVolver.setPreferredSize(new Dimension(120, 40));
+        botonVolver.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        botonVolver.setBackground(new Color(113, 183, 188));
+        botonVolver.setForeground(Color.WHITE);
 
-        botones.add(btnEditar);
-        botones.add(btnVolver);
+        botones.add(botonEditar);
+        botones.add(botonVolver);
         panel.add(botones);
 
-        btnEditar.addActionListener(e -> {
-            VentanaEditarPerfil panelEditar = new VentanaEditarPerfil(usuarioID, tipoUsuario, ventanaOrigen, this);
+        botonEditar.addActionListener(e -> {
+            VentanaEditarPerfil panelEditar = new VentanaEditarPerfil(usuarioID, tipoUsuario, ventanaInicial, this);
             JDialog dialogo = new JDialog(this, "Modificar información", true);
             dialogo.setContentPane(panelEditar);
             dialogo.pack();
             dialogo.setSize(900, 1100);
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            Dimension dimensionPantalla = Toolkit.getDefaultToolkit().getScreenSize();
             dialogo.setLocation(
-                    (screenSize.width - dialogo.getWidth()) / 2,
-                    (screenSize.height - dialogo.getHeight()) / 2
+                    (dimensionPantalla.width - dialogo.getWidth()) / 2,
+                    (dimensionPantalla.height - dialogo.getHeight()) / 2
                 );
             dialogo.setResizable(false);
             dialogo.setVisible(true);
         });
 
-        btnVolver.addActionListener(e -> {
-            switch (ventanaOrigen) {
+        botonVolver.addActionListener(e -> {
+            switch (ventanaInicial) {
                 case "principal" -> new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
                 case "citas" -> new VentanaCitasMedicas(usuarioID, usuarioID).setVisible(true);
                 case "medica" -> new VentanaAreaMedica(usuarioID, usuarioID).setVisible(true);
@@ -104,12 +104,12 @@ public class VentanaPerfilUsuario extends JFrame {
     }
 
     public void recargarContenido() {
-        getContentPane().removeAll(); // Limpia el contenido
+        getContentPane().removeAll();
         add(cabeceraVentana(), BorderLayout.NORTH);
         add(contenidoPerfil(), BorderLayout.CENTER);
         add(footerVentana(), BorderLayout.SOUTH);
-        revalidate(); // Refresca el layout
-        repaint();    // Redibuja la ventana
+        revalidate();
+        repaint();
     }
 
 
@@ -130,18 +130,18 @@ public class VentanaPerfilUsuario extends JFrame {
         return bloque;
     }
 
-    private JPanel etiquetaInfo(String campo, String valor) {
+    private JPanel etiquetaInfo(String campo, String dato) {
         JPanel fila = new JPanel(new BorderLayout());
         fila.setOpaque(false);
 
-        JLabel lblCampo = new JLabel(campo + ": ");
-        lblCampo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        JLabel etiquetaCampo = new JLabel(campo + ": ");
+        etiquetaCampo.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
-        JLabel lblValor = new JLabel(valor != null ? valor : "No definido");
-        lblValor.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        JLabel etiquetaDatos = new JLabel(dato != null ? dato : "No definido");
+        etiquetaDatos.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        fila.add(lblCampo, BorderLayout.WEST);
-        fila.add(lblValor, BorderLayout.CENTER);
+        fila.add(etiquetaCampo, BorderLayout.WEST);
+        fila.add(etiquetaDatos, BorderLayout.CENTER);
 
         fila.setMaximumSize(new Dimension(500, 30));
         return fila;
@@ -152,33 +152,30 @@ public class VentanaPerfilUsuario extends JFrame {
         cabecera.setBackground(new Color(113, 183, 188));
         cabecera.setPreferredSize(new Dimension(0, 150));
 
-        // Panel izquierdo vacío para equilibrar visualmente
-        JPanel panelIzq = new JPanel();
-        panelIzq.setOpaque(false);
-        panelIzq.setPreferredSize(new Dimension(250, 150));
+        JPanel panelIzquierdo = new JPanel();
+        panelIzquierdo.setOpaque(false);
+        panelIzquierdo.setPreferredSize(new Dimension(250, 150));
 
-        // Panel central con el logo
         JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         panelCentro.setOpaque(false);
 
         JLabel logo = new JLabel();
         try {
-            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
-            Image logoImagen = logoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
+            Image logoImagen = logoIcono.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
             logo.setIcon(new ImageIcon(logoImagen));
         } catch (Exception e) {
             logo.setText("LOGO");
         }
         panelCentro.add(logo);
 
-        // Panel derecho vacío para equilibrio
-        JPanel panelDer = new JPanel();
-        panelDer.setOpaque(false);
-        panelDer.setPreferredSize(new Dimension(250, 150));
+        JPanel panelDerecho = new JPanel();
+        panelDerecho.setOpaque(false);
+        panelDerecho.setPreferredSize(new Dimension(250, 150));
 
-        cabecera.add(panelIzq, BorderLayout.WEST);
+        cabecera.add(panelIzquierdo, BorderLayout.WEST);
         cabecera.add(panelCentro, BorderLayout.CENTER);
-        cabecera.add(panelDer, BorderLayout.EAST);
+        cabecera.add(panelDerecho, BorderLayout.EAST);
 
         return cabecera;
     }

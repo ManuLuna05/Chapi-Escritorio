@@ -10,18 +10,18 @@ import java.util.List;
 public class VentanaEditarPerfil extends JPanel {
     private final int usuarioID;
     private final String tipoUsuario;
-    private final String ventanaOrigen;
-    private final VentanaPerfilUsuario ventanaPadre; // Referencia a la ventana que llamó
+    private final String ventanaInicial;
+    private final VentanaPerfilUsuario ventanaPerfilPrincipal;
 
-    private JTextField txtNombre, txtApellidos, txtEmail, txtTelefono, txtNombrePaciente, txtApellidosPaciente, txtEmailPaciente, txtTelefonoPaciente;
-    private JPasswordField txtPassword;
+    private JTextField textoNombre, textoApellidos, textoEmail, textoTelefono, textoNombrePaciente, textoApellidosPaciente, textoEmailPaciente, textoTelefonoPaciente;
+    private JPasswordField textoPassword;
     private JPanel panelPaciente;
 
-    public VentanaEditarPerfil(int usuarioID, String tipoUsuario, String ventanaOrigen, VentanaPerfilUsuario ventanaPadre) {
+    public VentanaEditarPerfil(int usuarioID, String tipoUsuario, String ventanaInicial, VentanaPerfilUsuario ventanaPerfil) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
-        this.ventanaOrigen = ventanaOrigen;
-        this.ventanaPadre = ventanaPadre;
+        this.ventanaInicial = ventanaInicial;
+        this.ventanaPerfilPrincipal = ventanaPerfil;
 
         setLayout(new BorderLayout());
         JPanel panel = new JPanel();
@@ -36,15 +36,15 @@ public class VentanaEditarPerfil extends JPanel {
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titulo.setForeground(new Color(113, 183, 188));
 
-        JPanel contenedorTitulo = new JPanel();
-        contenedorTitulo.setLayout(new BoxLayout(contenedorTitulo, BoxLayout.X_AXIS));
-        contenedorTitulo.setOpaque(false);
-        contenedorTitulo.add(Box.createHorizontalGlue());
-        contenedorTitulo.add(titulo);
-        contenedorTitulo.add(Box.createHorizontalGlue());
-        contenedorTitulo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        JPanel panelTitulo = new JPanel();
+        panelTitulo.setLayout(new BoxLayout(panelTitulo, BoxLayout.X_AXIS));
+        panelTitulo.setOpaque(false);
+        panelTitulo.add(Box.createHorizontalGlue());
+        panelTitulo.add(titulo);
+        panelTitulo.add(Box.createHorizontalGlue());
+        panelTitulo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-        panel.add(contenedorTitulo);
+        panel.add(panelTitulo);
         panel.add(Box.createVerticalStrut(30));
 
         panel.add(crearFormularioUsuario("Mis datos", usuario, true));
@@ -67,43 +67,43 @@ public class VentanaEditarPerfil extends JPanel {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         botones.setOpaque(false);
 
-        JButton btnGuardar = new JButton("Guardar Cambios");
-        btnGuardar.setPreferredSize(new Dimension(180, 40));
-        btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnGuardar.setBackground(new Color(113, 183, 188));
-        btnGuardar.setForeground(Color.WHITE);
+        JButton botonGuardar = new JButton("Guardar Cambios");
+        botonGuardar.setPreferredSize(new Dimension(180, 40));
+        botonGuardar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        botonGuardar.setBackground(new Color(113, 183, 188));
+        botonGuardar.setForeground(Color.WHITE);
 
-        JButton btnCancelar = new JButton("Cancelar");
-        btnCancelar.setPreferredSize(new Dimension(180, 40));
-        btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnCancelar.setBackground(new Color(113, 183, 188));
-        btnCancelar.setForeground(Color.WHITE);
+        JButton botonCancelar = new JButton("Cancelar");
+        botonCancelar.setPreferredSize(new Dimension(180, 40));
+        botonCancelar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        botonCancelar.setBackground(new Color(113, 183, 188));
+        botonCancelar.setForeground(Color.WHITE);
 
-        botones.add(btnGuardar);
-        botones.add(btnCancelar);
+        botones.add(botonGuardar);
+        botones.add(botonCancelar);
         panel.add(botones);
 
         boolean finalEsCuidador = esCuidador;
 
-        btnCancelar.addActionListener(e -> {
+        botonCancelar.addActionListener(e -> {
             SwingUtilities.getWindowAncestor(this).dispose();
         });
 
-        btnGuardar.addActionListener(e -> {
+        botonGuardar.addActionListener(e -> {
             try {
-                if (validarCampos(txtNombre, txtApellidos, txtEmail, txtTelefono)) {
-                    String nuevaPassword = new String(txtPassword.getPassword()).trim();
+                if (validarCampos(textoNombre, textoApellidos, textoEmail, textoTelefono)) {
+                    String nuevaPassword = new String(textoPassword.getPassword()).trim();
                     String passwordFinal = nuevaPassword.isEmpty()
                             ? controlador.obtenerUsuarioPorId(usuarioID).getPassword()
                             : nuevaPassword;
 
                     Usuario nuevo = new Usuario(
                             usuarioID,
-                            txtNombre.getText().trim(),
-                            txtApellidos.getText().trim(),
-                            txtEmail.getText().trim(),
+                            textoNombre.getText().trim(),
+                            textoApellidos.getText().trim(),
+                            textoEmail.getText().trim(),
                             passwordFinal,
-                            txtTelefono.getText().trim(),
+                            textoTelefono.getText().trim(),
                             tipoUsuario
                     );
 
@@ -115,18 +115,18 @@ public class VentanaEditarPerfil extends JPanel {
                             String passwordPaciente = controlador.obtenerUsuarioPorId(pacientes.get(0)).getPassword();
                             Usuario actualizado = new Usuario(
                                     pacientes.get(0),
-                                    txtNombrePaciente.getText().trim(),
-                                    txtApellidosPaciente.getText().trim(),
-                                    txtEmailPaciente.getText().trim(),
+                                    textoNombrePaciente.getText().trim(),
+                                    textoApellidosPaciente.getText().trim(),
+                                    textoEmailPaciente.getText().trim(),
                                     passwordPaciente,
-                                    txtTelefonoPaciente.getText().trim(),
+                                    textoTelefonoPaciente.getText().trim(),
                                     "cuidado");
                             controlador.editarUsuario(actualizado);
                         }
                     }
 
                     JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
-                    if (ventanaPadre != null) ventanaPadre.recargarContenido();
+                    if (ventanaPerfil != null) ventanaPerfil.recargarContenido();
                     SwingUtilities.getWindowAncestor(this).dispose();
 
                 } else {
@@ -139,15 +139,15 @@ public class VentanaEditarPerfil extends JPanel {
         });
 
         add(panel, BorderLayout.CENTER);
-        Dimension preferredSize = esCuidador ? new Dimension(700, 850) : new Dimension(650, 750);
-        setPreferredSize(new Dimension(preferredSize.width, preferredSize.height + 200));
+        Dimension dimensionar = esCuidador ? new Dimension(700, 850) : new Dimension(650, 750);
+        setPreferredSize(new Dimension(dimensionar.width, dimensionar.height + 200));
     }
 
     private JPanel crearFormularioUsuario(String titulo, Usuario usuario, boolean esPrincipal) {
-        JPanel bloque = new JPanel();
-        bloque.setLayout(new BoxLayout(bloque, BoxLayout.Y_AXIS));
-        bloque.setBackground(new Color(245, 245, 245));
-        bloque.setBorder(BorderFactory.createCompoundBorder(
+        JPanel panelFormulario = new JPanel();
+        panelFormulario.setLayout(new BoxLayout(panelFormulario, BoxLayout.Y_AXIS));
+        panelFormulario.setBackground(new Color(245, 245, 245));
+        panelFormulario.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(titulo),
                 BorderFactory.createEmptyBorder(10, 20, 10, 20)
         ));
@@ -158,39 +158,39 @@ public class VentanaEditarPerfil extends JPanel {
         JTextField telefono = new JTextField(usuario.getTelefono() != null ? usuario.getTelefono() : "");
 
         if (esPrincipal) {
-            txtNombre = nombre;
-            txtApellidos = apellidos;
-            txtEmail = email;
-            txtTelefono = telefono;
-            txtPassword = new JPasswordField();
+            textoNombre = nombre;
+            textoApellidos = apellidos;
+            textoEmail = email;
+            textoTelefono = telefono;
+            textoPassword = new JPasswordField();
         } else {
-            txtNombrePaciente = nombre;
-            txtApellidosPaciente = apellidos;
-            txtEmailPaciente = email;
-            txtTelefonoPaciente = telefono;
+            textoNombrePaciente = nombre;
+            textoApellidosPaciente = apellidos;
+            textoEmailPaciente = email;
+            textoTelefonoPaciente = telefono;
         }
 
-        bloque.add(campoEditable("Nombre:", nombre));
-        bloque.add(campoEditable("Apellidos:", apellidos));
-        bloque.add(campoEditable("Email:", email));
-        bloque.add(campoEditable("Teléfono:", telefono));
+        panelFormulario.add(campoEditable("Nombre:", nombre));
+        panelFormulario.add(campoEditable("Apellidos:", apellidos));
+        panelFormulario.add(campoEditable("Email:", email));
+        panelFormulario.add(campoEditable("Teléfono:", telefono));
         if (esPrincipal) {
-            bloque.add(campoEditable("Nueva contraseña (opcional):", txtPassword));
+            panelFormulario.add(campoEditable("Nueva contraseña (opcional):", textoPassword));
         }
 
-        return bloque;
+        return panelFormulario;
     }
 
-    private JPanel campoEditable(String label, JComponent field) {
+    private JPanel campoEditable(String texto, JComponent campo) {
         JPanel fila = new JPanel();
         fila.setLayout(new BoxLayout(fila, BoxLayout.Y_AXIS));
         fila.setOpaque(false);
-        JLabel lbl = new JLabel(label);
-        lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        field.setMaximumSize(new Dimension(500, 30));
-        fila.add(lbl);
-        fila.add(field);
+        JLabel etiqueta = new JLabel(texto);
+        etiqueta.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        campo.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        campo.setMaximumSize(new Dimension(500, 30));
+        fila.add(etiqueta);
+        fila.add(campo);
         fila.add(Box.createVerticalStrut(10));
         return fila;
     }

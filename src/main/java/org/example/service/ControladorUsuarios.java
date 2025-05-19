@@ -78,12 +78,13 @@ public class ControladorUsuarios {
     }
 
     //Función para verificar si un correo electrónico tiene un formato válido
-    public boolean esEmailValido(String email) {
-        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+    public static boolean esEmailValido(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
     }
 
     //Función para verificar si un teléfono tiene un formato válido
-    public boolean esTelefonoValido(String telefono) {
+    public static boolean esTelefonoValido(String telefono) {
+        if (telefono == null) return false;
         int numDigitos = telefono.replaceAll("\\D", "").length();
         return numDigitos == 9;
     }

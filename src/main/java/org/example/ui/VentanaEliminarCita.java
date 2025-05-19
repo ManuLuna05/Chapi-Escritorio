@@ -38,25 +38,22 @@ public class VentanaEliminarCita extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // Inicializar modeloLista y listaRecordatorios antes de cargar especialistas
         modeloLista = new DefaultListModel<>();
         listaRecordatorios = new JList<>(modeloLista);
 
-        // Panel superior - filtro por especialista
         JPanel panelSuperior = new JPanel();
         panelSuperior.setLayout(new BoxLayout(panelSuperior, BoxLayout.Y_AXIS));
         panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel lblEspecialistas = new JLabel("Filtrar por Especialista:");
+        JLabel etiquetaEspecialistas = new JLabel("Filtrar por Especialista:");
         comboEspecialistas = new JComboBox<>();
         cargarEspecialistas();
         comboEspecialistas.addActionListener(e -> cargarRecordatorios());
 
-        panelSuperior.add(lblEspecialistas);
+        panelSuperior.add(etiquetaEspecialistas);
         panelSuperior.add(comboEspecialistas);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel central - lista de recordatorios
         JPanel panelCentral = new JPanel(new BorderLayout());
         panelCentral.setBorder(BorderFactory.createTitledBorder("Recordatorios asociados"));
 
@@ -65,25 +62,24 @@ public class VentanaEliminarCita extends JFrame {
 
         add(panelCentral, BorderLayout.CENTER);
 
-        // Panel inferior - botón único
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        JButton btnEliminarCita = new JButton("Eliminar Cita(s) y Recordatorio(s)");
-        estiloBoton(btnEliminarCita);
-        btnEliminarCita.addActionListener(e -> {
+        JButton botonEliminarCita = new JButton("Eliminar Cita(s) y Recordatorio(s)");
+        estiloBoton(botonEliminarCita);
+        botonEliminarCita.addActionListener(e -> {
             eliminarCita();
         });
 
-        panelInferior.add(btnEliminarCita);
+        panelInferior.add(botonEliminarCita);
         add(panelInferior, BorderLayout.SOUTH);
     }
 
-    private void estiloBoton(JButton button) {
-        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setBackground(new Color(113, 183, 188));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(250, 40));
+    private void estiloBoton(JButton boton) {
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        boton.setBackground(new Color(113, 183, 188));
+        boton.setForeground(Color.WHITE);
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(250, 40));
     }
 
     private void cargarEspecialistas() {
@@ -179,7 +175,6 @@ public class VentanaEliminarCita extends JFrame {
             JOptionPane.showMessageDialog(this, "No se encontraron citas para el especialista seleccionado.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
         }
 
-        // Actualizar especialistas y recordatorios
         cargarEspecialistas();
         ventanaCitasMedicas.cargarRecordatorios();
     }

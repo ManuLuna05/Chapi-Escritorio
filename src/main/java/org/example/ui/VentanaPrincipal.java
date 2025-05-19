@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,20 +62,17 @@ public class VentanaPrincipal extends JFrame {
         }
         todosRecordatorios.addAll(controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID));
 
-        // Filtrar los del día actual
         List<Recordatorios> recordatoriosFiltrados = new ArrayList<>();
-        for (Recordatorios r : todosRecordatorios) {
-            if (r.getFecha().isEqual(hoy)) {
-                recordatoriosFiltrados.add(r);
+        for (Recordatorios recordatorio : todosRecordatorios) {
+            if (recordatorio.getFecha().isEqual(hoy)) {
+                recordatoriosFiltrados.add(recordatorio);
             }
         }
 
-        // Ordenar por hora (asumiendo que r.getHora() es LocalTime o formato HH:mm válido)
         recordatoriosFiltrados.sort((r1, r2) -> r1.getHora().compareTo(r2.getHora()));
 
-        // Transformar en texto
-        for (Recordatorios r : recordatoriosFiltrados) {
-            String texto = r.getHora() + " - " + r.getDescripcion();
+        for (Recordatorios recordatorio : recordatoriosFiltrados) {
+            String texto = recordatorio.getHora() + " - " + recordatorio.getDescripcion();
             if (!recordatoriosHoy.contains(texto)) {
                 recordatoriosHoy.add(texto);
             }
@@ -91,9 +87,8 @@ public class VentanaPrincipal extends JFrame {
         cabecera.setBackground(new Color(113, 183, 188));
         cabecera.setPreferredSize(new Dimension(0, 150));
 
-        // Panel izquierdo con icono + texto
-        JPanel panelIzq = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 45));
-        panelIzq.setOpaque(false);
+        JPanel panelIzquierdo = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 45));
+        panelIzquierdo.setOpaque(false);
 
         JButton perfilBoton = new JButton();
         try {
@@ -115,10 +110,9 @@ public class VentanaPrincipal extends JFrame {
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
         texto.setForeground(Color.WHITE);
 
-        panelIzq.add(perfilBoton);
-        panelIzq.add(texto);
+        panelIzquierdo.add(perfilBoton);
+        panelIzquierdo.add(texto);
 
-        // Menú desplegable
         JPopupMenu menuPerfil = new JPopupMenu();
         JMenuItem verDatos = new JMenuItem("Ver Datos");
         JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
@@ -138,27 +132,25 @@ public class VentanaPrincipal extends JFrame {
             dispose();
         });
 
-        // Panel central con logo
         JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         panelCentro.setOpaque(false);
 
         JLabel logo = new JLabel();
         try {
-            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
-            logo.setIcon(new ImageIcon(logoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+            ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
+            logo.setIcon(new ImageIcon(logoIcono.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
             logo.setText("LOGO");
         }
         panelCentro.add(logo);
 
-        // Panel derecho vacío para equilibrar el ancho del izquierdo
-        JPanel panelDer = new JPanel();
-        panelDer.setOpaque(false);
-        panelDer.setPreferredSize(new Dimension(400, 150)); // ajusta este valor según lo que ocupe el texto largo
+        JPanel panelDerecho = new JPanel();
+        panelDerecho.setOpaque(false);
+        panelDerecho.setPreferredSize(new Dimension(400, 150));
 
-        cabecera.add(panelIzq, BorderLayout.WEST);
+        cabecera.add(panelIzquierdo, BorderLayout.WEST);
         cabecera.add(panelCentro, BorderLayout.CENTER);
-        cabecera.add(panelDer, BorderLayout.EAST);
+        cabecera.add(panelDerecho, BorderLayout.EAST);
 
         return cabecera;
     }
@@ -169,18 +161,18 @@ public class VentanaPrincipal extends JFrame {
         JPanel contenedor = new JPanel(new GridBagLayout());
         contenedor.setBackground(Color.WHITE);
 
-        JPanel grid = new JPanel(new GridLayout(2, 2, 25, 25));
-        grid.setBackground(Color.WHITE);
-        grid.setMaximumSize(new Dimension(1000, 600));
-        grid.setPreferredSize(new Dimension(900, 500));
-        grid.setMinimumSize(new Dimension(600, 400));
+        JPanel ajusteSecciones = new JPanel(new GridLayout(2, 2, 25, 25));
+        ajusteSecciones.setBackground(Color.WHITE);
+        ajusteSecciones.setMaximumSize(new Dimension(1000, 600));
+        ajusteSecciones.setPreferredSize(new Dimension(900, 500));
+        ajusteSecciones.setMinimumSize(new Dimension(600, 400));
 
-        grid.add(crearSeccion("Recordatorios", null, false, recordatorios));
-        grid.add(crearSeccion("Área Médica", "/images/seccionMedicacion.png", true, null));
-        grid.add(crearSeccion("Área Física", "/images/areaFisica.png", true, null));
-        grid.add(crearSeccion("Citas Médicas", "/images/citasMedicas.png", true, null));
+        ajusteSecciones.add(crearSeccion("Recordatorios", null, false, recordatorios));
+        ajusteSecciones.add(crearSeccion("Área Médica", "/images/seccionMedicacion.png", true, null));
+        ajusteSecciones.add(crearSeccion("Área Física", "/images/areaFisica.png", true, null));
+        ajusteSecciones.add(crearSeccion("Citas Médicas", "/images/citasMedicas.png", true, null));
 
-        contenedor.add(grid);
+        contenedor.add(ajusteSecciones);
         return contenedor;
     }
 
@@ -209,8 +201,8 @@ public class VentanaPrincipal extends JFrame {
                     super.paintComponent(g);
                     try {
                         ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
-                        Image img = icono.getImage();
-                        g.drawImage(img, 0, 0, getWidth(), getHeight() - 40, this);
+                        Image imagen = icono.getImage();
+                        g.drawImage(imagen, 0, 0, getWidth(), getHeight() - 40, this);
                     } catch (Exception e) {
                         g.drawString("Sin imagen", getWidth() / 2 - 30, getHeight() / 2);
                     }

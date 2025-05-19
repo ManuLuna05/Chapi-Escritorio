@@ -24,7 +24,7 @@ public class VentanaAreaFisica extends JFrame {
     private int usuarioID;
     private int usuarioCuidadorID;
     private String tipoUsuario;
-    private JTextField searchField;
+    private JTextField campoBusqueda;
     private List<Recordatorios> todosRecordatorios = new ArrayList<>();
 
     public String getTipoUsuario() {
@@ -59,82 +59,80 @@ public class VentanaAreaFisica extends JFrame {
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.WHITE);
+        JPanel panelPrincipal = new JPanel(new BorderLayout());
+        panelPrincipal.setBackground(Color.WHITE);
 
-        mainPanel.add(cabeceraVentana(), BorderLayout.NORTH);
-        mainPanel.add(footerVentana(), BorderLayout.SOUTH);
+        panelPrincipal.add(cabeceraVentana(), BorderLayout.NORTH);
+        panelPrincipal.add(footerVentana(), BorderLayout.SOUTH);
 
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setBackground(Color.WHITE);
+        JPanel panelCentral = new JPanel(new GridBagLayout());
+        panelCentral.setBackground(Color.WHITE);
 
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBackground(Color.WHITE);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.setBackground(Color.WHITE);
+        panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Título
-        JPanel titlePanel = new JPanel();
-        titlePanel.setOpaque(false);
+        JPanel panelTitulo = new JPanel();
+        panelTitulo.setOpaque(false);
         JLabel tituloLabel = new JLabel("ACTIVIDAD FÍSICA", JLabel.CENTER);
         tituloLabel.setFont(new Font("Segoe UI", Font.BOLD, 72));
         tituloLabel.setForeground(new Color(113, 183, 188));
-        titlePanel.add(tituloLabel);
-        contentPanel.add(titlePanel);
+        panelTitulo.add(tituloLabel);
+        panelContenido.add(panelTitulo);
 
-        contentPanel.add(Box.createVerticalStrut(70));
+        panelContenido.add(Box.createVerticalStrut(70));
 
-        // Search panel
-        JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
-        searchPanel.setOpaque(false);
+        JPanel panelBuscador = new JPanel();
+        panelBuscador.setLayout(new BoxLayout(panelBuscador, BoxLayout.X_AXIS));
+        panelBuscador.setOpaque(false);
 
-        searchField = new JTextField("Buscar...");
-        searchField.setMaximumSize(new Dimension(800, 38));
-        searchField.setPreferredSize(new Dimension(600, 38));
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        searchField.setForeground(Color.GRAY);
-        searchField.setBorder(BorderFactory.createCompoundBorder(
+        campoBusqueda = new JTextField("Buscar...");
+        campoBusqueda.setMaximumSize(new Dimension(800, 38));
+        campoBusqueda.setPreferredSize(new Dimension(600, 38));
+        campoBusqueda.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        campoBusqueda.setForeground(Color.GRAY);
+        campoBusqueda.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(113, 183, 188), 2),
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
-        searchField.addFocusListener(new FocusAdapter() {
+        campoBusqueda.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (searchField.getText().equals("Buscar...")) {
-                    searchField.setText("");
-                    searchField.setForeground(Color.BLACK);
+                if (campoBusqueda.getText().equals("Buscar...")) {
+                    campoBusqueda.setText("");
+                    campoBusqueda.setForeground(Color.BLACK);
                 }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (searchField.getText().isEmpty()) {
-                    searchField.setForeground(Color.GRAY);
-                    searchField.setText("Buscar...");
+                if (campoBusqueda.getText().isEmpty()) {
+                    campoBusqueda.setForeground(Color.GRAY);
+                    campoBusqueda.setText("Buscar...");
                 }
             }
         });
 
-        searchField.getDocument().addDocumentListener(new DocumentListener() {
+        campoBusqueda.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { filtrarRecordatorios(); }
             @Override public void removeUpdate(DocumentEvent e) { filtrarRecordatorios(); }
             @Override public void changedUpdate(DocumentEvent e) { filtrarRecordatorios(); }
         });
 
-        JButton backButton = new JButton("Volver");
-        backButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        backButton.setFocusPainted(false);
-        backButton.setBackground(new Color(113, 183, 188));
-        backButton.setForeground(Color.WHITE);
-        backButton.setMaximumSize(new Dimension(100, 38));
+        JButton botonVolver = new JButton("Volver");
+        botonVolver.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        botonVolver.setFocusPainted(false);
+        botonVolver.setBackground(new Color(113, 183, 188));
+        botonVolver.setForeground(Color.WHITE);
+        botonVolver.setMaximumSize(new Dimension(100, 38));
 
-        searchPanel.add(searchField);
-        searchPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        searchPanel.add(backButton);
-        contentPanel.add(searchPanel);
-        contentPanel.add(Box.createVerticalStrut(40));
+        panelBuscador.add(campoBusqueda);
+        panelBuscador.add(Box.createRigidArea(new Dimension(10, 0)));
+        panelBuscador.add(botonVolver);
+        panelContenido.add(panelBuscador);
+        panelContenido.add(Box.createVerticalStrut(40));
 
         modeloLista = new DefaultListModel<>();
         listaRecordatorios = new JList<>(modeloLista);
@@ -142,46 +140,46 @@ public class VentanaAreaFisica extends JFrame {
         listaRecordatorios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listaRecordatorios.setBorder(BorderFactory.createLineBorder(new Color(113, 183, 188), 2));
         listaRecordatorios.setFixedCellHeight(30);
-        JScrollPane scrollPane = new JScrollPane(listaRecordatorios);
-        scrollPane.setMaximumSize(new Dimension(1000, 400));
-        scrollPane.setBorder(BorderFactory.createTitledBorder(
+        JScrollPane scrollRecordatorios = new JScrollPane(listaRecordatorios);
+        scrollRecordatorios.setMaximumSize(new Dimension(1000, 400));
+        scrollRecordatorios.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(113, 183, 188), 2),
                 "Recordatorios de Actividad Física ",
                 0, 0,
                 new Font("Segoe UI", Font.BOLD, 18),
                 new Color(113, 183, 188)
         ));
-        contentPanel.add(scrollPane);
+        panelContenido.add(scrollRecordatorios);
 
         cargarRecordatorios();
-        contentPanel.add(Box.createVerticalStrut(20));
+        panelContenido.add(Box.createVerticalStrut(20));
 
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setOpaque(false);
+        JPanel panelBotones = new JPanel(new GridBagLayout());
+        panelBotones.setOpaque(false);
 
-        JButton addButton = new JButton("Añadir");
-        addButton.setPreferredSize(new Dimension(140, 45));
-        addButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        addButton.setBackground(new Color(113, 183, 188));
-        addButton.setForeground(Color.WHITE);
-        addButton.addActionListener(e -> new VentanaAgregarActividad(usuarioID, usuarioCuidadorID, this).setVisible(true));
+        JButton botonAgregar = new JButton("Añadir");
+        botonAgregar.setPreferredSize(new Dimension(140, 45));
+        botonAgregar.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        botonAgregar.setBackground(new Color(113, 183, 188));
+        botonAgregar.setForeground(Color.WHITE);
+        botonAgregar.addActionListener(e -> new VentanaAgregarActividad(usuarioID, usuarioCuidadorID, this).setVisible(true));
 
-        JButton deleteButton = new JButton("Eliminar");
-        deleteButton.setPreferredSize(new Dimension(140, 45));
-        deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        deleteButton.setBackground(new Color(113, 183, 188));
-        deleteButton.setForeground(Color.WHITE);
-        deleteButton.addActionListener(e -> {
+        JButton botonEliminar = new JButton("Eliminar");
+        botonEliminar.setPreferredSize(new Dimension(140, 45));
+        botonEliminar.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        botonEliminar.setBackground(new Color(113, 183, 188));
+        botonEliminar.setForeground(Color.WHITE);
+        botonEliminar.addActionListener(e -> {
             new VentanaEliminarActividad(usuarioID, this).setVisible(true);
         });
 
-        GridBagConstraints gbcButtons = new GridBagConstraints();
-        gbcButtons.insets = new Insets(0, 10, 0, 10);
-        gbcButtons.gridx = 0;
-        buttonPanel.add(addButton, gbcButtons);
-        gbcButtons.gridx = 1;
-        buttonPanel.add(deleteButton, gbcButtons);
-        contentPanel.add(buttonPanel);
+        GridBagConstraints ajustarBotones = new GridBagConstraints();
+        ajustarBotones.insets = new Insets(0, 10, 0, 10);
+        ajustarBotones.gridx = 0;
+        panelBotones.add(botonAgregar, ajustarBotones);
+        ajustarBotones.gridx = 1;
+        panelBotones.add(botonEliminar, ajustarBotones);
+        panelContenido.add(panelBotones);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -190,11 +188,11 @@ public class VentanaAreaFisica extends JFrame {
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
 
-        centerPanel.add(contentPanel, gbc);
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-        add(mainPanel);
+        panelCentral.add(panelContenido, gbc);
+        panelPrincipal.add(panelCentral, BorderLayout.CENTER);
+        add(panelPrincipal);
 
-        backButton.addActionListener(e -> {
+        botonVolver.addActionListener(e -> {
                 new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
                 dispose();
 
@@ -206,8 +204,8 @@ public class VentanaAreaFisica extends JFrame {
         cabecera.setBackground(new Color(113, 183, 188));
         cabecera.setPreferredSize(new Dimension(0, 150));
 
-        JPanel panelIzq = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 45));
-        panelIzq.setOpaque(false);
+        JPanel panelIzquierdo = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 45));
+        panelIzquierdo.setOpaque(false);
 
         JButton perfilBoton = new JButton();
         try {
@@ -220,20 +218,18 @@ public class VentanaAreaFisica extends JFrame {
         perfilBoton.setContentAreaFilled(false);
         perfilBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Obtener nombre de usuario logado
         String nombreUsuario = "";
         ControladorUsuarios controlador = new ControladorUsuarios();
-        Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
-        nombreUsuario = u.getNombre();
+        Usuario usuario = controlador.obtenerUsuarioPorId(usuarioID);
+        nombreUsuario = usuario.getNombre();
 
         JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
         texto.setForeground(Color.WHITE);
 
-        panelIzq.add(perfilBoton);
-        panelIzq.add(texto);
+        panelIzquierdo.add(perfilBoton);
+        panelIzquierdo.add(texto);
 
-        // Menú desplegable del botón de perfil
         JPopupMenu menuPerfil = new JPopupMenu();
         JMenuItem verDatos = new JMenuItem("Ver Datos");
         JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
@@ -255,27 +251,25 @@ public class VentanaAreaFisica extends JFrame {
             dispose();
         });
 
-        // Panel centro con logo centrado
         JPanel panelCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         panelCentro.setOpaque(false);
 
         JLabel logo = new JLabel();
         try {
-            ImageIcon logoIcon = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
-            logo.setIcon(new ImageIcon(logoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+            ImageIcon logoIcono = new ImageIcon(getClass().getResource("/images/chapi_logos_azulOscuro.png"));
+            logo.setIcon(new ImageIcon(logoIcono.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
             logo.setText("LOGO");
         }
         panelCentro.add(logo);
 
-        // Panel derecho vacío para equilibrio
-        JPanel panelDer = new JPanel();
-        panelDer.setOpaque(false);
-        panelDer.setPreferredSize(new Dimension(250, 150));
+        JPanel panelDerecho = new JPanel();
+        panelDerecho.setOpaque(false);
+        panelDerecho.setPreferredSize(new Dimension(250, 150));
 
-        cabecera.add(panelIzq, BorderLayout.WEST);
+        cabecera.add(panelIzquierdo, BorderLayout.WEST);
         cabecera.add(panelCentro, BorderLayout.CENTER);
-        cabecera.add(panelDer, BorderLayout.EAST);
+        cabecera.add(panelDerecho, BorderLayout.EAST);
 
         return cabecera;
     }
@@ -330,7 +324,7 @@ public class VentanaAreaFisica extends JFrame {
     }
 
     private void filtrarRecordatorios() {
-        String textoBusqueda = searchField.getText().toLowerCase();
+        String textoBusqueda = campoBusqueda.getText().toLowerCase();
 
         if (textoBusqueda.equals("buscar...") || textoBusqueda.isEmpty()) {
             cargarTodosRecordatorios();
