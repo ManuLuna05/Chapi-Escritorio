@@ -279,7 +279,7 @@ public class VentanaCitasMedicas extends JFrame {
         menuPerfil.add(cerrarSesion);
 
         perfilBoton.addActionListener(e -> {
-            menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0);
+            menuPerfil.show(perfilBoton, 0, perfilBoton.getHeight());
         });
 
         verDatos.addActionListener(e -> {

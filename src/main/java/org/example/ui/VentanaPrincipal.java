@@ -117,10 +117,11 @@ public class VentanaPrincipal extends JFrame {
         JMenuItem verDatos = new JMenuItem("Ver Datos");
         JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
 
+
         menuPerfil.add(verDatos);
         menuPerfil.add(cerrarSesion);
 
-        perfilBoton.addActionListener(e -> menuPerfil.show(perfilBoton, perfilBoton.getWidth(), 0));
+        perfilBoton.addActionListener(e -> menuPerfil.show(perfilBoton, 0, perfilBoton.getHeight()));
 
         verDatos.addActionListener(e -> {
             new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
@@ -181,6 +182,11 @@ public class VentanaPrincipal extends JFrame {
 
         if ("Recordatorios".equals(titulo)) {
             panel = new JPanel(new BorderLayout());
+
+            JPanel contenido = new JPanel(new BorderLayout());
+            contenido.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+            contenido.setOpaque(false);
+
             textoArea = new JTextArea();
             textoArea.setEditable(false);
             textoArea.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -193,7 +199,11 @@ public class VentanaPrincipal extends JFrame {
                 textoArea.setText("Aquí aparecerán los recordatorios...");
             }
 
-            panel.add(new JScrollPane(textoArea), BorderLayout.CENTER);
+            JScrollPane scroll = new JScrollPane(textoArea);
+            scroll.setBorder(BorderFactory.createEmptyBorder());
+            contenido.add(scroll, BorderLayout.CENTER);
+
+            panel.add(contenido, BorderLayout.CENTER);
         } else {
             panel = new JPanel(new BorderLayout()) {
                 @Override

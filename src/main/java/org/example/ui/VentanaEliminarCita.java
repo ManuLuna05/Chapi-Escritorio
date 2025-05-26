@@ -46,11 +46,15 @@ public class VentanaEliminarCita extends JFrame {
         panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JLabel etiquetaEspecialistas = new JLabel("Filtrar por Especialista:");
+        JPanel contenedorEtiqueta = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        contenedorEtiqueta.setOpaque(false);
+        contenedorEtiqueta.add(etiquetaEspecialistas);
+        panelSuperior.add(contenedorEtiqueta); // ✅ Aquí el cambio
+
         comboEspecialistas = new JComboBox<>();
         cargarEspecialistas();
         comboEspecialistas.addActionListener(e -> cargarRecordatorios());
 
-        panelSuperior.add(etiquetaEspecialistas);
         panelSuperior.add(comboEspecialistas);
         add(panelSuperior, BorderLayout.NORTH);
 
@@ -64,7 +68,7 @@ public class VentanaEliminarCita extends JFrame {
 
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        JButton botonEliminarCita = new JButton("Eliminar Cita(s) y Recordatorio(s)");
+        JButton botonEliminarCita = new JButton("Eliminar Cita");
         estiloBoton(botonEliminarCita);
         botonEliminarCita.addActionListener(e -> {
             eliminarCita();

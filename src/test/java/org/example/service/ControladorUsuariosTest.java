@@ -22,3 +22,4 @@ class ControladorUsuariosTest {
         assertFalse(ControladorUsuarios.esTelefonoValido(null));
     }
 }
+

@@ -50,7 +50,11 @@ public class VentanaEliminarActividad extends JFrame {
         cargarActividades();
         comboActividades.addActionListener(e -> cargarRecordatorios());
 
-        panelSuperior.add(etiquetaActividades);
+        JPanel contenedorEtiqueta = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        contenedorEtiqueta.setOpaque(false);
+        contenedorEtiqueta.add(etiquetaActividades);
+        panelSuperior.add(contenedorEtiqueta);
+
         panelSuperior.add(comboActividades);
         add(panelSuperior, BorderLayout.NORTH);
 

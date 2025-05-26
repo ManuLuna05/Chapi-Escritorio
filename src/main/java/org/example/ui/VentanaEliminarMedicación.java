@@ -74,20 +74,28 @@ public class VentanaEliminarMedicación extends JFrame {
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        JButton botonEliminarTodo = new JButton("Eliminar Medicación y Recordatorios");
-        botonEliminarTodo.addActionListener(e -> {
-            eliminarMedicacionYRecordatorios();
-        });
+        JButton botonEliminarTodo = new JButton("Eliminar Medicación");
+        botonEliminarTodo.addActionListener(e -> eliminarMedicacionYRecordatorios());
+        estiloBoton(botonEliminarTodo);
 
-        JButton botonEliminarRecordatorios = new JButton("Eliminar Solo Recordatorios");
-        botonEliminarRecordatorios.addActionListener(e -> {
-            eliminarRecordatoriosSeleccionados();
-        });
+        JButton botonEliminarRecordatorios = new JButton("Eliminar Recordatorio");
+        botonEliminarRecordatorios.addActionListener(e -> eliminarRecordatoriosSeleccionados());
+        estiloBoton(botonEliminarRecordatorios);
+
 
         panelBotones.add(botonEliminarTodo);
         panelBotones.add(botonEliminarRecordatorios);
         add(panelBotones, BorderLayout.SOUTH);
     }
+
+    private void estiloBoton(JButton boton) {
+        boton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        boton.setBackground(new Color(113, 183, 188));
+        boton.setForeground(Color.WHITE);
+        boton.setFocusPainted(false);
+        boton.setPreferredSize(new Dimension(180, 40));
+    }
+
 
     private void cargarMedicaciones() {
         comboMedicaciones.removeAllItems();
