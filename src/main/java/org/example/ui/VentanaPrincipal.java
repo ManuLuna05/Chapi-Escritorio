@@ -21,11 +21,13 @@ public class VentanaPrincipal extends JFrame {
     private List<Integer> pacientesAsignados = new ArrayList<>();
     private ControladorRecordatorios controladorRecordatorios;
 
+    //Ventana principal de la aplicación
     public VentanaPrincipal(int usuarioID, String tipoUsuario) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
         this.controladorRecordatorios = new ControladorRecordatorios();
 
+        //Si el usuario es un cuidador, se obtiene el paciente asignado
         if ("cuidador".equals(tipoUsuario)) {
             ControladorUsuarios controlador = new ControladorUsuarios();
             this.pacientesAsignados = controlador.obtenerPacientesDeCuidador(usuarioID);
@@ -36,6 +38,7 @@ public class VentanaPrincipal extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
 
+        //Se eliminan los recordatorios pasados
         if ("cuidador".equals(tipoUsuario)) {
             for (Integer pacienteId : pacientesAsignados) {
                 controladorRecordatorios.eliminarRecordatoriosPasados(pacienteId);
@@ -50,11 +53,13 @@ public class VentanaPrincipal extends JFrame {
         add(footerVentana(), BorderLayout.SOUTH);
     }
 
+    //Función que obtiene los recordatorios del día para el usuario actual
     private List<String> obtenerRecordatoriosDelDia() {
         List<Recordatorios> todosRecordatorios = new ArrayList<>();
         List<String> recordatoriosHoy = new ArrayList<>();
         LocalDate hoy = LocalDate.now();
 
+        //Si el usuario es un cuidador, se obtienen los recordatorios del paciente asignado
         if ("cuidador".equals(tipoUsuario)) {
             for (Integer pacienteId : pacientesAsignados) {
                 todosRecordatorios.addAll(controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId));
@@ -62,6 +67,7 @@ public class VentanaPrincipal extends JFrame {
         }
         todosRecordatorios.addAll(controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID));
 
+        //Filtrar los recordatorios que son del día actual
         List<Recordatorios> recordatoriosFiltrados = new ArrayList<>();
         for (Recordatorios recordatorio : todosRecordatorios) {
             if (recordatorio.getFecha().isEqual(hoy)) {
@@ -69,8 +75,10 @@ public class VentanaPrincipal extends JFrame {
             }
         }
 
+        //Se ordenan los recordatorios por la hora
         recordatoriosFiltrados.sort((r1, r2) -> r1.getHora().compareTo(r2.getHora()));
 
+        //Se crea una lista de recordatorios con el formato "hora - descripción"
         for (Recordatorios recordatorio : recordatoriosFiltrados) {
             String texto = recordatorio.getHora() + " - " + recordatorio.getDescripcion();
             if (!recordatoriosHoy.contains(texto)) {
@@ -82,6 +90,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
 
+    //Función que crea la cabecera de la ventana será igual en las ventanas de Área Médica, Área Física y Citas Médicas
     private JPanel cabeceraVentana() {
         JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.setBackground(new Color(113, 183, 188));
@@ -101,10 +110,11 @@ public class VentanaPrincipal extends JFrame {
         perfilBoton.setContentAreaFilled(false);
         perfilBoton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
+        //Configuración del nombre de usuario que accede a la aplicación
         String nombreUsuario = "";
         ControladorUsuarios controlador = new ControladorUsuarios();
-        Usuario u = controlador.obtenerUsuarioPorId(usuarioID);
-        nombreUsuario = u.getNombre();
+        Usuario usuario = controlador.obtenerUsuarioPorId(usuarioID);
+        nombreUsuario = usuario.getNombre();
 
         JLabel texto = new JLabel("Tus Datos: " + nombreUsuario);
         texto.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -117,17 +127,19 @@ public class VentanaPrincipal extends JFrame {
         JMenuItem verDatos = new JMenuItem("Ver Datos");
         JMenuItem cerrarSesion = new JMenuItem("Cerrar Sesión");
 
-
         menuPerfil.add(verDatos);
         menuPerfil.add(cerrarSesion);
 
         perfilBoton.addActionListener(e -> menuPerfil.show(perfilBoton, 0, perfilBoton.getHeight()));
 
+        /*Acción para ver los datos del usuario, se pasa id de la ventana para poder volver a la ventana
+        desde la que accede a ver los datos del usuario */
         verDatos.addActionListener(e -> {
             new VentanaPerfilUsuario(usuarioID, tipoUsuario, "principal").setVisible(true);
             dispose();
         });
 
+        //Acción para cerrar sesión
         cerrarSesion.addActionListener(e -> {
             new VentanaInicioSesion().setVisible(true);
             dispose();
@@ -156,12 +168,12 @@ public class VentanaPrincipal extends JFrame {
         return cabecera;
     }
 
-
-
+    //Función que crea el panel principal de la ventana
     private JPanel panelPrincipal(List<String> recordatorios) {
         JPanel contenedor = new JPanel(new GridBagLayout());
         contenedor.setBackground(Color.WHITE);
 
+        //Ajuste de las distintas secciones
         JPanel ajusteSecciones = new JPanel(new GridLayout(2, 2, 25, 25));
         ajusteSecciones.setBackground(Color.WHITE);
         ajusteSecciones.setMaximumSize(new Dimension(1000, 600));
@@ -177,9 +189,11 @@ public class VentanaPrincipal extends JFrame {
         return contenedor;
     }
 
+    //Función que crea una sección del panel principal
     private JPanel crearSeccion(String titulo, String rutaImagen, boolean clickable, List<String> recordatorios) {
         JPanel panel;
 
+        //Si la sección es Recordatorios, se crea un JTextArea para mostrar los recordatorios
         if ("Recordatorios".equals(titulo)) {
             panel = new JPanel(new BorderLayout());
 
@@ -193,6 +207,7 @@ public class VentanaPrincipal extends JFrame {
             textoArea.setLineWrap(true);
             textoArea.setWrapStyleWord(true);
 
+            //Si hay recordatorios, se muestran en el JTextArea
             if (recordatorios != null && !recordatorios.isEmpty()) {
                 textoArea.setText(String.join("\n", recordatorios));
             } else {
@@ -204,7 +219,7 @@ public class VentanaPrincipal extends JFrame {
             contenido.add(scroll, BorderLayout.CENTER);
 
             panel.add(contenido, BorderLayout.CENTER);
-        } else {
+        } else { //Para las demás secciones, se crea un JPanel con una imagen de fondo
             panel = new JPanel(new BorderLayout()) {
                 @Override
                 protected void paintComponent(Graphics g) {
@@ -219,6 +234,8 @@ public class VentanaPrincipal extends JFrame {
                 }
             };
 
+            /*Si la sección es clickeable, se añade un MouseListener para abrir la ventana correspondiente
+            dependiendo de la sección seleccionada */
             if (clickable) {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 panel.addMouseListener(new MouseAdapter() {

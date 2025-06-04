@@ -23,6 +23,7 @@ public class VentanaEliminarActividad extends JFrame {
     private int usuarioCuidadorID;
     private VentanaAreaFisica ventanaAreaFisica;
 
+    //Ventana para eliminar una actividad física y sus recordatorios asociados
     public VentanaEliminarActividad(int usuarioID, VentanaAreaFisica ventanaAreaFisica)  {
         this.usuarioID = usuarioID;
         this.ventanaAreaFisica = ventanaAreaFisica;
@@ -69,10 +70,12 @@ public class VentanaEliminarActividad extends JFrame {
 
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
+        //Botón para eliminar la actividad
         JButton botonEliminarActividad = new JButton("Eliminar Actividad");
         botonEliminarActividad.addActionListener(e -> eliminarActividad());
         estiloBoton(botonEliminarActividad);
 
+        //Botón para eliminar uno o varios recordatorios
         JButton botonEliminarRecordatorio = new JButton("Eliminar Recordatorio");
         botonEliminarRecordatorio.addActionListener(e -> eliminarRecordatorio());
         estiloBoton(botonEliminarRecordatorio);
@@ -82,6 +85,7 @@ public class VentanaEliminarActividad extends JFrame {
         add(panelInferior, BorderLayout.SOUTH);
     }
 
+    //Función encargada de establecer el estilo de los botones
     private void estiloBoton(JButton boton) {
         boton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         boton.setBackground(new Color(113, 183, 188));
@@ -90,32 +94,38 @@ public class VentanaEliminarActividad extends JFrame {
         boton.setPreferredSize(new Dimension(180, 40));
     }
 
+    //Función encargada de cargar las actividades físicas del usuario
     private void cargarActividades() {
         comboActividades.removeAllItems();
 
         Set<ActividadFisica> actividades = new HashSet<>();
 
+        //Si el usuario es un cuidador, se obtienen las actividades de los pacientes asignados
         if (ventanaAreaFisica.getTipoUsuario().equals("cuidador")) {
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
 
+            //Se obtienen las actividades del paciente en caso de acceder como cuidador
             for (Integer pacienteId : pacientes) {
                 actividades.addAll(controladorActividad.obtenerActividadesPorUsuario(pacienteId));
             }
-        } else {
+        } else { //Si el usuario es un paciente, se obtienen sus propias actividades y las establecidas por el cuidador
             actividades.addAll(controladorActividad.obtenerActividadesPorUsuario(usuarioID));
         }
 
+        //Se añaden las actividades al combo box
         for (ActividadFisica actividad : actividades) {
             comboActividades.addItem(actividad);
         }
     }
 
 
+    //Función encargada de cargar los recordatorios asociados a la actividad seleccionada
     private void cargarRecordatorios() {
         modeloLista.clear();
         ActividadFisica actividadSeleccionada = (ActividadFisica) comboActividades.getSelectedItem();
 
+        //Si se selecciona una actividad, se obtienen los recordatorios asociados a la misma
         if (actividadSeleccionada != null) {
             try {
                 int usuarioActividad = actividadSeleccionada.getUsuarioId();
@@ -123,7 +133,9 @@ public class VentanaEliminarActividad extends JFrame {
                 List<Recordatorios> recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioActividad);
                 List<Integer> idsVistos = new ArrayList<>();
 
+                //Se recorren los recordatorios y se añaden los que correspondan a la actividad seleccionada
                 for (Recordatorios recordatorio : recordatorios) {
+                    //Se verifica que el recordatorio sea del tipo "ActividadFisica" y que su ID coincida con el de la actividad seleccionada
                     if ("ActividadFisica".equals(recordatorio.getTipoEvento())
                             && recordatorio.getActividadID() != null && recordatorio.getActividadID() == actividadSeleccionada.getId()
                             && !idsVistos.contains(recordatorio.getRecordatorioID())) {
@@ -133,50 +145,52 @@ public class VentanaEliminarActividad extends JFrame {
                     }
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al cargar recordatorios: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al cargar recordatorios: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    //Función encargada de eliminar la actividad física seleccionada y sus recordatorios asociados
     private void eliminarActividad() {
         ActividadFisica actividadSeleccionada = (ActividadFisica) comboActividades.getSelectedItem();
 
+        //Se verifica que se haya seleccionado una actividad antes de proceder a eliminarla
         if (actividadSeleccionada != null) {
-            int confirmacion = JOptionPane.showConfirmDialog(this,
-                    "¿Está seguro que desea eliminar esta actividad y todos sus recordatorios?",
+            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea eliminar esta actividad y todos sus recordatorios?",
                     "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
+            //Si el usuario confirma la eliminación, se procede a eliminar la actividad y sus recordatorios
             if (confirmacion == JOptionPane.YES_OPTION) {
                 try {
                     controladorActividad.eliminarActividad(actividadSeleccionada.getId(), actividadSeleccionada.getUsuarioId());
 
                     JOptionPane.showMessageDialog(this, "Actividad eliminada correctamente");
 
+                    //Se recargan los recordatorios después de eliminar la actividad
                     if (ventanaAreaFisica != null) {
                         ventanaAreaFisica.recargarRecordatorios();
                     }
 
                     dispose();
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al eliminar actividad: " + ex.getMessage(),
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Error al eliminar actividad: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una actividad para eliminar",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione una actividad para eliminar", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    //Función encargada de eliminar los recordatorios seleccionados
     private void eliminarRecordatorio() {
         Recordatorios recordatorioSeleccionado = listaRecordatorios.getSelectedValue();
 
+        //Se verifica que se haya seleccionado un recordatorio antes de proceder a eliminarlo
         if (recordatorioSeleccionado != null) {
-            int confirmacion = JOptionPane.showConfirmDialog(this,
-                    "¿Está seguro que desea eliminar este recordatorio?",
+            int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro que desea eliminar este recordatorio?",
                     "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
+            //Si el usuario confirma la eliminación, se procede a eliminar el recordatorio
             if (confirmacion == JOptionPane.YES_OPTION) {
                 try {
                     controladorRecordatorios.eliminarRecordatorio(recordatorioSeleccionado.getRecordatorioID());
@@ -184,6 +198,7 @@ public class VentanaEliminarActividad extends JFrame {
 
                     cargarRecordatorios();
 
+                    //Se recargan los recordatorios en la ventana principal si está disponible
                     if (ventanaAreaFisica != null) {
                         ventanaAreaFisica.recargarRecordatorios();
                     }

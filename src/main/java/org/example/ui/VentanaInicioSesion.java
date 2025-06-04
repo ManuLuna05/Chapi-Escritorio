@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class VentanaInicioSesion extends JFrame {
+    //Ventana de inicio de sesión
     public VentanaInicioSesion() {
         setTitle("Inicio de Sesión");
         setSize(500, 750);
@@ -65,35 +66,37 @@ public class VentanaInicioSesion extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         panelBotones.setOpaque(false);
 
+        //Configuración del botón "Aceptar"
         JButton botonAceptar = new JButton("Aceptar");
         botonAceptar.setFont(new Font("Arial", Font.BOLD, 14));
         botonAceptar.setPreferredSize(new Dimension(150, 40));
         botonAceptar.setBackground(new Color(113, 183, 188));
         botonAceptar.setForeground(Color.WHITE);
 
+        //Configuración del botón "Volver"
         JButton botonVolver = new JButton("Volver");
         botonVolver.setFont(new Font("Arial", Font.BOLD, 14));
         botonVolver.setPreferredSize(new Dimension(150, 40));
         botonVolver.setBackground(new Color(113, 183, 188));
         botonVolver.setForeground(Color.WHITE);
 
+        //Acción del botón "Aceptar"
         botonAceptar.addActionListener(e -> {
             try {
                 String email = textoEmail.getText().trim();
                 String password = new String(textoPassword.getPassword());
 
+                //Validación de campos
                 if (email.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 ControladorUsuarios controlador = new ControladorUsuarios();
 
                 if (!controlador.esEmailValido(email)) {
                     JOptionPane.showMessageDialog(this, "Por favor, introduzca un correo válido", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 Usuario usuario = controlador.iniciarSesionUsuario(email, password);
 
                 if (usuario != null) {
@@ -103,12 +106,12 @@ public class VentanaInicioSesion extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Credenciales incorrectas", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error al iniciar sesión: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
+        //Acción del botón "Volver"
         botonVolver.addActionListener(e -> {
             new VentanaAcceso().setVisible(true);
             dispose();

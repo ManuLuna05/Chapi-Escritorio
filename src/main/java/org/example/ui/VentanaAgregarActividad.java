@@ -76,10 +76,12 @@ public class VentanaAgregarActividad extends JFrame {
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         panelInferior.setBackground(new Color(248, 248, 248));
 
+        //Acción del botón "Guardar"
         botonGuardar = new JButton("GUARDAR");
         estiloBoton(botonGuardar);
         botonGuardar.addActionListener(e -> guardarActividad());
 
+        //Acción del botón "Cancelar"
         botonCancelar = new JButton("CANCELAR");
         estiloBoton(botonCancelar);
         botonCancelar.addActionListener(e -> dispose());

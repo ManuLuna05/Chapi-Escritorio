@@ -17,6 +17,7 @@ public class VentanaEditarPerfil extends JPanel {
     private JPasswordField textoPassword;
     private JPanel panelPaciente;
 
+    //Ventana para editar el perfil de un usuario
     public VentanaEditarPerfil(int usuarioID, String tipoUsuario, String ventanaInicial, VentanaPerfilUsuario ventanaPerfil) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
@@ -51,6 +52,8 @@ public class VentanaEditarPerfil extends JPanel {
 
         boolean esCuidador = false;
 
+        //Si el usuario es un cuidador, se muestran los datos del paciente asignado y se realiza un
+        // formulario para poder editar sus datos */
         if ("cuidador".equalsIgnoreCase(tipoUsuario)) {
             List<Integer> pacientes = controlador.obtenerPacientesDeCuidador(usuarioID);
             if (!pacientes.isEmpty()) {
@@ -67,12 +70,14 @@ public class VentanaEditarPerfil extends JPanel {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         botones.setOpaque(false);
 
+        //Configuración del botón "Guardar"
         JButton botonGuardar = new JButton("Guardar Cambios");
         botonGuardar.setPreferredSize(new Dimension(180, 40));
         botonGuardar.setFont(new Font("Segoe UI", Font.BOLD, 14));
         botonGuardar.setBackground(new Color(113, 183, 188));
         botonGuardar.setForeground(Color.WHITE);
 
+        //Configuración del botón "Cancelar"
         JButton botonCancelar = new JButton("Cancelar");
         botonCancelar.setPreferredSize(new Dimension(180, 40));
         botonCancelar.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -85,12 +90,15 @@ public class VentanaEditarPerfil extends JPanel {
 
         boolean finalEsCuidador = esCuidador;
 
+        //Acción del botón "Cancelar"
         botonCancelar.addActionListener(e -> {
             SwingUtilities.getWindowAncestor(this).dispose();
         });
 
+        //Acción del botón "Guardar"
         botonGuardar.addActionListener(e -> {
             try {
+                //Validación de los campos
                 if (validarCampos(textoNombre, textoApellidos, textoEmail, textoTelefono)) {
                     String nuevaPassword = new String(textoPassword.getPassword()).trim();
                     String passwordFinal = nuevaPassword.isEmpty()
@@ -109,6 +117,7 @@ public class VentanaEditarPerfil extends JPanel {
 
                     controlador.editarUsuario(nuevo);
 
+                    //Si es cuidador, actualiza los datos del paciente asignado si se ha modificado alguno de estos
                     if (finalEsCuidador && panelPaciente != null) {
                         List<Integer> pacientes = controlador.obtenerPacientesDeCuidador(usuarioID);
                         if (!pacientes.isEmpty()) {
@@ -125,6 +134,7 @@ public class VentanaEditarPerfil extends JPanel {
                         }
                     }
 
+                    //Mensaje de éxito y cierre de la ventana
                     JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
                     if (ventanaPerfil != null) ventanaPerfil.recargarContenido();
                     SwingUtilities.getWindowAncestor(this).dispose();
@@ -132,7 +142,6 @@ public class VentanaEditarPerfil extends JPanel {
                 } else {
                     JOptionPane.showMessageDialog(this, "Por favor, rellene todos los campos obligatorios.");
                 }
-
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error al guardar los cambios: " + ex.getMessage());
             }
@@ -143,6 +152,7 @@ public class VentanaEditarPerfil extends JPanel {
         setPreferredSize(new Dimension(dimensionar.width, dimensionar.height + 200));
     }
 
+    //Función para crear el formulario de usuario
     private JPanel crearFormularioUsuario(String titulo, Usuario usuario, boolean esPrincipal) {
         JPanel panelFormulario = new JPanel();
         panelFormulario.setLayout(new BoxLayout(panelFormulario, BoxLayout.Y_AXIS));
@@ -157,6 +167,7 @@ public class VentanaEditarPerfil extends JPanel {
         JTextField email = new JTextField(usuario.getEmail());
         JTextField telefono = new JTextField(usuario.getTelefono() != null ? usuario.getTelefono() : "");
 
+        //Si es el usuario principal, se crea un campo de contraseña para poder modificarla
         if (esPrincipal) {
             textoNombre = nombre;
             textoApellidos = apellidos;
@@ -181,6 +192,7 @@ public class VentanaEditarPerfil extends JPanel {
         return panelFormulario;
     }
 
+    //Función para crear un campo editable
     private JPanel campoEditable(String texto, JComponent campo) {
         JPanel fila = new JPanel();
         fila.setLayout(new BoxLayout(fila, BoxLayout.Y_AXIS));
@@ -195,6 +207,7 @@ public class VentanaEditarPerfil extends JPanel {
         return fila;
     }
 
+    //Función para validar que los campos no estén vacíos
     private boolean validarCampos(JTextField... campos) {
         for (JTextField campo : campos) {
             if (campo.getText().trim().isEmpty()) return false;

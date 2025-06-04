@@ -24,9 +24,9 @@ public class Main {
             v_log_buf = new BufferedWriter(new FileWriter(nombre_fichero_log));
             escribe_log(v_log_buf, c_tipo_info, "Inicio de la aplicación");
 
-            boolean baseCreada = BBDD.crearBaseDeDatos(v_log_buf);
+            boolean bbddCreada = BBDD.crearBaseDeDatos(v_log_buf);
 
-            if (baseCreada) {
+            if (bbddCreada) {
                 escribe_log(v_log_buf, c_tipo_info, "Base de datos 'Chapi' lista para su uso.");
                 SwingUtilities.invokeLater(() -> new VentanaAcceso().setVisible(true));
             } else {

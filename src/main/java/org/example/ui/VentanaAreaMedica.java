@@ -35,6 +35,7 @@ public class VentanaAreaMedica extends JFrame {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
 
+        //Verificación del tipo de usuario
         ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
         Usuario usuario = controladorUsuarios.obtenerUsuarioPorId(usuarioID);
         this.tipoUsuario = usuario.getTipo();
@@ -42,6 +43,7 @@ public class VentanaAreaMedica extends JFrame {
         this.controladorRecordatorios = new ControladorRecordatorios();
         controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
 
+        //Se eliminan recordatorios pasados de medicación
         ControladorMedicacion controladorMedicacion = new ControladorMedicacion();
         controladorMedicacion.eliminarMedicacionesPasadas(usuarioID);
         if ("cuidador".equals(tipoUsuario)) {
@@ -78,6 +80,7 @@ public class VentanaAreaMedica extends JFrame {
         panelBusqueda.setLayout(new BoxLayout(panelBusqueda, BoxLayout.X_AXIS));
         panelBusqueda.setOpaque(false);
 
+        //Configuración de la barra de búsqueda
         campoBusqueda = new JTextField("Buscar...");
         campoBusqueda.setMaximumSize(new Dimension(800, 38));
         campoBusqueda.setPreferredSize(new Dimension(600, 38));
@@ -88,6 +91,7 @@ public class VentanaAreaMedica extends JFrame {
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
+        //Se añaden listeners para manejar el foco del campo de búsqueda
         campoBusqueda.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
                 if (campoBusqueda.getText().equals("Buscar...")) {
@@ -104,6 +108,7 @@ public class VentanaAreaMedica extends JFrame {
             }
         });
 
+        //Se añade un DocumentListener para filtrar los recordatorios al escribir en el campo de búsqueda
         campoBusqueda.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { filtrarRecordatorios(); }
             public void removeUpdate(DocumentEvent e) { filtrarRecordatorios(); }
@@ -130,6 +135,7 @@ public class VentanaAreaMedica extends JFrame {
         listaRecordatorios.setBorder(BorderFactory.createLineBorder(new Color(113, 183, 188), 2));
         listaRecordatorios.setFixedCellHeight(30);
 
+        //Panel con barra de desplazamiento para mostrar la lista de recordatorios de medicación
         JScrollPane scrollRecordatorios = new JScrollPane(listaRecordatorios);
         scrollRecordatorios.setMaximumSize(new Dimension(1000, 400));
         scrollRecordatorios.setBorder(BorderFactory.createTitledBorder(
@@ -177,11 +183,13 @@ public class VentanaAreaMedica extends JFrame {
 
         add(panelCentral, BorderLayout.CENTER);
 
+        //Acción del botón "Volver"
         botonVolver.addActionListener(e -> {
             new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
             dispose();
         });
 
+        //Acciones de los botones "Añadir" y "Eliminar"
         botonAgregar.addActionListener(e -> new VentanaAgregarMedicacion(usuarioID, usuarioCuidadorID, this).setVisible(true));
         botonEliminar.addActionListener(e -> {
 
@@ -190,23 +198,25 @@ public class VentanaAreaMedica extends JFrame {
         });
     }
 
-
+    //Función para cargar los recordatorios de medicación
     void cargarRecordatorios() {
         modeloLista.clear();
         todosRecordatorios.clear();
         List<Recordatorios> recordatorios = new ArrayList<>();
 
+        //Se obtienen los recordatorios de medicación según el tipo de usuario
         if ("cuidador".equals(tipoUsuario)) {
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
 
-            for (Integer pacienteId : pacientes) {
+            for (Integer pacienteId : pacientes) { //Se obtienen los recordatorios del paciente
                 List<Recordatorios> recordatoriosPaciente = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
                 if (recordatoriosPaciente != null) {
                     recordatorios.addAll(recordatoriosPaciente);
                 }
             }
 
+            //Se obtienen los recordatorios creados por el propio cuidador
             List<Recordatorios> recordatoriosPropios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
             if (recordatoriosPropios != null) {
                 recordatorios.addAll(recordatoriosPropios);
@@ -215,6 +225,7 @@ public class VentanaAreaMedica extends JFrame {
             recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
         }
 
+        //Se filtran los recordatorios de medicación y se añaden a la lista
         Set<Integer> idsVistos = new HashSet<>();
         if (recordatorios != null) {
             for (Recordatorios recordatorio : recordatorios) {
@@ -228,14 +239,17 @@ public class VentanaAreaMedica extends JFrame {
         }
     }
 
+    //Función para filtrar los recordatorios dependiendo del texto ingresado al buscar
     private void filtrarRecordatorios() {
         String textoBusqueda = campoBusqueda.getText().toLowerCase();
 
+        //Si el campo de búsqueda está vacío o contiene el texto por defecto, se cargan todos los recordatorios
         if (textoBusqueda.equals("buscar...") || textoBusqueda.isEmpty()) {
             cargarTodosRecordatorios();
             return;
         }
 
+        //Filtrar los recordatorios que contengan el texto de búsqueda
         modeloLista.clear();
         for (Recordatorios recordatorio : todosRecordatorios) {
             if (recordatorio.toString().toLowerCase().contains(textoBusqueda)) {
@@ -244,6 +258,7 @@ public class VentanaAreaMedica extends JFrame {
         }
     }
 
+    //Función para cargar todos los recordatorios en la lista cuando no hay filtro aplicado
     private void cargarTodosRecordatorios() {
         modeloLista.clear();
         for (Recordatorios recordatorio : todosRecordatorios) {
@@ -251,6 +266,7 @@ public class VentanaAreaMedica extends JFrame {
         }
     }
 
+    //Función para crear la cabecera de la ventana (Explicada a fondo en VentanaPrincipal)
     private JPanel cabeceraVentana() {
         JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.setBackground(new Color(113, 183, 188));

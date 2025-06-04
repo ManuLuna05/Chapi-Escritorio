@@ -27,6 +27,7 @@ public class VentanaAgregarMedicacion extends JFrame {
     private List<LocalTime> horasDosis;
     private VentanaAreaMedica ventanaAreaMedica;
 
+    //Configuración de elementos de la ventana para agregar una medicación
     public VentanaAgregarMedicacion(int usuarioID, int usuarioCuidadorID, VentanaAreaMedica ventanaAreaMedicaPrincipal) {
         this.usuarioID = usuarioID;
         this.horasDosis = new ArrayList<>();
@@ -67,6 +68,7 @@ public class VentanaAgregarMedicacion extends JFrame {
 
         cargarMedicamentos();
 
+        //Botón para configurar horas de dosis
         botonConfigurarHoras = new JButton("CONFIGURAR HORAS DE DOSIS");
         estiloBoton(botonConfigurarHoras, new Color(113, 183, 188));
         botonConfigurarHoras.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -80,6 +82,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         panelInferior.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 0));
         panelInferior.setBackground(new Color(248, 248, 248));
 
+        //Acciones de los botones
         botonGuardar = new JButton("GUARDAR");
         estiloBoton(botonGuardar, new Color(113, 183, 188));
         botonGuardar.setPreferredSize(new Dimension(150, 40));
@@ -101,6 +104,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         add(panel);
     }
 
+    //Función para crear el formulario a rellenar para la creación de la medicación
     private void formularioCentrado(JPanel panel, String etiquetaTexto, JComponent campo) {
         JPanel panelCampo = new JPanel();
         panelCampo.setLayout(new BoxLayout(panelCampo, BoxLayout.Y_AXIS));
@@ -116,6 +120,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         campo.setMaximumSize(new Dimension(300, 30));
         campo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        //Estilo de fondo dependiendo del tipo de campo
         if (campo instanceof JSpinner) {
             ((JSpinner.DefaultEditor)((JSpinner) campo).getEditor()).getTextField().setBackground(Color.WHITE);
         } else if (campo instanceof JComboBox) {
@@ -132,6 +137,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         panel.add(panelCampo);
     }
 
+    //Función para crear un selector de fecha con el formato correcto
     private JDateChooser crearSeleccionFecha() {
         JDateChooser selectorFecha = new JDateChooser();
         selectorFecha.setDateFormatString("yyyy-MM-dd");
@@ -143,17 +149,20 @@ public class VentanaAgregarMedicacion extends JFrame {
         return selectorFecha;
     }
 
+    //Función para aplicar el estilo a los botones
     private void estiloBoton(JButton boton, Color color) {
         boton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         boton.setBackground(color);
         boton.setFocusPainted(false);
         boton.setMaximumSize(new Dimension(300, 40));
+        boton.setForeground(Color.WHITE);
 
         Border lineaBorde = BorderFactory.createLineBorder(new Color(200, 200, 200));
         Border vacioBorde = BorderFactory.createEmptyBorder(8, 20, 8, 20);
         boton.setBorder(BorderFactory.createCompoundBorder(lineaBorde, vacioBorde));
     }
 
+    //Función para configurar las horas de las dosis
     private void configurarHorasDosis() {
         int dosis = (int) spinnerDosis.getValue();
         horasDosis.clear();
@@ -163,7 +172,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         panelHoras.setBackground(Color.WHITE);
 
         List<JSpinner> spinnersHoras = new ArrayList<>();
-        for (int i = 0; i < dosis; i++) {
+        for (int i = 0; i < dosis; i++) { //Para cada dosis, se crea un campo para seleccionar la hora correspondiente
             JLabel etiquetaHora = new JLabel("Hora de la dosis " + (i + 1) + ":");
             etiquetaHora.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             panelHoras.add(etiquetaHora);
@@ -185,6 +194,7 @@ public class VentanaAgregarMedicacion extends JFrame {
         }
     }
 
+    //Función para guardar la medicación y los recordatorios asociados
     private void guardarMedicacion() {
         try {
             Medicamento medicamentoSeleccionado = (Medicamento) comboMedicamentos.getSelectedItem();
@@ -207,6 +217,7 @@ public class VentanaAgregarMedicacion extends JFrame {
             int idUsuario = usuarioID;
             Integer idCuidador = null;
 
+            // Si el usuario es un cuidador, se obtiene el ID del paciente asignado para el posterior guardado de la medicación y recordatorios
             if (ventanaAreaMedica != null && "cuidador".equals(ventanaAreaMedica.getTipoUsuario())) {
                 List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
                 if (!pacientes.isEmpty()) {
@@ -230,6 +241,7 @@ public class VentanaAgregarMedicacion extends JFrame {
             int medicacionID = controladorMedicacion.registrarMedicacion(medicacion);
 
             ControladorRecordatorios controladorRecordatorios = new ControladorRecordatorios();
+            //Creación de recordatorios para cada día y hora de dosis
             for (LocalDate fecha = fechaInicio; !fecha.isAfter(fechaFin); fecha = fecha.plusDays(1)) {
                 for (LocalTime hora : horasDosis) {
                     Recordatorios recordatorio = new Recordatorios();
@@ -248,19 +260,18 @@ public class VentanaAgregarMedicacion extends JFrame {
                 }
             }
 
-            JOptionPane.showMessageDialog(this,
-                    "Medicación y recordatorios guardados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Medicación y recordatorios guardados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             if (ventanaAreaMedica != null) {
                 ventanaAreaMedica.cargarRecordatorios();
             }
             dispose();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error al guardar la medicación: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al guardar la medicación: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    //Función para cargar los medicamentos disponibles
     private void cargarMedicamentos() {
         ControladorMedicacion controlador = new ControladorMedicacion();
         List<Medicamento> medicamentos = controlador.obtenerTodosMedicamentos();

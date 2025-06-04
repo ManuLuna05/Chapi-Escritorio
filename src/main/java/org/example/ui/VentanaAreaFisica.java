@@ -31,7 +31,7 @@ public class VentanaAreaFisica extends JFrame {
         return tipoUsuario;
     }
 
-
+    //Configuración para crear la ventana del área física
     public VentanaAreaFisica(int usuarioID, int usuarioCuidadorID) {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
@@ -46,6 +46,7 @@ public class VentanaAreaFisica extends JFrame {
         ControladorActividadFisica controladorActividadFisica = new ControladorActividadFisica();
         controladorActividadFisica.eliminarActividadesPasadas(usuarioID);
 
+        //Se eliminan las actividades pasadas
         if ("cuidador".equals(tipoUsuario)) {
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
             for (int pacienteId : pacientes) {
@@ -87,6 +88,7 @@ public class VentanaAreaFisica extends JFrame {
         panelBuscador.setLayout(new BoxLayout(panelBuscador, BoxLayout.X_AXIS));
         panelBuscador.setOpaque(false);
 
+        //Configuración de la barra de búsqueda
         campoBusqueda = new JTextField("Buscar...");
         campoBusqueda.setMaximumSize(new Dimension(800, 38));
         campoBusqueda.setPreferredSize(new Dimension(600, 38));
@@ -97,6 +99,7 @@ public class VentanaAreaFisica extends JFrame {
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
+        //Se añaden listeners para manejar el foco del campo de búsqueda
         campoBusqueda.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -115,6 +118,7 @@ public class VentanaAreaFisica extends JFrame {
             }
         });
 
+        //Se añade un DocumentListener para filtrar recordatorios al escribir en el campo de búsqueda
         campoBusqueda.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { filtrarRecordatorios(); }
             @Override public void removeUpdate(DocumentEvent e) { filtrarRecordatorios(); }
@@ -140,6 +144,8 @@ public class VentanaAreaFisica extends JFrame {
         listaRecordatorios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listaRecordatorios.setBorder(BorderFactory.createLineBorder(new Color(113, 183, 188), 2));
         listaRecordatorios.setFixedCellHeight(30);
+
+        //Panel con barra de desplazamiento para mostrar la lista de recordatorios de actividad física
         JScrollPane scrollRecordatorios = new JScrollPane(listaRecordatorios);
         scrollRecordatorios.setMaximumSize(new Dimension(1000, 400));
         scrollRecordatorios.setBorder(BorderFactory.createTitledBorder(
@@ -154,9 +160,11 @@ public class VentanaAreaFisica extends JFrame {
         cargarRecordatorios();
         panelContenido.add(Box.createVerticalStrut(20));
 
+        //Panel para los botones de añadir y eliminar recordatorios
         JPanel panelBotones = new JPanel(new GridBagLayout());
         panelBotones.setOpaque(false);
 
+        //Configuración del botón para "Añadir"
         JButton botonAgregar = new JButton("Añadir");
         botonAgregar.setPreferredSize(new Dimension(140, 45));
         botonAgregar.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -164,6 +172,7 @@ public class VentanaAreaFisica extends JFrame {
         botonAgregar.setForeground(Color.WHITE);
         botonAgregar.addActionListener(e -> new VentanaAgregarActividad(usuarioID, usuarioCuidadorID, this).setVisible(true));
 
+        //Configuración del botón para "Eliminar"
         JButton botonEliminar = new JButton("Eliminar");
         botonEliminar.setPreferredSize(new Dimension(140, 45));
         botonEliminar.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -192,13 +201,14 @@ public class VentanaAreaFisica extends JFrame {
         panelPrincipal.add(panelCentral, BorderLayout.CENTER);
         add(panelPrincipal);
 
+        //Acción del botón "Volver"
         botonVolver.addActionListener(e -> {
                 new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
                 dispose();
-
         });
     }
 
+    //Función para crear la cabecera de la ventana (Explicada a fondo en VentanaPrincipal)
     private JPanel cabeceraVentana() {
         JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.setBackground(new Color(113, 183, 188));
@@ -286,15 +296,18 @@ public class VentanaAreaFisica extends JFrame {
         cargarRecordatorios();
     }
 
+    //Función para cargar los recordatorios de actividad física
     void cargarRecordatorios()  {
         modeloLista.clear();
         todosRecordatorios.clear();
         List<Recordatorios> recordatorios = new ArrayList<>();
 
+        //Cargar recordatorios según el tipo de usuario
         if ("cuidador".equals(tipoUsuario)) {
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
 
+            //Obtener recordatorios del paciente asignado al cuidador
             for (Integer pacienteId : pacientes) {
                 List<Recordatorios> recordatoriosPaciente = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
                 if (recordatoriosPaciente != null) {
@@ -302,6 +315,7 @@ public class VentanaAreaFisica extends JFrame {
                 }
             }
 
+            //Obtener recordatorios creados por el propio cuidador
             List<Recordatorios> recordatoriosPropios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
             if (recordatoriosPropios != null) {
                 recordatorios.addAll(recordatoriosPropios);
@@ -310,6 +324,7 @@ public class VentanaAreaFisica extends JFrame {
             recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
         }
 
+        //Filtrar los recordatorios de actividad física y evitar así recordatorios duplicados
         Set<Integer> idsVistos = new HashSet<>();
         if (recordatorios != null) {
             for (Recordatorios recordatorio : recordatorios) {
@@ -323,14 +338,17 @@ public class VentanaAreaFisica extends JFrame {
         }
     }
 
+    //Función para filtrar los recordatorios según el texto ingresado en el campo de búsqueda
     private void filtrarRecordatorios() {
         String textoBusqueda = campoBusqueda.getText().toLowerCase();
 
+        //Si el texto es "buscar..." o está vacío, se cargan todos los recordatorios
         if (textoBusqueda.equals("buscar...") || textoBusqueda.isEmpty()) {
             cargarTodosRecordatorios();
             return;
         }
 
+        //Filtrado de los recordatorios que contengan el texto de búsqueda
         modeloLista.clear();
         for (Recordatorios recordatorio : todosRecordatorios) {
             if (recordatorio.toString().toLowerCase().contains(textoBusqueda)) {
@@ -339,8 +357,10 @@ public class VentanaAreaFisica extends JFrame {
         }
     }
 
+    //Función para cargar todos los recordatorios sin filtrar
     private void cargarTodosRecordatorios() {
         modeloLista.clear();
+        //Para cada recordatorio en la lista, se añade al modelo de lista
         for (Recordatorios recordatorio : todosRecordatorios) {
             modeloLista.addElement(recordatorio.toString());
         }

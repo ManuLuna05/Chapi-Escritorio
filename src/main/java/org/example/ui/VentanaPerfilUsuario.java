@@ -11,6 +11,7 @@ public class VentanaPerfilUsuario extends JFrame {
     private final String tipoUsuario;
     private final String ventanaInicial;
 
+    //Ventana para mostrar el perfil de un usuario
     public VentanaPerfilUsuario(int usuarioID, String tipoUsuario, String ventanaInicial) {
         this.usuarioID = usuarioID;
         this.tipoUsuario = tipoUsuario;
@@ -26,6 +27,7 @@ public class VentanaPerfilUsuario extends JFrame {
         add(footerVentana(), BorderLayout.SOUTH);
     }
 
+    //Función que crea el contenido del perfil del usuario
     private JPanel contenidoPerfil() {
         ControladorUsuarios controlador = new ControladorUsuarios();
         Usuario usuario = controlador.obtenerUsuarioPorId(usuarioID);
@@ -44,6 +46,7 @@ public class VentanaPerfilUsuario extends JFrame {
 
         panel.add(crearBloqueUsuario("Mis datos", usuario));
 
+        //Si el usuario es un cuidador, se muestran los datos del paciente asignado
         if ("cuidador".equalsIgnoreCase(tipoUsuario)) {
             java.util.List<Integer> pacientes = controlador.obtenerPacientesDeCuidador(usuarioID);
             if (!pacientes.isEmpty()) {
@@ -58,12 +61,14 @@ public class VentanaPerfilUsuario extends JFrame {
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         botones.setOpaque(false);
 
+        //Configuración del botón de modificación del perfil
         JButton botonEditar = new JButton("Modificar Información");
         botonEditar.setPreferredSize(new Dimension(200, 40));
         botonEditar.setFont(new Font("Segoe UI", Font.BOLD, 14));
         botonEditar.setBackground(new Color(113, 183, 188));
         botonEditar.setForeground(Color.WHITE);
 
+        //Configuración del botón "Volver"
         JButton botonVolver = new JButton("Volver");
         botonVolver.setPreferredSize(new Dimension(120, 40));
         botonVolver.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -74,6 +79,7 @@ public class VentanaPerfilUsuario extends JFrame {
         botones.add(botonVolver);
         panel.add(botones);
 
+        //Acción del botón "Modificar Información"
         botonEditar.addActionListener(e -> {
             VentanaEditarPerfil panelEditar = new VentanaEditarPerfil(usuarioID, tipoUsuario, ventanaInicial, this);
             JDialog dialogo = new JDialog(this, "Modificar información", true);
@@ -89,6 +95,7 @@ public class VentanaPerfilUsuario extends JFrame {
             dialogo.setVisible(true);
         });
 
+        //Acción del botón "Volver"
         botonVolver.addActionListener(e -> {
             switch (ventanaInicial) {
                 case "principal" -> new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
@@ -103,6 +110,7 @@ public class VentanaPerfilUsuario extends JFrame {
         return panel;
     }
 
+    //Función que recarga el contenido del perfil del usuario
     public void recargarContenido() {
         getContentPane().removeAll();
         add(cabeceraVentana(), BorderLayout.NORTH);
@@ -112,7 +120,7 @@ public class VentanaPerfilUsuario extends JFrame {
         repaint();
     }
 
-
+    //Función que crea un bloque de información del usuario
     private JPanel crearBloqueUsuario(String titulo, Usuario usuario) {
         JPanel bloque = new JPanel();
         bloque.setLayout(new BoxLayout(bloque, BoxLayout.Y_AXIS));
@@ -122,6 +130,7 @@ public class VentanaPerfilUsuario extends JFrame {
                 BorderFactory.createEmptyBorder(10, 20, 10, 20)
         ));
 
+        //Se añaden los datos del usuario al bloque
         bloque.add(etiquetaInfo("Nombre", usuario.getNombre()));
         bloque.add(etiquetaInfo("Apellidos", usuario.getApellidos()));
         bloque.add(etiquetaInfo("Email", usuario.getEmail()));
@@ -130,6 +139,7 @@ public class VentanaPerfilUsuario extends JFrame {
         return bloque;
     }
 
+    //Función que crea una etiqueta con el campo y el dato del usuario
     private JPanel etiquetaInfo(String campo, String dato) {
         JPanel fila = new JPanel(new BorderLayout());
         fila.setOpaque(false);
@@ -147,6 +157,7 @@ public class VentanaPerfilUsuario extends JFrame {
         return fila;
     }
 
+    //Función que crea la cabecera de la ventana
     private JPanel cabeceraVentana() {
         JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.setBackground(new Color(113, 183, 188));
@@ -180,7 +191,7 @@ public class VentanaPerfilUsuario extends JFrame {
         return cabecera;
     }
 
-
+    //Función que crea el pie o footer de la ventana
     private JPanel footerVentana() {
         JPanel footer = new JPanel();
         footer.setBackground(new Color(113, 183, 188));

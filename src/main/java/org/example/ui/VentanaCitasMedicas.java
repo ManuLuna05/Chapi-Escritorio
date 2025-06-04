@@ -35,6 +35,7 @@ public class VentanaCitasMedicas extends JFrame {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
 
+        //Verificación del tipo de usuario
         ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
         Usuario usuario = controladorUsuarios.obtenerUsuarioPorId(usuarioID);
         this.tipoUsuario = usuario.getTipo();
@@ -42,6 +43,7 @@ public class VentanaCitasMedicas extends JFrame {
         controladorRecordatorios = new ControladorRecordatorios();
         controladorRecordatorios.eliminarRecordatoriosPasados(usuarioID);
 
+        //Se eliminan las citas pasadas
         ControladorCitasMedicas controladorCitas = new ControladorCitasMedicas();
         controladorCitas.eliminarCitasPasadas(usuarioID);
 
@@ -72,6 +74,7 @@ public class VentanaCitasMedicas extends JFrame {
         panelBusqueda.setLayout(new BoxLayout(panelBusqueda, BoxLayout.X_AXIS));
         panelBusqueda.setOpaque(false);
 
+        //Configuración de la barra de búsqueda
         campoBusqueda = new JTextField("Buscar...");
         campoBusqueda.setMaximumSize(new Dimension(800, 38));
         campoBusqueda.setPreferredSize(new Dimension(600, 38));
@@ -82,6 +85,7 @@ public class VentanaCitasMedicas extends JFrame {
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
+        //Se añaden listeners para manejar el foco del campo de búsqueda
         campoBusqueda.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
                 if (campoBusqueda.getText().equals("Buscar...")) {
@@ -98,12 +102,14 @@ public class VentanaCitasMedicas extends JFrame {
             }
         });
 
+        //Se añade un DocumentListener para filtrar los recordatorios al escribir en el campo de búsqueda
         campoBusqueda.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { filtrarRecordatorios(); }
             public void removeUpdate(DocumentEvent e) { filtrarRecordatorios(); }
             public void changedUpdate(DocumentEvent e) { filtrarRecordatorios(); }
         });
 
+        //Configuración del botón de "Volver"
         JButton botonVolver = new JButton("Volver");
         botonVolver.setFont(new Font("Segoe UI", Font.BOLD, 16));
         botonVolver.setFocusPainted(false);
@@ -124,6 +130,7 @@ public class VentanaCitasMedicas extends JFrame {
         listaRecordatorios.setBorder(BorderFactory.createLineBorder(new Color(113, 183, 188), 2));
         listaRecordatorios.setFixedCellHeight(30);
 
+        //Panel con barra de desplazamiento para mostrar la lista de recordatorios de citas médicas
         JScrollPane scrollRecordatorios = new JScrollPane(listaRecordatorios);
         scrollRecordatorios.setMaximumSize(new Dimension(1000, 400));
         scrollRecordatorios.setBorder(BorderFactory.createTitledBorder(
@@ -141,12 +148,14 @@ public class VentanaCitasMedicas extends JFrame {
         JPanel panelBotones = new JPanel(new GridBagLayout());
         panelBotones.setOpaque(false);
 
+        //Configuración del botón "Añadir"
         JButton agregarBoton = new JButton("Añadir");
         agregarBoton.setPreferredSize(new Dimension(140, 45));
         agregarBoton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         agregarBoton.setBackground(new Color(113, 183, 188));
         agregarBoton.setForeground(Color.WHITE);
 
+        //Configuración del botón "Eliminar"
         JButton eliminarBoton = new JButton("Eliminar");
         eliminarBoton.setPreferredSize(new Dimension(140, 45));
         eliminarBoton.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -176,11 +185,13 @@ public class VentanaCitasMedicas extends JFrame {
 
         add(panelCentral, BorderLayout.CENTER);
 
+        //Acción del botón "Volver"
         botonVolver.addActionListener(e -> {
             new VentanaPrincipal(usuarioID, tipoUsuario).setVisible(true);
             dispose();
         });
 
+        //Acciones de los botones "Añadir" y "Eliminar"
         agregarBoton.addActionListener(e -> new VentanaAgregarCita(usuarioID, usuarioCuidadorID, this).setVisible(true));
         eliminarBoton.addActionListener(e -> {
             new VentanaEliminarCita(usuarioID, this).setVisible(true);
@@ -188,24 +199,28 @@ public class VentanaCitasMedicas extends JFrame {
     }
 
 
+    //Función para cargar los recordatorios de citas médicas
     void cargarRecordatorios() {
         modeloLista.clear();
         todosRecordatorios.clear();
         List<Recordatorios> recordatorios = new ArrayList<>();
 
+        //Si el usuario es un cuidador, se obtienen los recordatorios de los pacientes asignados
         if ("cuidador".equals(tipoUsuario)) {
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
             List<Integer> pacientes = controladorUsuarios.obtenerPacientesDeCuidador(usuarioID);
-            for (Integer pacienteId : pacientes) {
+            for (Integer pacienteId : pacientes) { //Se obtienen los recordatorios del paciente
                 List<Recordatorios> rec = controladorRecordatorios.obtenerRecordatoriosPorUsuario(pacienteId);
                 if (rec != null) recordatorios.addAll(rec);
             }
+            //Se obtienen los recordatorios creados por el propio cuidador
             List<Recordatorios> propios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
             if (propios != null) recordatorios.addAll(propios);
         } else {
             recordatorios = controladorRecordatorios.obtenerRecordatoriosPorUsuario(usuarioID);
         }
 
+        //Se filtran los recordatorios para evitar duplicados y solo incluir citas médicas
         Set<Integer> idsVistos = new HashSet<>();
         if (recordatorios != null) {
             for (Recordatorios r : recordatorios) {
@@ -218,13 +233,16 @@ public class VentanaCitasMedicas extends JFrame {
         }
     }
 
+    //Función para filtrar los recordatorios dependiendo del texto ingresado al buscar
     private void filtrarRecordatorios() {
+        //Si el campo de búsqueda está vacío o contiene el texto por defecto, se cargan todos los recordatorios
         String textoBusqueda = campoBusqueda.getText().toLowerCase();
         if (textoBusqueda.equals("buscar...") || textoBusqueda.isEmpty()) {
             cargarTodosRecordatorios();
             return;
         }
 
+        //Si hay texto en el campo de búsqueda, se filtran los recordatorios
         modeloLista.clear();
         for (Recordatorios r : todosRecordatorios) {
             if (r.toString().toLowerCase().contains(textoBusqueda)) {
@@ -233,6 +251,7 @@ public class VentanaCitasMedicas extends JFrame {
         }
     }
 
+    //Función para cargar todos los recordatorios en la lista cuando no hay filtro aplicado
     private void cargarTodosRecordatorios() {
         modeloLista.clear();
         for (Recordatorios r : todosRecordatorios) {
@@ -240,6 +259,7 @@ public class VentanaCitasMedicas extends JFrame {
         }
     }
 
+    //Función para crear la cabecera de la ventana (Explicada a fondo en VentanaPrincipal)
     private JPanel cabeceraVentana() {
         JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.setBackground(new Color(113, 183, 188));

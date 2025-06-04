@@ -23,6 +23,7 @@ public class VentanaAgregarCita extends JFrame {
     private int usuarioCuidadorID;
     private VentanaCitasMedicas ventanaCitasMedicas;
 
+    //Creación de la ventana para agregar una cita médica
     public VentanaAgregarCita(int usuarioID, int usuarioCuidadorID, VentanaCitasMedicas ventanaCitasPrincipal) {
         this.usuarioID = usuarioID;
         this.usuarioCuidadorID = usuarioCuidadorID;
@@ -45,11 +46,13 @@ public class VentanaAgregarCita extends JFrame {
         panel.add(titulo);
         panel.add(Box.createRigidArea(new Dimension(0, 25)));
 
+        // Creación de los campos del formulario
         textoLugar = new JTextField();
         textoEspecialista = new JTextField();
         selectorFecha = new JDateChooser();
         selectorFecha.setDateFormatString("yyyy-MM-dd");
 
+        //Spinner para la hora con su configuración de formato
         spinnerHora = new JSpinner(new SpinnerDateModel());
         spinnerHora.setEditor(new JSpinner.DateEditor(spinnerHora, "HH:mm"));
 
@@ -63,6 +66,7 @@ public class VentanaAgregarCita extends JFrame {
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         panelInferior.setBackground(new Color(248, 248, 248));
 
+        //Acciones de los botones
         botonGuardar = new JButton("GUARDAR");
         estiloBoton(botonGuardar);
         botonGuardar.addActionListener(e -> guardarCita());
@@ -78,6 +82,7 @@ public class VentanaAgregarCita extends JFrame {
         add(panel);
     }
 
+    //Función para crear el formulario a rellenar para la creación de la cita médica
     private void formulario(JPanel panel, String etiquetaTexto, JComponent campo) {
         JPanel panelCampo = new JPanel();
         panelCampo.setLayout(new BoxLayout(panelCampo, BoxLayout.Y_AXIS));
@@ -101,6 +106,7 @@ public class VentanaAgregarCita extends JFrame {
         panel.add(panelCampo);
     }
 
+    //Estilo de los botones
     private void estiloBoton(JButton boton) {
         boton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         boton.setBackground(new Color(113, 183, 188));
@@ -108,16 +114,19 @@ public class VentanaAgregarCita extends JFrame {
         boton.setPreferredSize(new Dimension(150, 40));
     }
 
+    //Función para guardar la cita médica
     private void guardarCita() {
         try {
             String lugar = textoLugar.getText().trim();
             String especialista = textoEspecialista.getText().trim();
 
+            //Validación de los campos requeridos
             if (lugar.isEmpty() || especialista.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Debe completar el lugar y el especialista.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
+            //Validación de la fecha seleccionada
             if (selectorFecha.getDate() == null) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -130,6 +139,7 @@ public class VentanaAgregarCita extends JFrame {
             int pacienteId = usuarioID;
             Integer cuidadorId = null;
 
+            //Si el usuario es un cuidador, se obtiene el ID del paciente asignado para el posterior guardado
             if ("cuidador".equals(ventanaCitasMedicas.getTipoUsuario())) {
                 cuidadorId = usuarioID;
                 ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
@@ -137,7 +147,7 @@ public class VentanaAgregarCita extends JFrame {
                 if (!pacientes.isEmpty()) {
                     pacienteId = pacientes.get(0);
                 } else {
-                    JOptionPane.showMessageDialog(this, "No tiene pacientes asignados. Se creará como paciente propio.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "No tiene pacientes asignados. Se crea como paciente propio.", "Aviso", JOptionPane.WARNING_MESSAGE);
                     cuidadorId = null;
                 }
             }
@@ -164,8 +174,7 @@ public class VentanaAgregarCita extends JFrame {
             dispose();
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al guardar la cita: " + ex.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al guardar la cita: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }

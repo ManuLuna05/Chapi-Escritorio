@@ -9,6 +9,7 @@ import java.awt.*;
 
 public class VentanaRegistro extends JFrame {
 
+    //Ventana de registro de usuario
     public VentanaRegistro() {
         setTitle("Registro de Usuario");
         setSize(500, 800);
@@ -30,12 +31,14 @@ public class VentanaRegistro extends JFrame {
         panelFormulario.setOpaque(false);
         panelFormulario.setMaximumSize(new Dimension(400, 330));
 
+        //Definición de los campos del formulario
         String[] nombreCampos = {"Nombre:", "Apellidos:", "Email:", "Contraseña:", "Teléfono:"};
         JTextField[] campos = {
                 new JTextField(), new JTextField(), new JTextField(),
                 new JPasswordField(), new JTextField()
         };
 
+        //Configuración de los campos del formulario
         for (int i = 0; i < nombreCampos.length; i++) {
             JLabel etiqueta = new JLabel(nombreCampos[i]);
             etiqueta.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -59,6 +62,8 @@ public class VentanaRegistro extends JFrame {
         panelPrincipal.add(panelFormulario);
         panelPrincipal.add(Box.createVerticalStrut(20));
 
+        /*Checkbox para seleccionar si el usuario es un cuidador, si es así, se muestra el campo para
+        el correo del paciente que se le asigna */
         JCheckBox seleccionaCuidador = new JCheckBox("Soy un usuario cuidador");
         seleccionaCuidador.setFont(new Font("Arial", Font.PLAIN, 16));
         seleccionaCuidador.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -74,27 +79,31 @@ public class VentanaRegistro extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         panelBotones.setOpaque(false);
 
+        //Configuración del botón "Aceptar"
         JButton botonAceptar = new JButton("Aceptar");
         botonAceptar.setFont(new Font("Arial", Font.BOLD, 14));
         botonAceptar.setPreferredSize(new Dimension(150, 40));
         botonAceptar.setBackground(new Color(113, 183, 188));
         botonAceptar.setForeground(Color.WHITE);
 
+        //Configuración del botón "Volver"
         JButton botonVolver = new JButton("Volver");
         botonVolver.setFont(new Font("Arial", Font.BOLD, 14));
         botonVolver.setPreferredSize(new Dimension(150, 40));
         botonVolver.setBackground(new Color(113, 183, 188));
         botonVolver.setForeground(Color.WHITE);
 
+        //Acción del botón "Aceptar"
         botonAceptar.addActionListener(e -> {
             boolean camposVacios = false;
-            for (JTextField campo : campos) {
+            for (JTextField campo : campos) { //Validación de campos vacíos
                 if (campo.getText().trim().isEmpty()) {
                     camposVacios = true;
                     break;
                 }
             }
 
+            //Si hay campos vacíos, se muestra un mensaje de error
             if (camposVacios) {
                 JOptionPane.showMessageDialog(this, "Por favor complete todos los campos obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -104,6 +113,7 @@ public class VentanaRegistro extends JFrame {
             String telefono = campos[4].getText().trim();
             ControladorUsuarios controladorUsuarios = new ControladorUsuarios();
 
+            //Validación de email y teléfono
             if (!controladorUsuarios.esEmailValido(email)) {
                 JOptionPane.showMessageDialog(this, "Por favor ingrese un email válido", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -114,14 +124,17 @@ public class VentanaRegistro extends JFrame {
                 return;
             }
 
+            //Verificación del email en caso de que ya esté registrado
             if (controladorUsuarios.obtenerUsuarioIdPorCorreo(email) != -1) {
                 JOptionPane.showMessageDialog(this, "Este correo ya está registrado. Por favor, use otro.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
+            //Si el usuario es cuidador, se valida el correo del usuario cuidado
             if (seleccionaCuidador.isSelected()) {
                 String correoUsuarioCuidado = campoUsuarioCuidado.getText().trim();
 
+                //Validación del correo del usuario cuidado
                 if (correoUsuarioCuidado.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Por favor ingrese el correo del usuario cuidado", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -137,6 +150,7 @@ public class VentanaRegistro extends JFrame {
                     return;
                 }
 
+                //Registro del usuario cuidador y su relación con el usuario cuidado
                 Usuario usuarioCuidador = new Usuario(0,
                         campos[0].getText(),
                         campos[1].getText(),
@@ -156,7 +170,7 @@ public class VentanaRegistro extends JFrame {
 
                 controladorUsuarios.registrarUsuario(relacion);
 
-            } else {
+            } else { //Registro de un usuario normal (paciente)
                 Usuario usuario = new Usuario(0,
                         campos[0].getText(),
                         campos[1].getText(),
@@ -171,9 +185,9 @@ public class VentanaRegistro extends JFrame {
             JOptionPane.showMessageDialog(this, "Registro exitoso");
             new VentanaInicioSesion().setVisible(true);
             dispose();
-
         });
 
+        //Acción del botón "Volver"
         botonVolver.addActionListener(e -> {
             new VentanaAcceso().setVisible(true);
             dispose();

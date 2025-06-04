@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class BBDD {
+
+    //Función para crear la base de datos y las tablas necesarias además de realizar la inserción de los medicamentos
     public static boolean crearBaseDeDatos(BufferedWriter log) {
         String url = "jdbc:mysql://localhost:3306/?serverTimezone=UTC";
         String user = "root";
