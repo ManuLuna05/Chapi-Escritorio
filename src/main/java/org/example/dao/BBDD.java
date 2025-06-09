@@ -14,93 +14,93 @@ public class BBDD {
         String user = "root";
         String password = "root";
 
-        String crearBBDD = "CREATE DATABASE IF NOT EXISTS Chapi";
+        String crearBBDD = "CREATE DATABASE IF NOT EXISTS chapi";
 
         String scriptSQL = """
-        CREATE TABLE IF NOT EXISTS Usuario (
-            UsuarioID INT PRIMARY KEY AUTO_INCREMENT,
-            Nombre VARCHAR(100) NOT NULL,
-            Apellidos VARCHAR(100) NOT NULL,
-            Email VARBINARY(255) UNIQUE NOT NULL,
-            Password VARBINARY(255) NOT NULL,
-            Telefono VARBINARY(255) UNIQUE,
-            Tipo ENUM('cuidador', 'cuidado') NOT NULL
+        CREATE TABLE IF NOT EXISTS usuario (
+            usuarioID INT PRIMARY KEY AUTO_INCREMENT,
+            nombre VARCHAR(100) NOT NULL,
+            apellidos VARCHAR(100) NOT NULL,
+            email VARBINARY(255) UNIQUE NOT NULL,
+            password VARBINARY(255) NOT NULL,
+            telefono VARBINARY(255) UNIQUE,
+            tipo ENUM('cuidador', 'cuidado') NOT NULL
         );
 
-        CREATE TABLE IF NOT EXISTS Cuidador_Usuario (
-            UsuarioID INT NOT NULL,
-            UsuarioCuidadorID INT NOT NULL,
-            PRIMARY KEY (UsuarioID, UsuarioCuidadorID),
-            FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE,
-            FOREIGN KEY (UsuarioCuidadorID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE
+        CREATE TABLE IF NOT EXISTS cuidador_usuario (
+            usuarioID INT NOT NULL,
+            usuarioCuidadorID INT NOT NULL,
+            PRIMARY KEY (usuarioID, usuarioCuidadorID),
+            FOREIGN KEY (usuarioID) REFERENCES usuario(usuarioID) ON DELETE CASCADE,
+            FOREIGN KEY (usuarioCuidadorID) REFERENCES usuario(usuarioID) ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS Medicamento (
-            MedicamentoID INT PRIMARY KEY AUTO_INCREMENT,
-            Nombre VARCHAR(100) NOT NULL,
-            FechaCaducidad DATE NOT NULL,
-            Descripcion TEXT,
-            Foto VARCHAR(255)
+        CREATE TABLE IF NOT EXISTS medicamento (
+            medicamentoID INT PRIMARY KEY AUTO_INCREMENT,
+            nombre VARCHAR(100) NOT NULL,
+            fechaCaducidad DATE NOT NULL,
+            descripcion TEXT,
+            foto VARCHAR(255)
         );
 
-        CREATE TABLE IF NOT EXISTS Medicacion (
-            MedicacionID INT PRIMARY KEY AUTO_INCREMENT,
-            UsuarioID INT NOT NULL,
-            MedicamentoID INT NOT NULL,
-            Dosis INT NOT NULL,
-            Frecuencia VARCHAR(50) NOT NULL,
-            Duracion INT NOT NULL,
-            FechaInicio DATE NOT NULL,
-            FechaFin DATE NOT NULL,
-            FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE,
-            FOREIGN KEY (MedicamentoID) REFERENCES Medicamento(MedicamentoID) ON DELETE CASCADE
+        CREATE TABLE IF NOT EXISTS medicacion (
+            medicacionID INT PRIMARY KEY AUTO_INCREMENT,
+            usuarioID INT NOT NULL,
+            medicamentoID INT NOT NULL,
+            dosis INT NOT NULL,
+            frecuencia VARCHAR(50) NOT NULL,
+            duracion INT NOT NULL,
+            fechaInicio DATE NOT NULL,
+            fechaFin DATE NOT NULL,
+            FOREIGN KEY (usuarioID) REFERENCES usuario(usuarioID) ON DELETE CASCADE,
+            FOREIGN KEY (medicamentoID) REFERENCES medicamento(medicamentoID) ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS CitaMedica (
-            CitaMedicaID INT PRIMARY KEY AUTO_INCREMENT,
-            UsuarioID INT NOT NULL,
-            UsuarioCuidadorID INT NULL,
-            FechaCita DATETIME NOT NULL,
-            Lugar VARCHAR(255) NOT NULL,
-            Especialista VARCHAR(100) NOT NULL,
-            FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE,
-            FOREIGN KEY (UsuarioCuidadorID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE
+        CREATE TABLE IF NOT EXISTS citaMedica (
+            citaMedicaID INT PRIMARY KEY AUTO_INCREMENT,
+            usuarioID INT NOT NULL,
+            usuarioCuidadorID INT NULL,
+            fechaCita DATETIME NOT NULL,
+            lugar VARCHAR(255) NOT NULL,
+            especialista VARCHAR(100) NOT NULL,
+            FOREIGN KEY (usuarioID) REFERENCES usuario(usuarioID) ON DELETE CASCADE,
+            FOREIGN KEY (usuarioCuidadorID) REFERENCES usuario(usuarioID) ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS ActividadFisica (
-            ActividadID INT PRIMARY KEY AUTO_INCREMENT,
-            UsuarioID INT NOT NULL,
-            UsuarioCuidadorID INT NULL,
-            Nombre VARCHAR(100) NOT NULL,
-            Duracion INT NOT NULL,
-            HoraInicio TIME NOT NULL,
-            HoraFin TIME NOT NULL,
-            FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE,
-            FOREIGN KEY (UsuarioCuidadorID) REFERENCES Usuario(UsuarioID) ON DELETE SET NULL
+        CREATE TABLE IF NOT EXISTS actividadFisica (
+            actividadID INT PRIMARY KEY AUTO_INCREMENT,
+            usuarioID INT NOT NULL,
+            usuarioCuidadorID INT NULL,
+            nombre VARCHAR(100) NOT NULL,
+            duracion INT NOT NULL,
+            horaInicio TIME NOT NULL,
+            horaFin TIME NOT NULL,
+            FOREIGN KEY (usuarioID) REFERENCES usuario(usuarioID) ON DELETE CASCADE,
+            FOREIGN KEY (usuarioCuidadorID) REFERENCES usuario(usuarioID) ON DELETE SET NULL
         );
 
-        CREATE TABLE IF NOT EXISTS Recordatorio (
-            RecordatorioID INT PRIMARY KEY AUTO_INCREMENT,
-            UsuarioID INT NOT NULL,
-            UsuarioCuidadorID INT NULL,
-            Descripcion VARCHAR(255) NOT NULL,
-            TipoEvento ENUM('Medicacion', 'ActividadFisica', 'CitaMedica') NOT NULL,
-            NumeroDosis INT NOT NULL,
-            Fecha DATE NOT NULL,
-            Hora TIME NOT NULL,
-            FechaInicio DATETIME NOT NULL,
-            FechaFin DATETIME NOT NULL,
-            CitaMedicaID INT DEFAULT NULL,
-            MedicacionID INT DEFAULT NULL,
-            ActividadID INT DEFAULT NULL,
-            FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE,
-            FOREIGN KEY (UsuarioCuidadorID) REFERENCES Usuario(UsuarioID) ON DELETE SET NULL,
-            FOREIGN KEY (CitaMedicaID) REFERENCES CitaMedica(CitaMedicaID) ON DELETE SET NULL,
-            FOREIGN KEY (MedicacionID) REFERENCES Medicacion(MedicacionID) ON DELETE SET NULL,
-            FOREIGN KEY (ActividadID) REFERENCES ActividadFisica(ActividadID) ON DELETE SET NULL
+        CREATE TABLE IF NOT EXISTS recordatorio (
+            recordatorioID INT PRIMARY KEY AUTO_INCREMENT,
+            usuarioID INT NOT NULL,
+            usuarioCuidadorID INT NULL,
+            descripcion VARCHAR(255) NOT NULL,
+            tipoEvento ENUM('Medicacion', 'ActividadFisica', 'CitaMedica') NOT NULL,
+            numeroDosis INT NOT NULL,
+            fecha DATE NOT NULL,
+            hora TIME NOT NULL,
+            fechaInicio DATETIME NOT NULL,
+            fechaFin DATETIME NOT NULL,
+            citaMedicaID INT DEFAULT NULL,
+            medicacionID INT DEFAULT NULL,
+            actividadID INT DEFAULT NULL,
+            FOREIGN KEY (usuarioID) REFERENCES usuario(usuarioID) ON DELETE CASCADE,
+            FOREIGN KEY (usuarioCuidadorID) REFERENCES usuario(usuarioID) ON DELETE SET NULL,
+            FOREIGN KEY (citaMedicaID) REFERENCES citaMedica(citaMedicaID) ON DELETE SET NULL,
+            FOREIGN KEY (medicacionID) REFERENCES medicacion(medicacionID) ON DELETE SET NULL,
+            FOREIGN KEY (actividadID) REFERENCES actividadFisica(actividadID) ON DELETE SET NULL
         );
 
-        INSERT INTO Medicamento (Nombre, FechaCaducidad, Descripcion, Foto)
+        INSERT INTO medicamento (nombre, fechaCaducidad, descripcion, foto)
         SELECT * FROM (
             SELECT 'Ibuprofeno', '2026-07-08', 'Uso médico común de ibuprofeno', 'ibuprofeno.jpg' UNION ALL
             SELECT 'Paracetamol', '2026-04-17', 'Uso médico común de paracetamol', 'paracetamol.jpg' UNION ALL
@@ -152,14 +152,14 @@ public class BBDD {
             SELECT 'Cefalexina', '2025-10-19', 'Uso médico común de cefalexina', 'cefalexina.jpg' UNION ALL
             SELECT 'Nitrofurantoína', '2027-03-06', 'Uso médico común de nitrofurantoína', 'nitrofurantoína.jpg'
         ) AS nuevos
-        WHERE NOT EXISTS (SELECT 1 FROM Medicamento);
+        WHERE NOT EXISTS (SELECT 1 FROM medicamento);
         """;
 
         try (Connection conn = DriverManager.getConnection(url, user, password);
              Statement stmt = conn.createStatement()) {
 
             stmt.execute(crearBBDD);
-            stmt.execute("USE Chapi");
+            stmt.execute("USE chapi");
 
             for (String sql : scriptSQL.split(";")) {
                 String trimmed = sql.trim();

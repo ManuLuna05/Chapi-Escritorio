@@ -180,7 +180,7 @@ public class VentanaPrincipal extends JFrame {
         ajusteSecciones.setPreferredSize(new Dimension(900, 500));
         ajusteSecciones.setMinimumSize(new Dimension(600, 400));
 
-        ajusteSecciones.add(crearSeccion("Recordatorios", null, false, recordatorios));
+        ajusteSecciones.add(crearSeccion("Recordatorios (Hoy)", null, false, recordatorios));
         ajusteSecciones.add(crearSeccion("Área Médica", "/images/seccionMedicacion.png", true, null));
         ajusteSecciones.add(crearSeccion("Área Física", "/images/areaFisica.png", true, null));
         ajusteSecciones.add(crearSeccion("Citas Médicas", "/images/citasMedicas.png", true, null));
@@ -194,7 +194,7 @@ public class VentanaPrincipal extends JFrame {
         JPanel panel;
 
         //Si la sección es Recordatorios, se crea un JTextArea para mostrar los recordatorios
-        if ("Recordatorios".equals(titulo)) {
+        if ("Recordatorios (Hoy)".equals(titulo)) {
             panel = new JPanel(new BorderLayout());
 
             JPanel contenido = new JPanel(new BorderLayout());
