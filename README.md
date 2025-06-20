@@ -16,11 +16,15 @@ Para realizar la instalación de Chapi en esta versión escritorio, será necesa
     
 ## Colores Principales
 
-| Color             | Hex                                                                |
-| ----------------- | ------------------------------------------------------------------ |
-| Example Color | ![#71B7BCFF](https://via.placeholder.com/10/0a192f?text=+) #71B7BCFF |
-| Example Color | ![#ffffff](https://via.placeholder.com/10/f8f8f8?text=+) #ffffff |
-| Example Color | ![#000000](https://via.placeholder.com/10/00b48a?text=+) #000000 |
+| Color             | Hex                                                           |
+|-------------------|---------------------------------------------------------------|
+| Example Color     | ![#71B7BC](https://via.placeholder.com/10/71B7BC?text=+) #71B7BC |
+| Example Color     | ![#FFFFFF](https://via.placeholder.com/10/FFFFFF?text=+) #FFFFFF |
+| Example Color     | ![#000000](https://via.placeholder.com/10/000000?text=+) #000000 |
+
+## Versiones Logo
+
+El logo de chapi va mas allá de un simple diseño, este realiza la colocación de las letras de la propia aplicación formando la imagen de un abuelo con un bastón, haciendo referencia a los usuarios a los que la aplicación está destinada principalmente.
 
 | ![Logo 1](src/main/resources/images/chapi_logos_negroBlanco.png) | ![Logo 2](src/main/resources/images/chapi_logos_azulOscuro.png) |
 |:--:|:--:|
