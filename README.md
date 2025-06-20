@@ -5,7 +5,5 @@ Esta versión escritorio inicial de Chapi es una aplicación dedicada a la gesti
 
 Además es importante destacar que la aplicación consta con dos tipos de perfiles, pacientes y cuidadores, los pacientes podrán decidir si autogestionar sus recordatorios o bien si prefieren que los gestione un cuidador.
 
-
-![Logo](src/main/resources/images/chapi_logos_negroBlanco.png)
-
-![Logo](src/main/resources/images/chapi_logos_azulOscuro.png)
+| ![Logo 1](src/main/resources/images/chapi_logos_negroBlanco.png) | ![Logo 2](src/main/resources/images/chapi_logos_azulOscuro.png) |
+|:--:|:--:|
